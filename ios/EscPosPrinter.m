@@ -21,25 +21,36 @@ RCT_EXPORT_METHOD(initLANprinter: (NSString *)ip
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 {
-  [PrintManager.shared initializeLANprinter:ip
+   [PrintManager.shared initializeLANprinter:ip
            onSuccess: ^(NSString *result) {
       resolve(result);
            }
            onError: ^(NSString *error) {
       reject(@"event_failure",error, nil);
            }
-   ];
+    ];
 }
 
 RCT_EXPORT_METHOD(printText: (NSString *)text
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 {
- [PrintManager.shared printString:text onSuccess:^(NSString *result) {
+   [PrintManager.shared printString:text onSuccess:^(NSString *result) {
             resolve(result);
         } onError:^(NSString *error) {
             reject(@"event_failure",error, nil);
         }];
+}
+
+RCT_EXPORT_METHOD(printHex: (NSString *)hextString
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+{
+    [PrintManager.shared printHexString:hextString onSuccess:^(NSString *result) {
+            resolve(result);
+        } onError:^(NSString *error) {
+            reject(@"event_failure",error, nil);
+    }];
 }
 
 

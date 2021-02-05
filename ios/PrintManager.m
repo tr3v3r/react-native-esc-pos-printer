@@ -41,21 +41,21 @@
     [self startDiscovery:^(NSString *error) {
         onError(error);
     }];
-    
+
     [self performDiscovery:^(NSString *result) {
         onSuccess(_printerList);
     }];
-    
+
 }
 
 - (void) startDiscovery: (void(^)(NSString *))onError
 {
     [Epos2Discovery stop];
-    
+
     _filteroption  = [[Epos2FilterOption alloc] init];
     [_filteroption setDeviceType:EPOS2_TYPE_PRINTER];
     _printerList = [[NSMutableArray alloc]init];
-    
+
     int result = [Epos2Discovery start:_filteroption delegate:self];
     if (result != EPOS2_SUCCESS) {
         onError(@"Error - discovery start failed");
@@ -79,7 +79,7 @@
 
 - (void)printHexString: (NSString*) hexString onSuccess: (void(^)(NSString *))onSuccess onError: (void(^)(NSString *))onError {
     NSString *finalString = [self stringFromHexString:hexString];
-    
+
     [self printString:finalString onSuccess:^(NSString *result) {
             onSuccess(result);
         } onError:^(NSString *error) {
@@ -124,14 +124,14 @@
         onError(@"Error - addText");
         return;
     }
-    
+
     result = [printer addFeedLine:2];
     if (result != EPOS2_SUCCESS) {
         [printer clearCommandBuffer];
         onError(@"Error - addFeedLine");
         return;
     }
-    
+
     result = [printer addCut:EPOS2_CUT_FEED];
     if (result != EPOS2_SUCCESS) {
         [printer clearCommandBuffer];
@@ -152,7 +152,7 @@
     PrinterInfo* printerInfo = [PrinterInfo sharedPrinterInfo];
     printerInfo.printerSeries = EPOS2_TM_M30;
     printerInfo.lang = EPOS2_MODEL_ANK;
-    
+
     printer = [[Epos2Printer alloc] initWithPrinterSeries:printerInfo.printerSeries lang:printerInfo.lang];
 
     if (printer == nil) {
@@ -162,7 +162,7 @@
 
     [printer setReceiveEventDelegate:self];
     self.printerAddress = [NSString stringWithFormat:@"TCP:%@", ip];
-    
+
     onSuccess(@"LAN Printer initialized");
 }
 
@@ -172,7 +172,7 @@
     PrinterInfo* printerInfo = [PrinterInfo sharedPrinterInfo];
     printerInfo.printerSeries = EPOS2_TM_M30;
     printerInfo.lang = EPOS2_MODEL_ANK;
-    
+
     printer = [[Epos2Printer alloc] initWithPrinterSeries:printerInfo.printerSeries lang:printerInfo.lang];
 
     if (printer == nil) {
@@ -181,7 +181,7 @@
     }
 
     [printer setReceiveEventDelegate:self];
-    
+
     Epos2BluetoothConnection *btConnection = [[Epos2BluetoothConnection alloc] init];
     NSMutableString *BDAddress = [[NSMutableString alloc] init];
     int result = [btConnection connectDevice:BDAddress];
@@ -199,16 +199,16 @@
     PrinterInfo* printerInfo = [PrinterInfo sharedPrinterInfo];
     printerInfo.printerSeries = EPOS2_TM_M30;
     printerInfo.lang = EPOS2_MODEL_ANK;
-    
+
     printer = [[Epos2Printer alloc] initWithPrinterSeries:printerInfo.printerSeries lang:printerInfo.lang];
 
     if (printer == nil) {
         onError(@"Error - initWithPrinterSeries");
         return;
     }
-    
+
     [printer setReceiveEventDelegate:self];
-    
+
     self.printerAddress = [NSString stringWithFormat:@"BT:%@", bluetoothAddress];
     onSuccess(@"BT printer initialized");
 }
@@ -219,16 +219,16 @@
     PrinterInfo* printerInfo = [PrinterInfo sharedPrinterInfo];
     printerInfo.printerSeries = EPOS2_TM_M30;
     printerInfo.lang = EPOS2_MODEL_ANK;
-    
+
     printer = [[Epos2Printer alloc] initWithPrinterSeries:printerInfo.printerSeries lang:printerInfo.lang];
-    
+
     if (printer == nil) {
         onError(@"Error - initWithPrinterSeries");
         return;
     }
-    
+
     [printer setReceiveEventDelegate:self];
-    
+
     self.printerAddress = @"USB:";
     onSuccess(@"USB printer initialized");
 }
@@ -595,25 +595,3 @@
 }
 
 @end
-
-
-
-//Суть этого всего получить готовые методы с минимальным набором параметров на входе.
-//
-//в самом классе нужны методы коннекта к принтеру ( lan, bluetooth, usb).
-//с колбэками обязательно на sucess fail.
-//
-//вообще везде где можно еррор хэндлинг - вкидывать в него колбэк (onError onSuccess)
-//
-//
-//-connectLan(ip: string, port: string, onSuccess, onFailure)
-//
-//-monitorDevicesBLT():
-//-connectBLT(id, onSuccess, onFailure)
-//
-//-monitorDevicesUSB():
-//-connectUSB(id, onSuccess, onFailure)
-//
-//-printHex:( data: string, onSuccess, onFailure ) //  печать данных ввиде hex строки
-//
-//-disconnect()
