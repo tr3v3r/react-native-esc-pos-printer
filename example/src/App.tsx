@@ -1,18 +1,44 @@
 import * as React from 'react';
+import Encoder from 'esc-pos-encoder';
 
-import { StyleSheet, View, Text } from 'react-native';
+import { StyleSheet, View, Button } from 'react-native';
 import EscPosPrinter from 'react-native-esc-pos-printer';
+import {} from 'react-native';
 
 export default function App() {
-  const [result, setResult] = React.useState<number | undefined>();
-
-  React.useEffect(() => {
-    EscPosPrinter.multiply(3, 7).then(setResult);
-  }, []);
-
   return (
     <View style={styles.container}>
-      <Text>Result: {result}</Text>
+      <Button
+        title="discover"
+        onPress={() => {
+          EscPosPrinter.discover().then(console.log).catch(console.log);
+        }}
+      />
+
+      <Button
+        title="testt"
+        onPress={async () => {
+          const encoder = new Encoder();
+
+          encoder
+            .initialize()
+            .line('The quick brown fox jumps over the lazy dog')
+            .newline()
+            .newline()
+            .newline()
+            .cut('partial');
+
+          try {
+            await EscPosPrinter.initLANprinter('192.168.1.6');
+
+            const status = await EscPosPrinter.printRawData(encoder.encode());
+
+            console.log('print', status);
+          } catch (error) {
+            console.log('error', error);
+          }
+        }}
+      />
     </View>
   );
 }

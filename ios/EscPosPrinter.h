@@ -1,5 +1,11 @@
 #import <React/RCTBridgeModule.h>
+#import <React/RCTEventEmitter.h>
 
-@interface EscPosPrinter : NSObject <RCTBridgeModule>
+#import "ePOS2.h"
+#import "PrinterInfo.h"
 
+@interface EscPosPrinter : RCTEventEmitter <RCTBridgeModule>
+{
+    Epos2Printer *printer;
+}
 @end
