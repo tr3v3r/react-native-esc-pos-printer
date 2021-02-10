@@ -1,0 +1,97 @@
+#import "EscPosPrinterDiscovery.h"
+#import "ErrorManager.h"
+
+#import "ePOS2.h"
+
+@interface EscPosPrinterDiscovery() <Epos2DiscoveryDelegate>
+    @property (strong, nonatomic) Epos2FilterOption *filteroption;
+    @property (strong, nonatomic) NSMutableArray *printerList;
+@end
+
+@implementation EscPosPrinterDiscovery
+
+RCT_EXPORT_MODULE()
+
+- (NSArray<NSString *> *)supportedEvents {
+    return @[@"onDiscoveryDone"];
+}
+
+RCT_REMAP_METHOD(discover,
+                 withResolver:(RCTPromiseResolveBlock)resolve
+                 withRejecter:(RCTPromiseRejectBlock)reject)
+{
+    [self startDiscovery:^(NSString *error) {
+        reject(@"event_failure",error, nil);
+    }];
+
+    [self performDiscovery:^(NSString *result) {
+        resolve(result);
+
+    }];
+}
+
+- (void) startDiscovery: (void(^)(NSString *))onError
+{
+    [Epos2Discovery stop];
+
+    _filteroption  = [[Epos2FilterOption alloc] init];
+    [_filteroption setDeviceType:EPOS2_TYPE_PRINTER];
+    _printerList = [ [NSMutableArray alloc] init ];
+
+    int result = [Epos2Discovery start:_filteroption delegate:self];
+    if (result != EPOS2_SUCCESS) {
+        onError(@"startDiscovery error");
+    }
+}
+
+- (void)stopDiscovery
+{
+    int result = EPOS2_SUCCESS;
+
+    result = [Epos2Discovery stop];
+
+    if (result != EPOS2_SUCCESS) {
+        return;
+    }
+}
+
+- (void) performDiscovery: (void(^)(NSString *))onFinish
+{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self stopDiscovery];
+        onFinish(@"Search completed");
+    });
+}
+
+- (void) onDiscovery:(Epos2DeviceInfo *)deviceInfo
+{
+    [_printerList addObject:deviceInfo];
+
+    NSMutableArray *stringArray = [[NSMutableArray alloc] init];
+
+    for (int i = 0; i < [_printerList count]; i++)
+    {
+        Epos2DeviceInfo *info = _printerList[i];
+        NSString *name = [info getDeviceName];
+        NSString *ip = [info getIpAddress];
+        NSString *mac = [info getMacAddress];
+        NSString *target = [info getTarget];
+        NSString *bt = [info getBdAddress];
+
+        [stringArray addObject:@{
+            @"name": name,
+            @"ip": ip,
+            @"mac": mac,
+            @"target": target,
+            @"bt": bt
+        }];
+    }
+
+
+    [self sendEventWithName:@"onDiscoveryDone" body:stringArray];
+
+
+    NSLog(@"Discovery done! %@", deviceInfo.bdAddress);
+}
+
+@end
