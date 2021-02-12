@@ -12,7 +12,6 @@
 		62DF9CFF25CC6CF50048F83E /* ExternalAccessory.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 62DF9CFE25CC6CF50048F83E /* ExternalAccessory.framework */; };
 		62DF9FD525CDBEDE0048F83E /* PrinterInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 62DF9FD425CDBEDE0048F83E /* PrinterInfo.m */; };
 		62DF9FDB25CDBEEB0048F83E /* ShowMsg.m in Sources */ = {isa = PBXBuildFile; fileRef = 62DF9FD925CDBEEB0048F83E /* ShowMsg.m */; };
-		62DF9FDC25CDBEEB0048F83E /* PrintManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 62DF9FDA25CDBEEB0048F83E /* PrintManager.m */; };
 		62E6DE2525CC688800B4CFF3 /* libepos2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 62E6DE2425CC688800B4CFF3 /* libepos2.a */; };
 		F4FF95D7245B92E800C19C63 /* EscPosPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FF95D6245B92E800C19C63 /* EscPosPrinter.swift */; };
 /* End PBXBuildFile section */
@@ -33,14 +32,14 @@
 		134814201AA4EA6300B7C361 /* libEscPosPrinter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libEscPosPrinter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		6218BEC125D1A2F800D6767F /* ErrorManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ErrorManager.m; sourceTree = "<group>"; };
 		6218BEC425D1A31000D6767F /* ErrorManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ErrorManager.h; sourceTree = "<group>"; };
+		6218CEA325D6963300B59129 /* EscPosPrinterDiscovery.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EscPosPrinterDiscovery.h; sourceTree = "<group>"; };
+		6218CEA425D6963300B59129 /* EscPosPrinterDiscovery.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EscPosPrinterDiscovery.m; sourceTree = "<group>"; };
 		62DF9CFB25CC6CE30048F83E /* libxml2.2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.2.tbd; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/lib/libxml2.2.tbd; sourceTree = DEVELOPER_DIR; };
 		62DF9CFE25CC6CF50048F83E /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/System/Library/Frameworks/ExternalAccessory.framework; sourceTree = DEVELOPER_DIR; };
 		62DF9FD325CDBEDE0048F83E /* PrinterInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrinterInfo.h; sourceTree = "<group>"; };
 		62DF9FD425CDBEDE0048F83E /* PrinterInfo.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrinterInfo.m; sourceTree = "<group>"; };
 		62DF9FD725CDBEEB0048F83E /* ShowMsg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShowMsg.h; sourceTree = "<group>"; };
-		62DF9FD825CDBEEB0048F83E /* PrintManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrintManager.h; sourceTree = "<group>"; };
 		62DF9FD925CDBEEB0048F83E /* ShowMsg.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShowMsg.m; sourceTree = "<group>"; };
-		62DF9FDA25CDBEEB0048F83E /* PrintManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = PrintManager.m; sourceTree = "<group>"; };
 		62DF9FDE25CDC7BB0048F83E /* EscPosPrinter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EscPosPrinter.h; sourceTree = "<group>"; };
 		62E6DE2325CC687A00B4CFF3 /* ePOS2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ePOS2.h; sourceTree = "<group>"; };
 		62E6DE2425CC688800B4CFF3 /* libepos2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libepos2.a; sourceTree = "<group>"; };
@@ -74,11 +73,11 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				6218CEA325D6963300B59129 /* EscPosPrinterDiscovery.h */,
+				6218CEA425D6963300B59129 /* EscPosPrinterDiscovery.m */,
 				6218BEC425D1A31000D6767F /* ErrorManager.h */,
 				6218BEC125D1A2F800D6767F /* ErrorManager.m */,
 				62DF9FDE25CDC7BB0048F83E /* EscPosPrinter.h */,
-				62DF9FD825CDBEEB0048F83E /* PrintManager.h */,
-				62DF9FDA25CDBEEB0048F83E /* PrintManager.m */,
 				62DF9FD725CDBEEB0048F83E /* ShowMsg.h */,
 				62DF9FD925CDBEEB0048F83E /* ShowMsg.m */,
 				62DF9FD325CDBEDE0048F83E /* PrinterInfo.h */,
@@ -169,7 +168,6 @@
 			files = (
 				62DF9FD525CDBEDE0048F83E /* PrinterInfo.m in Sources */,
 				6218BEC225D1A2F800D6767F /* ErrorManager.m in Sources */,
-				62DF9FDC25CDBEEB0048F83E /* PrintManager.m in Sources */,
 				F4FF95D7245B92E800C19C63 /* EscPosPrinter.swift in Sources */,
 				62DF9FDB25CDBEEB0048F83E /* ShowMsg.m in Sources */,
 			);
