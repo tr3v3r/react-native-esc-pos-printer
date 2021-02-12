@@ -6,6 +6,7 @@ import EscPosPrinter from 'react-native-esc-pos-printer';
 import {} from 'react-native';
 
 export default function App() {
+  const [init, setInit] = React.useState(false);
   return (
     <View style={styles.container}>
       <Button
@@ -29,13 +30,16 @@ export default function App() {
             .cut('partial');
 
           try {
-            await EscPosPrinter.initLANprinter('192.168.1.6');
+            if (!init) {
+              await EscPosPrinter.initLANprinter('192.168.1.6');
+              setInit(true);
+            }
 
             const status = await EscPosPrinter.printRawData(encoder.encode());
 
             console.log('print', status);
           } catch (error) {
-            console.log('error', error);
+            console.log('error', error.message);
           }
         }}
       />

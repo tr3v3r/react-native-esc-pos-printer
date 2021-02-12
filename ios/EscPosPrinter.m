@@ -69,6 +69,7 @@ RCT_EXPORT_METHOD(disconnect)
       [self sendEventWithName:@"onPrintFailure" body: result];
     }
 
+    [printer endTransaction];
     [self performSelectorInBackground:@selector(disconnectPrinter) withObject:nil];
 }
 
@@ -76,9 +77,10 @@ RCT_EXPORT_METHOD(disconnect)
 // Methods
 - (void)initializeLANprinter: (NSString*) ip onSuccess: (void(^)(NSString *))onSuccess onError: (void(^)(NSString *))onError
 {
+    [self finalizeObject];
     printer = nil;
     PrinterInfo* printerInfo = [PrinterInfo sharedPrinterInfo];
-    printerInfo.printerSeries = EPOS2_TM_M30;
+    printerInfo.printerSeries = EPOS2_TM_T88;
     printerInfo.lang = EPOS2_MODEL_ANK;
 
     printer = [[Epos2Printer alloc] initWithPrinterSeries:printerInfo.printerSeries lang:printerInfo.lang];
@@ -98,9 +100,10 @@ RCT_EXPORT_METHOD(disconnect)
 
 - (void)initializeBTprinter: (NSString*) bluetoothAddress onSuccess: (void(^)(NSString *))onSuccess onError: (void(^)(NSString *))onError
 {
+   [self finalizeObject];
    printer = nil;
    PrinterInfo* printerInfo = [PrinterInfo sharedPrinterInfo];
-   printerInfo.printerSeries = EPOS2_TM_M30;
+   printerInfo.printerSeries = EPOS2_TM_T88;
    printerInfo.lang = EPOS2_MODEL_ANK;
 
    printer = [[Epos2Printer alloc] initWithPrinterSeries:printerInfo.printerSeries lang:printerInfo.lang];
@@ -128,13 +131,17 @@ RCT_EXPORT_METHOD(disconnect)
         return;
     }
 
-    if (![self connectPrinter]) {
+    result = [printer connect: self.printerAddress timeout:EPOS2_PARAM_DEFAULT];
+
+    if (result != EPOS2_SUCCESS) {
         [printer clearCommandBuffer];
-        NSString *errorString = [ErrorManager getEposErrorText: EPOS2_ERR_CONNECT];
+        NSString *errorString = [ErrorManager getEposErrorText: result];
         onError(errorString);
         return;
     }
 
+
+    [printer beginTransaction];
     result = [printer sendData:EPOS2_PARAM_DEFAULT];
     if (result != EPOS2_SUCCESS) {
         [printer clearCommandBuffer];
@@ -148,20 +155,15 @@ RCT_EXPORT_METHOD(disconnect)
     onSuccess(successString);
 }
 
--(BOOL)connectPrinter
+- (void)finalizeObject
 {
-    int result = EPOS2_SUCCESS;
-
     if (printer == nil) {
-        return NO;
+        return;
     }
 
-    result = [printer connect: self.printerAddress timeout:EPOS2_PARAM_DEFAULT];
-    if (result != EPOS2_SUCCESS) {
-        return NO;
-    }
-
-    return YES;
+    [printer clearCommandBuffer];
+    [printer setReceiveEventDelegate:nil];
+     printer = nil;
 }
 
 - (void)disconnectPrinter
@@ -185,6 +187,7 @@ RCT_EXPORT_METHOD(disconnect)
     }
 
     [printer clearCommandBuffer];
+    NSLog(@"Disconnected!");
 }
 
 - (void)printFromBase64: (NSString*)base64String onSuccess: (void(^)(NSString *))onSuccess onError: (void(^)(NSString *))onError
@@ -199,7 +202,6 @@ RCT_EXPORT_METHOD(disconnect)
 
     NSData *data = [[NSData alloc] initWithBase64EncodedString: base64String options:0];
 
-    NSLog(@"%@", data);
     result = [printer addCommand:data];
     if (result != EPOS2_SUCCESS) {
         [printer clearCommandBuffer];
