@@ -16,34 +16,47 @@ const _default = {
     return EscPosPrinter.initLANprinter(ip);
   },
   initBTprinter(address: string): Promise<number> {
-    return EscPosPrinter.initLANprinter(address);
+    return EscPosPrinter.initBTprinter(address);
   },
   discover(): Promise<IPrinter[]> {
     return new Promise((res, rej) => {
-      const listener = discoveryEventEmmiter.addListener(
+      let listener: EmitterSubscription | null;
+      function removeListener() {
+        listener?.remove();
+        listener = null;
+      }
+      listener = discoveryEventEmmiter.addListener(
         'onDiscoveryDone',
         (printers: IPrinter[]) => {
           res(printers);
-          listener.remove();
+          removeListener();
         }
       );
 
-      EscPosPrinterDiscovery.discover().catch((e: Error) => {
-        listener.remove();
-        rej(e);
-      });
+      EscPosPrinterDiscovery.discover()
+        .then(() => {
+          removeListener();
+          res([]);
+        })
+        .catch((e: Error) => {
+          removeListener();
+          rej(e);
+        });
     });
   },
   printRawData(uint8Array: Uint8Array): Promise<string> {
     const buffer = new BufferHelper();
     const base64String = buffer.bytesToString(uint8Array, 'base64');
 
-    let successListener: EmitterSubscription;
-    let errorListener: EmitterSubscription;
+    let successListener: EmitterSubscription | null;
+    let errorListener: EmitterSubscription | null;
 
     function removeListeners() {
       successListener?.remove();
       errorListener?.remove();
+
+      successListener = null;
+      errorListener = null;
     }
 
     return new Promise((res, rej) => {
