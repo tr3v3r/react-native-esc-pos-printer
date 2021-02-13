@@ -126,6 +126,10 @@ const _default = {
     });
   },
 
+  pairingBluetoothPrinter(): Promise<string> {
+    return EscPosPrinter.pairingBluetoothPrinter();
+  },
+
   disconnect() {
     EscPosPrinter.disconnect();
   },

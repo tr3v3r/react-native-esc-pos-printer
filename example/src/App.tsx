@@ -53,7 +53,8 @@ export default function App() {
               // const paper = await EscPosPrinter.getPaperWidth();
               // console.log(paper);
               const status = await EscPosPrinter.printRawData(encoder.encode());
-
+              // const pairingSatus = await EscPosPrinter.pairingBluetoothPrinter();
+              // console.log(pairingSatus);
               console.log('print', status);
             }
           } catch (error) {
