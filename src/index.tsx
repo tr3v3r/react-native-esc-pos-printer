@@ -3,8 +3,9 @@ import {
   NativeEventEmitter,
   EmitterSubscription,
 } from 'react-native';
-import { BufferHelper } from './utils';
+import { BufferHelper, getPrinterSeriesByName } from './utils';
 import type { PrinerEvents, EventListenerCallback, IPrinter } from './types';
+import { PRINTER_SERIES } from './constants';
 
 const { EscPosPrinter, EscPosPrinterDiscovery } = NativeModules;
 
@@ -12,11 +13,17 @@ const discoveryEventEmmiter = new NativeEventEmitter(EscPosPrinterDiscovery);
 const printEventEmmiter = new NativeEventEmitter(EscPosPrinter);
 
 const _default = {
-  initLANprinter(ip: string): Promise<number> {
-    return EscPosPrinter.initLANprinter(ip);
+  initLANprinter(
+    ip: string,
+    series: number = PRINTER_SERIES.EPOS2_TM_T88
+  ): Promise<number> {
+    return EscPosPrinter.initLANprinter(ip, series);
   },
-  initBTprinter(address: string): Promise<number> {
-    return EscPosPrinter.initBTprinter(address);
+  initBTprinter(
+    address: string,
+    series: number = PRINTER_SERIES.EPOS2_TM_T88
+  ): Promise<number> {
+    return EscPosPrinter.initBTprinter(address, series);
   },
   discover(): Promise<IPrinter[]> {
     return new Promise((res, rej) => {
@@ -83,10 +90,48 @@ const _default = {
     });
   },
 
+  getPaperWidth(): Promise<number> {
+    let successListener: EmitterSubscription | null;
+    let errorListener: EmitterSubscription | null;
+
+    function removeListeners() {
+      successListener?.remove();
+      errorListener?.remove();
+
+      successListener = null;
+      errorListener = null;
+    }
+
+    return new Promise((res, rej) => {
+      successListener = printEventEmmiter.addListener(
+        'onGetPaperWidthSuccess',
+        (status) => {
+          removeListeners();
+          res(status);
+        }
+      );
+
+      errorListener = printEventEmmiter.addListener(
+        'onGetPaperWidthFailure',
+        (status) => {
+          removeListeners();
+          rej(status);
+        }
+      );
+
+      EscPosPrinter.getPaperWidth().catch((e: Error) => {
+        removeListeners();
+        rej(e);
+      });
+    });
+  },
+
   disconnect() {
     EscPosPrinter.disconnect();
   },
 };
+
+export { getPrinterSeriesByName, PRINTER_SERIES };
 export type { PrinerEvents, EventListenerCallback, IPrinter };
 
 export default _default;

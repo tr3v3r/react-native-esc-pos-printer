@@ -2,22 +2,34 @@ import * as React from 'react';
 import Encoder from 'esc-pos-encoder';
 
 import { StyleSheet, View, Button } from 'react-native';
-import EscPosPrinter from 'react-native-esc-pos-printer';
+import EscPosPrinter, {
+  getPrinterSeriesByName,
+  IPrinter,
+} from 'react-native-esc-pos-printer';
 import {} from 'react-native';
 
 export default function App() {
   const [init, setInit] = React.useState(false);
+  const [printer, setPrinter] = React.useState<IPrinter | null>(null);
   return (
     <View style={styles.container}>
       <Button
         title="discover"
         onPress={() => {
-          EscPosPrinter.discover().then(console.log).catch(console.log);
+          EscPosPrinter.discover()
+            .then((printers) => {
+              if (printers[0]) {
+                setPrinter(printers[0]);
+              }
+            })
+            .catch(console.log);
         }}
       />
 
       <Button
         title="testt"
+        disabled={!printer}
+        color={!printer ? 'gray' : 'blue'}
         onPress={async () => {
           const encoder = new Encoder();
 
@@ -30,16 +42,22 @@ export default function App() {
             .cut('partial');
 
           try {
-            if (!init) {
-              await EscPosPrinter.initLANprinter('192.168.1.6');
-              setInit(true);
+            if (printer) {
+              if (!init) {
+                await EscPosPrinter.initLANprinter(
+                  printer.ip,
+                  getPrinterSeriesByName(printer.name)
+                );
+                setInit(true);
+              }
+              // const paper = await EscPosPrinter.getPaperWidth();
+              // console.log(paper);
+              const status = await EscPosPrinter.printRawData(encoder.encode());
+
+              console.log('print', status);
             }
-
-            const status = await EscPosPrinter.printRawData(encoder.encode());
-
-            console.log('print', status);
           } catch (error) {
-            console.log('error', error.message);
+            console.log('error', error);
           }
         }}
       />
