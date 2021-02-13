@@ -201,4 +201,26 @@
     return result;
 }
 
++ (int)getEposGetWidthResult:(int)resultCode
+{
+    int result = 0;
+    switch (resultCode) {
+        case EPOS2_PRINTER_SETTING_PAPERWIDTH_58_0:
+            result = 58;
+            break;
+        case EPOS2_PRINTER_SETTING_PAPERWIDTH_60_0:
+            result = 60;
+            break;
+        case EPOS2_PRINTER_SETTING_PAPERWIDTH_80_0:
+            result = 80;
+            break;
+        default:
+            result = 0;
+            break;
+    }
+
+    return result;
+}
+
+
 @end

@@ -1,7 +1,7 @@
 #import "EscPosPrinter.h"
 #import "ErrorManager.h"
 
-@interface EscPosPrinter() <Epos2PtrReceiveDelegate>
+@interface EscPosPrinter() <Epos2PtrReceiveDelegate, Epos2PrinterSettingDelegate>
  @property (strong, nonatomic) NSString* printerAddress;
 @end
 
@@ -12,40 +12,78 @@
 RCT_EXPORT_MODULE()
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"onPrintSuccess", @"onPrintFailure"];
+    return @[@"onPrintSuccess", @"onPrintFailure", @"onGetPaperWidthSuccess", @"onGetPaperWidthFailure"];
+}
+
+- (NSDictionary *)constantsToExport
+{
+ return @{
+      @"EPOS2_TM_M10": @(EPOS2_TM_M10),
+      @"EPOS2_TM_M30": @(EPOS2_TM_M30),
+      @"EPOS2_TM_P20": @(EPOS2_TM_P20),
+      @"EPOS2_TM_P60": @(EPOS2_TM_P60),
+      @"EPOS2_TM_P60II": @(EPOS2_TM_P60II),
+      @"EPOS2_TM_P80": @(EPOS2_TM_P80),
+      @"EPOS2_TM_T20": @(EPOS2_TM_T20),
+      @"EPOS2_TM_T60": @(EPOS2_TM_T60),
+      @"EPOS2_TM_T70": @(EPOS2_TM_T70),
+      @"EPOS2_TM_T81": @(EPOS2_TM_T81),
+      @"EPOS2_TM_T82": @(EPOS2_TM_T82),
+      @"EPOS2_TM_T83": @(EPOS2_TM_T83),
+      @"EPOS2_TM_T88": @(EPOS2_TM_T88),
+      @"EPOS2_TM_T90": @(EPOS2_TM_T90),
+      @"EPOS2_TM_T90KP": @(EPOS2_TM_T90KP),
+      @"EPOS2_TM_U220": @(EPOS2_TM_U220),
+      @"EPOS2_TM_U330": @(EPOS2_TM_U330),
+      @"EPOS2_TM_L90": @(EPOS2_TM_L90),
+      @"EPOS2_TM_H6000": @(EPOS2_TM_H6000),
+      @"EPOS2_TM_T83III": @(EPOS2_TM_T83III),
+      @"EPOS2_TM_T100": @(EPOS2_TM_T100),
+      @"EPOS2_TM_M30II": @(EPOS2_TM_M30II),
+      @"EPOS2_TS_100": @(EPOS2_TS_100),
+      @"EPOS2_TM_M50": @(EPOS2_TM_M50)
+   };
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+  return YES;
 }
 
 RCT_EXPORT_METHOD(initLANprinter: (NSString *)ip
+                  series:(int)series
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 {
-   [self initializeLANprinter:ip
-           onSuccess: ^(NSString *result) {
-      resolve(result);
-           }
-           onError: ^(NSString *error) {
-      reject(@"event_failure",error, nil);
-           }
-    ];
+    [self finalizeObject];
+    [self initializeObject: series onSuccess:^(NSString *result) {
+        resolve(result);
+    } onError:^(NSString *error) {
+       reject(@"event_failure",error, nil);
+
+    }];
+
+    self.printerAddress = [NSString stringWithFormat:@"TCP:%@", ip];
 }
 
 RCT_EXPORT_METHOD(initBTprinter: (NSString *)address
+                  series:(int)series
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 {
-   [self initializeBTprinter:address
-           onSuccess: ^(NSString *result) {
-      resolve(result);
-           }
-           onError: ^(NSString *error) {
-      reject(@"event_failure",error, nil);
-           }
-    ];
+    [self finalizeObject];
+    [self initializeObject: series onSuccess:^(NSString *result) {
+        resolve(result);
+    } onError:^(NSString *error) {
+        reject(@"event_failure",error, nil);
+    }];
+
+   self.printerAddress = [NSString stringWithFormat:@"BT:%@", address];
 }
 
 RCT_EXPORT_METHOD(printBase64: (NSString *)base64string
-                   withResolver:(RCTPromiseResolveBlock)resolve
-                   withRejecter:(RCTPromiseRejectBlock)reject)
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
 {
     [self printFromBase64:base64string onSuccess:^(NSString *result) {
             resolve(result);
@@ -54,10 +92,23 @@ RCT_EXPORT_METHOD(printBase64: (NSString *)base64string
     }];
 }
 
+RCT_EXPORT_METHOD(getPaperWidth:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+{
+    [self getPrinterSettings:EPOS2_PRINTER_SETTING_PAPERWIDTH onSuccess:^(NSString *result) {
+            resolve(result);
+        } onError:^(NSString *error) {
+            reject(@"event_failure",error, nil);
+    }];
+}
+
+
 RCT_EXPORT_METHOD(disconnect)
 {
     [self disconnectPrinter];
 }
+
+
 
 - (void) onPtrReceive:(Epos2Printer *)printerObj code:(int)code status:(Epos2PrinterStatusInfo *)status printJobId:(NSString *)printJobId
 {
@@ -73,53 +124,28 @@ RCT_EXPORT_METHOD(disconnect)
     [self performSelectorInBackground:@selector(disconnectPrinter) withObject:nil];
 }
 
+- (void) onGetPrinterSetting: (int)code type:(int)type value:(int)value
+{
+   NSString *result = [ErrorManager getEposResultText: code];
+
+  if(code == EPOS2_CODE_SUCCESS) {
+    if(type == EPOS2_PRINTER_SETTING_PAPERWIDTH) {
+       int paperWidth = [ErrorManager getEposGetWidthResult: value];
+       [self sendEventWithName:@"onGetPaperWidthSuccess" body: @(paperWidth)];
+    }
+  } else {
+    if(type == EPOS2_PRINTER_SETTING_PAPERWIDTH) {
+       [self sendEventWithName:@"onGetPaperWidthFailure" body: result];
+    }
+  }
+
+  [printer endTransaction];
+  [self performSelectorInBackground:@selector(disconnectPrinter) withObject:nil];
+}
+
+
 
 // Methods
-- (void)initializeLANprinter: (NSString*) ip onSuccess: (void(^)(NSString *))onSuccess onError: (void(^)(NSString *))onError
-{
-    [self finalizeObject];
-    printer = nil;
-    PrinterInfo* printerInfo = [PrinterInfo sharedPrinterInfo];
-    printerInfo.printerSeries = EPOS2_TM_T88;
-    printerInfo.lang = EPOS2_MODEL_ANK;
-
-    printer = [[Epos2Printer alloc] initWithPrinterSeries:printerInfo.printerSeries lang:printerInfo.lang];
-
-    if (printer == nil) {
-        NSString *errorString = [ErrorManager getEposErrorText: EPOS2_ERR_PARAM];
-        onError(errorString);
-        return;
-    }
-
-    [printer setReceiveEventDelegate:self];
-    self.printerAddress = [NSString stringWithFormat:@"TCP:%@", ip];
-
-    NSString *successString = [ErrorManager getEposErrorText: EPOS2_SUCCESS];
-    onSuccess(successString);
-}
-
-- (void)initializeBTprinter: (NSString*) bluetoothAddress onSuccess: (void(^)(NSString *))onSuccess onError: (void(^)(NSString *))onError
-{
-   [self finalizeObject];
-   printer = nil;
-   PrinterInfo* printerInfo = [PrinterInfo sharedPrinterInfo];
-   printerInfo.printerSeries = EPOS2_TM_T88;
-   printerInfo.lang = EPOS2_MODEL_ANK;
-
-   printer = [[Epos2Printer alloc] initWithPrinterSeries:printerInfo.printerSeries lang:printerInfo.lang];
-
-   if (printer == nil) {
-       NSString *errorString = [ErrorManager getEposErrorText: EPOS2_ERR_PARAM];
-       onError(errorString);
-       return;
-   }
-
-   [printer setReceiveEventDelegate:self];
-
-   self.printerAddress = [NSString stringWithFormat:@"BT:%@", bluetoothAddress];
-   NSString *successString = [ErrorManager getEposErrorText: EPOS2_SUCCESS];
-   onSuccess(successString);
-}
 
 - (void)printData: (void(^)(NSString *))onSuccess onError: (void(^)(NSString *))onError
 {
@@ -150,6 +176,30 @@ RCT_EXPORT_METHOD(disconnect)
         [printer disconnect];
         return;
     }
+
+    NSString *successString = [ErrorManager getEposErrorText: EPOS2_SUCCESS];
+    onSuccess(successString);
+}
+
+
+- (void)initializeObject: (int)series
+                          onSuccess: (void(^)(NSString *))onSuccess
+                          onError: (void(^)(NSString *))onError
+{
+    printer = nil;
+    PrinterInfo* printerInfo = [PrinterInfo sharedPrinterInfo];
+    printerInfo.printerSeries = series;
+    printerInfo.lang = EPOS2_MODEL_ANK;
+
+    printer = [[Epos2Printer alloc] initWithPrinterSeries:printerInfo.printerSeries lang:printerInfo.lang];
+
+    if (printer == nil) {
+        NSString *errorString = [ErrorManager getEposErrorText: EPOS2_ERR_PARAM];
+        onError(errorString);
+        return;
+    }
+
+    [printer setReceiveEventDelegate:self];
 
     NSString *successString = [ErrorManager getEposErrorText: EPOS2_SUCCESS];
     onSuccess(successString);
@@ -216,5 +266,44 @@ RCT_EXPORT_METHOD(disconnect)
             onError(error);
     }];
 }
+
+- (void)getPrinterSettings:(int)type
+                           onSuccess: (void(^)(NSString *))onSuccess
+                           onError: (void(^)(NSString *))onError {
+    int result = EPOS2_SUCCESS;
+    if (printer == nil) {
+        NSString *errorString = [ErrorManager getEposErrorText: EPOS2_ERR_PARAM];
+        onError(errorString);
+        return;
+    }
+
+    result = [printer connect: self.printerAddress timeout:EPOS2_PARAM_DEFAULT];
+
+    if (result != EPOS2_SUCCESS) {
+        [printer clearCommandBuffer];
+        NSString *errorString = [ErrorManager getEposErrorText: result];
+        onError(errorString);
+        return;
+    }
+
+    [printer beginTransaction];
+    result = [printer getPrinterSetting:EPOS2_PARAM_DEFAULT type:type delegate:self];
+
+   if (result != EPOS2_SUCCESS) {
+        [printer clearCommandBuffer];
+        NSString *errorString = [ErrorManager getEposErrorText: result];
+        onError(errorString);
+        [printer disconnect];
+        return;
+    }
+
+    NSString *successString = [ErrorManager getEposErrorText: EPOS2_SUCCESS];
+    onSuccess(successString);
+}
+
+- (void)onSetPrinterSetting:(int)code {
+    // nothing to do
+}
+
 
 @end
