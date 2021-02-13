@@ -103,6 +103,16 @@ RCT_EXPORT_METHOD(getPaperWidth:(RCTPromiseResolveBlock)resolve
 }
 
 
+RCT_EXPORT_METHOD(pairingBluetoothPrinter:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+{
+    [self pairingBluetoothPrinter:^(NSString *result) {
+            resolve(result);
+        } onError:^(NSString *error) {
+            reject(@"event_failure",error, nil);
+    }];
+}
+
 RCT_EXPORT_METHOD(disconnect)
 {
     [self disconnectPrinter];
@@ -299,6 +309,22 @@ RCT_EXPORT_METHOD(disconnect)
 
     NSString *successString = [ErrorManager getEposErrorText: EPOS2_SUCCESS];
     onSuccess(successString);
+}
+
+- (void)pairingBluetoothPrinter:(void(^)(NSString *))onSuccess
+                               onError: (void(^)(NSString *))onError
+{
+    Epos2BluetoothConnection *pairingPrinter = [[Epos2BluetoothConnection alloc] init];
+    NSMutableString *address = [[NSMutableString alloc] init];
+    int result = [pairingPrinter connectDevice: address];
+    
+    if(result == EPOS2_BT_SUCCESS || result == EPOS2_BT_ERR_ALREADY_CONNECT) {
+        NSString *successString = [ErrorManager getEposBTResultText: EPOS2_BT_SUCCESS];
+        onSuccess(successString);
+    } else {
+        NSString *errorString = [ErrorManager getEposBTResultText: EPOS2_BT_SUCCESS];
+        onError(errorString);
+    }
 }
 
 - (void)onSetPrinterSetting:(int)code {

@@ -223,4 +223,37 @@
 }
 
 
+//convert Epos2Printer Error to text
++ (NSString *)getEposBTResultText:(int)error
+{
+    NSString *errText = @"";
+    switch (error) {
+        case EPOS2_BT_SUCCESS:
+            errText = @"BT_SUCCESS";
+            break;
+        case EPOS2_BT_ERR_PARAM:
+            errText = @"BT_ERR_PARAM";
+            break;
+        case EPOS2_BT_ERR_UNSUPPORTED:
+            errText = @"BT_ERR_UNSUPPORTED";
+            break;
+        case EPOS2_BT_ERR_CANCEL:
+            errText = @"BT_ERR_CANCEL";
+            break;
+        case EPOS2_BT_ERR_ALREADY_CONNECT:
+            errText = @"BT_ERR_ALREADY_CONNECT";
+            break;
+        case EPOS2_BT_ERR_ILLEGAL_DEVICE:
+            errText = @"BT_ERR_ILLEGAL_DEVICE";
+            break;
+        case EPOS2_BT_ERR_FAILURE:
+            errText = @"BT_ERR_FAILURE";
+            break;
+        default:
+            errText = [NSString stringWithFormat:@"%d", error];
+            break;
+    }
+    return errText;
+}
+
 @end
