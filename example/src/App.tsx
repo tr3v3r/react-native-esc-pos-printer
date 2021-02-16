@@ -11,18 +11,46 @@ import {} from 'react-native';
 export default function App() {
   const [init, setInit] = React.useState(false);
   const [printer, setPrinter] = React.useState<IPrinter | null>(null);
+  React.useEffect(() => {
+    console.log(printer);
+  }, [printer]);
   return (
     <View style={styles.container}>
       <Button
         title="discover"
         onPress={() => {
+          console.log('discovering');
           EscPosPrinter.discover()
             .then((printers) => {
+              console.log('done!', printers);
               if (printers[0]) {
                 setPrinter(printers[0]);
               }
             })
             .catch(console.log);
+        }}
+      />
+
+      <Button
+        title="gett lines per row"
+        disabled={!printer}
+        color={!printer ? 'gray' : 'blue'}
+        onPress={async () => {
+          if (printer) {
+            if (!init) {
+              await EscPosPrinter.initLANprinter({
+                address: printer.ip,
+                seriesName: getPrinterSeriesByName(printer.name),
+              });
+              setInit(true);
+            }
+
+            const status = await EscPosPrinter.getPrinterCharsPerLine(
+              getPrinterSeriesByName(printer.name)
+            );
+
+            console.log('print', status);
+          }
         }}
       />
 
@@ -44,10 +72,10 @@ export default function App() {
           try {
             if (printer) {
               if (!init) {
-                await EscPosPrinter.initLANprinter(
-                  printer.ip,
-                  getPrinterSeriesByName(printer.name)
-                );
+                await EscPosPrinter.initLANprinter({
+                  address: printer.ip,
+                  seriesName: getPrinterSeriesByName(printer.name),
+                });
                 setInit(true);
               }
               // const paper = await EscPosPrinter.getPaperWidth();

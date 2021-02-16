@@ -4,8 +4,19 @@ import {
   EmitterSubscription,
 } from 'react-native';
 import { BufferHelper, getPrinterSeriesByName } from './utils';
-import type { PrinerEvents, EventListenerCallback, IPrinter } from './types';
-import { PRINTER_SERIES } from './constants';
+import type {
+  PrinerEvents,
+  EventListenerCallback,
+  IPrinter,
+  IPrinterInitParams,
+  PrinterSeriesName,
+} from './types';
+import {
+  PRINTER_SERIES,
+  FONT_A_CHARS_PER_LINE,
+  DEFAULT_FONT_A_CHARS_PER_LINE,
+  DEFAULT_PAPER_WIDTHT,
+} from './constants';
 
 const { EscPosPrinter, EscPosPrinterDiscovery } = NativeModules;
 
@@ -13,16 +24,12 @@ const discoveryEventEmmiter = new NativeEventEmitter(EscPosPrinterDiscovery);
 const printEventEmmiter = new NativeEventEmitter(EscPosPrinter);
 
 const _default = {
-  initLANprinter(
-    ip: string,
-    series: number = PRINTER_SERIES.EPOS2_TM_T88
-  ): Promise<number> {
-    return EscPosPrinter.initLANprinter(ip, series);
+  initLANprinter({ address, seriesName }: IPrinterInitParams): Promise<number> {
+    const series = PRINTER_SERIES[seriesName];
+    return EscPosPrinter.initLANprinter(address, series);
   },
-  initBTprinter(
-    address: string,
-    series: number = PRINTER_SERIES.EPOS2_TM_T88
-  ): Promise<number> {
+  initBTprinter({ address, seriesName }: IPrinterInitParams): Promise<number> {
+    const series = PRINTER_SERIES[seriesName];
     return EscPosPrinter.initBTprinter(address, series);
   },
   discover(): Promise<IPrinter[]> {
@@ -90,7 +97,7 @@ const _default = {
     });
   },
 
-  getPaperWidth(): Promise<number> {
+  getPaperWidth(): Promise<80 | 60 | 58> {
     let successListener: EmitterSubscription | null;
     let errorListener: EmitterSubscription | null;
 
@@ -126,6 +133,23 @@ const _default = {
     });
   },
 
+  async getPrinterCharsPerLine(
+    seriesName: PrinterSeriesName
+  ): Promise<{ fontA: number }> {
+    const paperWidth: 80 | 60 | 58 =
+      (await this.getPaperWidth()) || DEFAULT_PAPER_WIDTHT;
+
+    const key = String(paperWidth) as '80' | '60' | '58';
+
+    const seriesCharsPerLineFontA = FONT_A_CHARS_PER_LINE[seriesName];
+    const fontAcplForCurrentWidth = seriesCharsPerLineFontA?.[key];
+
+    return {
+      fontA:
+        fontAcplForCurrentWidth || DEFAULT_FONT_A_CHARS_PER_LINE[paperWidth],
+    };
+  },
+
   pairingBluetoothPrinter(): Promise<string> {
     return EscPosPrinter.pairingBluetoothPrinter();
   },
@@ -136,6 +160,11 @@ const _default = {
 };
 
 export { getPrinterSeriesByName, PRINTER_SERIES };
-export type { PrinerEvents, EventListenerCallback, IPrinter };
+export type {
+  PrinerEvents,
+  EventListenerCallback,
+  IPrinter,
+  PrinterSeriesName,
+};
 
 export default _default;

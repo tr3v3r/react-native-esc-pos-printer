@@ -1,11 +1,12 @@
 import { PRINTER_SERIES } from '../constants';
+import type { PrinterSeriesName } from '../types';
 
-export function getPrinterSeriesByName(printerName: string): number {
+export function getPrinterSeriesByName(printerName: string): PrinterSeriesName {
   const keys = Object.keys(PRINTER_SERIES);
-  const key = keys.find((series) => {
+  const seriesName = keys.find((series) => {
     const [, , model] = series.split('_');
     return printerName.toLowerCase().includes(model?.toLowerCase?.());
-  });
+  }) as PrinterSeriesName | undefined;
 
-  return key ? PRINTER_SERIES[key] : PRINTER_SERIES.EPOS2_TM_T88;
+  return seriesName || 'EPOS2_TM_T88';
 }

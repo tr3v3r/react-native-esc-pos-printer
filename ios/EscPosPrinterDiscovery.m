@@ -90,8 +90,7 @@ RCT_REMAP_METHOD(discover,
 
     [self sendEventWithName:@"onDiscoveryDone" body:stringArray];
 
-
-    NSLog(@"Discovery done! %@", deviceInfo.bdAddress);
+    NSLog(@"Discovery done!");
 }
 
 @end
