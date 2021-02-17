@@ -63,6 +63,19 @@ RCT_REMAP_METHOD(discover,
     });
 }
 
+- (NSString *) getUSBAddress: (NSString *)target {
+    NSRange rangeFirstThree = NSMakeRange(0, 3);
+    NSRange rangeThreeTillLength = NSMakeRange(4, [target length] - 4);
+    NSString *res;
+    if ([[target substringWithRange:rangeFirstThree] isEqualToString:@"USB"]) {
+        res = [target substringWithRange:rangeThreeTillLength];
+    } else {
+        res = @"";
+    }
+    
+    return res;
+}
+
 - (void) onDiscovery:(Epos2DeviceInfo *)deviceInfo
 {
     [_printerList addObject:deviceInfo];
@@ -77,13 +90,15 @@ RCT_REMAP_METHOD(discover,
         NSString *mac = [info getMacAddress];
         NSString *target = [info getTarget];
         NSString *bt = [info getBdAddress];
+        NSString *usb = [self getUSBAddress: target];
 
         [stringArray addObject:@{
             @"name": name,
             @"ip": ip,
             @"mac": mac,
             @"target": target,
-            @"bt": bt
+            @"bt": bt,
+            @"usb": usb
         }];
     }
 

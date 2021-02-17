@@ -81,6 +81,21 @@ RCT_EXPORT_METHOD(initBTprinter: (NSString *)address
    self.printerAddress = [NSString stringWithFormat:@"BT:%@", address];
 }
 
+RCT_EXPORT_METHOD(initUSBprinter: (NSString *)address
+                  series:(int)series
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+{
+    [self finalizeObject];
+    [self initializeObject: series onSuccess:^(NSString *result) {
+        resolve(result);
+    } onError:^(NSString *error) {
+       reject(@"event_failure",error, nil);
+    }];
+
+    self.printerAddress = [NSString stringWithFormat:@"USB:%@", address];
+}
+
 RCT_EXPORT_METHOD(printBase64: (NSString *)base64string
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
@@ -317,7 +332,7 @@ RCT_EXPORT_METHOD(disconnect)
     Epos2BluetoothConnection *pairingPrinter = [[Epos2BluetoothConnection alloc] init];
     NSMutableString *address = [[NSMutableString alloc] init];
     int result = [pairingPrinter connectDevice: address];
-    
+
     if(result == EPOS2_BT_SUCCESS || result == EPOS2_BT_ERR_ALREADY_CONNECT) {
         NSString *successString = [ErrorManager getEposBTResultText: EPOS2_BT_SUCCESS];
         onSuccess(successString);
