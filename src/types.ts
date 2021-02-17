@@ -4,6 +4,7 @@ export interface IPrinter {
   mac: string;
   target: string;
   bt: string;
+  usb: string;
 }
 
 export type PrinerEvents =
