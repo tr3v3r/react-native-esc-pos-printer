@@ -1,130 +1,59 @@
 buildscript {
-  // Buildscript is evaluated before everything else so we can't use getExtOrDefault
-  def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['EscPosPrinter_kotlinVersion']
+    if (project == rootProject) {
+        repositories {
+            google()
+            jcenter()
+        }
 
-  repositories {
-    google()
-    jcenter()
-  }
-
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
-    // noinspection DifferentKotlinGradleVersion
-    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
-  }
+        dependencies {
+            classpath 'com.android.tools.build:gradle:3.5.3'
+        }
+    }
 }
 
 apply plugin: 'com.android.library'
-apply plugin: 'kotlin-android'
 
-def getExtOrDefault(name) {
-  return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties['EscPosPrinter_' + name]
-}
-
-def getExtOrIntegerDefault(name) {
-  return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties['EscPosPrinter_' + name]).toInteger()
+def safeExtGet(prop, fallback) {
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
 
 android {
-  compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
-  buildToolsVersion getExtOrDefault('buildToolsVersion')
-  defaultConfig {
-    minSdkVersion 16
-    targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
-    versionCode 1
-    versionName "1.0"
-    
-  }
-  
-  buildTypes {
-    release {
-      minifyEnabled false
+    compileSdkVersion safeExtGet('EscPosPrinter_compileSdkVersion', 29)
+    buildToolsVersion safeExtGet('EscPosPrinter_buildToolsVersion', '29.0.2')
+    defaultConfig {
+        minSdkVersion safeExtGet('EscPosPrinter_minSdkVersion', 16)
+        targetSdkVersion safeExtGet('EscPosPrinter_targetSdkVersion', 29)
+        versionCode 1
+        versionName "1.0"
+
     }
-  }
-  lintOptions {
-    disable 'GradleCompatible'
-  }
-  compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
-  }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+        }
+    }
+    lintOptions {
+        disable 'GradleCompatible'
+    }
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+    }
 }
 
 repositories {
-  mavenCentral()
-  jcenter()
-  google()
-
-  def found = false
-  def defaultDir = null
-  def androidSourcesName = 'React Native sources'
-
-  if (rootProject.ext.has('reactNativeAndroidRoot')) {
-    defaultDir = rootProject.ext.get('reactNativeAndroidRoot')
-  } else {
-    defaultDir = new File(
-            projectDir,
-            '/../../../node_modules/react-native/android'
-    )
-  }
-
-  if (defaultDir.exists()) {
+    mavenLocal()
     maven {
-      url defaultDir.toString()
-      name androidSourcesName
+        // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
+        url("$rootDir/../node_modules/react-native/android")
     }
-
-    logger.info(":${project.name}:reactNativeAndroidRoot ${defaultDir.canonicalPath}")
-    found = true
-  } else {
-    def parentDir = rootProject.projectDir
-
-    1.upto(5, {
-      if (found) return true
-      parentDir = parentDir.parentFile
-
-      def androidSourcesDir = new File(
-              parentDir,
-              'node_modules/react-native'
-      )
-
-      def androidPrebuiltBinaryDir = new File(
-              parentDir,
-              'node_modules/react-native/android'
-      )
-
-      if (androidPrebuiltBinaryDir.exists()) {
-        maven {
-          url androidPrebuiltBinaryDir.toString()
-          name androidSourcesName
-        }
-
-        logger.info(":${project.name}:reactNativeAndroidRoot ${androidPrebuiltBinaryDir.canonicalPath}")
-        found = true
-      } else if (androidSourcesDir.exists()) {
-        maven {
-          url androidSourcesDir.toString()
-          name androidSourcesName
-        }
-
-        logger.info(":${project.name}:reactNativeAndroidRoot ${androidSourcesDir.canonicalPath}")
-        found = true
-      }
-    })
-  }
-
-  if (!found) {
-    throw new GradleException(
-            "${project.name}: unable to locate React Native android sources. " +
-                    "Ensure you have you installed React Native as a dependency in your project and try again."
-    )
-  }
+    google()
+    jcenter()
 }
 
-def kotlin_version = getExtOrDefault('kotlinVersion')
-
 dependencies {
-  // noinspection GradleDynamicVersion
-  api 'com.facebook.react:react-native:+'
-  implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
+    //noinspection GradleDynamicVersion
+    implementation fileTree(dir: "libs", include: ["*.jar"])
+    implementation "com.facebook.react:react-native:+"  // From node_modules
 }
