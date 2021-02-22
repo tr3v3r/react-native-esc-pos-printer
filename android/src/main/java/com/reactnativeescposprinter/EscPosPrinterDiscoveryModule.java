@@ -1,4 +1,3 @@
-
 package com.reactnativeescposprinter;
 
 import androidx.annotation.NonNull;
