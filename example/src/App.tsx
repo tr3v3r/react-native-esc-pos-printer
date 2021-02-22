@@ -38,8 +38,8 @@ export default function App() {
         onPress={async () => {
           if (printer) {
             if (!init) {
-              await EscPosPrinter.initLANprinter({
-                address: printer.ip,
+              await EscPosPrinter.init({
+                target: printer.target,
                 seriesName: getPrinterSeriesByName(printer.name),
               });
               setInit(true);
@@ -72,8 +72,8 @@ export default function App() {
           try {
             if (printer) {
               if (!init) {
-                await EscPosPrinter.initLANprinter({
-                  address: printer.ip,
+                await EscPosPrinter.init({
+                  target: printer.target,
                   seriesName: getPrinterSeriesByName(printer.name),
                 });
                 setInit(true);

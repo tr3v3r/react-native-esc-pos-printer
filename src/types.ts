@@ -41,6 +41,6 @@ export type PrinterSeriesName =
   | 'EPOS2_TM_M50';
 
 export interface IPrinterInitParams {
-  address: string;
+  target: string;
   seriesName: PrinterSeriesName;
 }
