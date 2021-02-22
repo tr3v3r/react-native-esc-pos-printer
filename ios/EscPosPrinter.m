@@ -50,7 +50,7 @@ RCT_EXPORT_MODULE()
   return YES;
 }
 
-RCT_EXPORT_METHOD(initLANprinter: (NSString *)ip
+RCT_EXPORT_METHOD(init:(NSString *)target
                   series:(int)series
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
@@ -63,37 +63,7 @@ RCT_EXPORT_METHOD(initLANprinter: (NSString *)ip
 
     }];
 
-    self.printerAddress = [NSString stringWithFormat:@"TCP:%@", ip];
-}
-
-RCT_EXPORT_METHOD(initBTprinter: (NSString *)address
-                  series:(int)series
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-{
-    [self finalizeObject];
-    [self initializeObject: series onSuccess:^(NSString *result) {
-        resolve(result);
-    } onError:^(NSString *error) {
-        reject(@"event_failure",error, nil);
-    }];
-
-   self.printerAddress = [NSString stringWithFormat:@"BT:%@", address];
-}
-
-RCT_EXPORT_METHOD(initUSBprinter: (NSString *)address
-                  series:(int)series
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-{
-    [self finalizeObject];
-    [self initializeObject: series onSuccess:^(NSString *result) {
-        resolve(result);
-    } onError:^(NSString *error) {
-       reject(@"event_failure",error, nil);
-    }];
-
-    self.printerAddress = [NSString stringWithFormat:@"USB:%@", address];
+    self.printerAddress = target;
 }
 
 RCT_EXPORT_METHOD(printBase64: (NSString *)base64string

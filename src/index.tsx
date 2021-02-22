@@ -24,17 +24,9 @@ const discoveryEventEmmiter = new NativeEventEmitter(EscPosPrinterDiscovery);
 const printEventEmmiter = new NativeEventEmitter(EscPosPrinter);
 
 const _default = {
-  initLANprinter({ address, seriesName }: IPrinterInitParams): Promise<number> {
+  init({ target, seriesName }: IPrinterInitParams): Promise<number> {
     const series = PRINTER_SERIES[seriesName];
-    return EscPosPrinter.initLANprinter(address, series);
-  },
-  initUSBprinter({ address, seriesName }: IPrinterInitParams): Promise<number> {
-    const series = PRINTER_SERIES[seriesName];
-    return EscPosPrinter.initUSBprinter(address, series);
-  },
-  initBTprinter({ address, seriesName }: IPrinterInitParams): Promise<number> {
-    const series = PRINTER_SERIES[seriesName];
-    return EscPosPrinter.initBTprinter(address, series);
+    return EscPosPrinter.init(target, series);
   },
   discover(): Promise<IPrinter[]> {
     return new Promise((res, rej) => {
