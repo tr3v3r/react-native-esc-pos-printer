@@ -2,6 +2,7 @@ package com.reactnativeescposprinter;
 
 import com.epson.epos2.Epos2Exception;
 import com.epson.epos2.Epos2CallbackCode;
+import com.epson.epos2.printer.Printer;
 
 public class EscPosPrinterErrorManager {
 
@@ -208,5 +209,26 @@ public class EscPosPrinterErrorManager {
                 break;
         }
         return return_text;
+    }
+
+    public static int getEposGetWidthResult(int resultCode) {
+      int result = 0;
+
+      switch (resultCode) {
+        case Printer.SETTING_PAPERWIDTH_58_0:
+            result = 58;
+            break;
+        case Printer.SETTING_PAPERWIDTH_60_0:
+            result = 60;
+            break;
+        case Printer.SETTING_PAPERWIDTH_80_0:
+            result = 80;
+            break;
+        default:
+            result = 0;
+            break;
+    }
+
+    return result;
     }
 }
