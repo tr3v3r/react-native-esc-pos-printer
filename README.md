@@ -71,7 +71,7 @@ EscPosPrinter.init({ target:  "TCP:192.168.192.168", seriesName: "EPOS2_TM_M10" 
 Starts searching for device.
 Returns list of printers.
 
-#### return type
+##### return type
 ```typescript
 interface IPrinter {
   name: string;
@@ -146,7 +146,7 @@ console.log("Print success!", status);
 
 ```
 
-#### pairingBluetoothPrinter iOS only
+#### pairingBluetoothPrinter() - iOS only
 
 Shows a list of Bluetooth devices available for pairing and pairs a selected device with the terminal.
 Opens native dialog.
@@ -170,7 +170,7 @@ Supports only `font A` for now.
 | ---- | :--: | :------: | :----------: |
 | `seriesName` | `string` | `Yes` | Specifies the target printer model. |
 
-#### return type
+##### return type
 ```typescript
 {
   fontA: number;
