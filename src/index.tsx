@@ -2,8 +2,14 @@ import {
   NativeModules,
   NativeEventEmitter,
   EmitterSubscription,
+  Platform,
 } from 'react-native';
-import { BufferHelper, getPrinterSeriesByName } from './utils';
+import {
+  BufferHelper,
+  getPrinterSeriesByName,
+  requestAndroidPermissions,
+  enableLocationAccessAndroid10,
+} from './utils';
 import type {
   PrinerEvents,
   EventListenerCallback,
@@ -28,31 +34,39 @@ const _default = {
     const series = PRINTER_SERIES[seriesName];
     return EscPosPrinter.init(target, series);
   },
-  discover(): Promise<IPrinter[]> {
-    return new Promise((res, rej) => {
-      let listener: EmitterSubscription | null;
-      function removeListener() {
-        listener?.remove();
-        listener = null;
-      }
-      listener = discoveryEventEmmiter.addListener(
-        'onDiscoveryDone',
-        (printers: IPrinter[]) => {
-          res(printers);
-          removeListener();
+  async discover(): Promise<IPrinter[]> {
+    if (
+      Platform.OS === 'ios' ||
+      ((await requestAndroidPermissions()) &&
+        (await enableLocationAccessAndroid10()))
+    ) {
+      return new Promise((res, rej) => {
+        let listener: EmitterSubscription | null;
+        function removeListener() {
+          listener?.remove();
+          listener = null;
         }
-      );
+        listener = discoveryEventEmmiter.addListener(
+          'onDiscoveryDone',
+          (printers: IPrinter[]) => {
+            res(printers);
+            removeListener();
+          }
+        );
 
-      EscPosPrinterDiscovery.discover()
-        .then(() => {
-          removeListener();
-          res([]);
-        })
-        .catch((e: Error) => {
-          removeListener();
-          rej(e);
-        });
-    });
+        EscPosPrinterDiscovery.discover()
+          .then(() => {
+            removeListener();
+            res([]);
+          })
+          .catch((e: Error) => {
+            removeListener();
+            rej(e);
+          });
+      });
+    }
+
+    return Promise.reject('No permissions granted');
   },
   printRawData(uint8Array: Uint8Array): Promise<string> {
     const buffer = new BufferHelper();
@@ -147,7 +161,10 @@ const _default = {
   },
 
   pairingBluetoothPrinter(): Promise<string> {
-    return EscPosPrinter.pairingBluetoothPrinter();
+    if (Platform.OS === 'ios') {
+      return EscPosPrinter.pairingBluetoothPrinter();
+    }
+    return Promise.resolve('Success');
   },
 
   disconnect() {
