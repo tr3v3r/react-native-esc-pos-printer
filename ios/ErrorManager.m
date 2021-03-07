@@ -256,4 +256,243 @@
     return errText;
 }
 
++ (NSDictionary *)makeStatusMessage:(Epos2PrinterStatusInfo *)status
+{
+    NSString *connection = @"";
+    NSString *online = @"";
+    NSString *coverOpen = @"";
+    NSString *paper = @"";
+    NSString *paperFeed = @"";
+    NSString *panelSwitch = @"";
+    NSString *drawer = @"";
+    NSString *errorStatus = @"";
+    NSString *autoRecoverErr = @"";
+    NSString *adapter = @"";
+    NSString *batteryLevel = @"";
+
+    switch(status.connection){
+        case EPOS2_TRUE:
+            connection = @"CONNECT";
+            break;
+        case EPOS2_FALSE:
+            connection = @"DISCONNECT";
+            break;
+        case EPOS2_UNKNOWN:
+            connection = @"UNKNOWN";
+            break;
+        default:
+            break;
+    }
+
+    switch(status.online){
+        case EPOS2_TRUE:
+            online = @"ONLINE";
+            break;
+        case EPOS2_FALSE:
+            online = @"OFFLINE";
+            break;
+        case EPOS2_UNKNOWN:
+            online = @"UNKNOWN";
+            break;
+        default:
+            break;
+    }
+
+    switch(status.coverOpen){
+        case EPOS2_TRUE:
+            coverOpen = @"COVER_OPEN";
+            break;
+        case EPOS2_FALSE:
+            coverOpen = @"COVER_CLOSE";
+            break;
+        case EPOS2_UNKNOWN:
+            coverOpen = @"UNKNOWN";
+            break;
+        default:
+            break;
+    }
+
+    switch(status.paper){
+        case EPOS2_PAPER_OK:
+            paper = @"PAPER_OK";
+            break;
+        case EPOS2_PAPER_NEAR_END:
+            paper = @"PAPER_NEAR_END";
+            break;
+        case EPOS2_PAPER_EMPTY:
+            paper = @"PAPER_EMPTY";
+            break;
+        case EPOS2_UNKNOWN:
+            paper = @"UNKNOWN";
+            break;
+        default:
+            break;
+    }
+
+    switch(status.paperFeed){
+        case EPOS2_TRUE:
+            paperFeed = @"PAPER_FEED";
+            break;
+        case EPOS2_FALSE:
+            paperFeed = @"PAPER_STOP";
+            break;
+        case EPOS2_UNKNOWN:
+            paperFeed = @"UNKNOWN";
+            break;
+        default:
+            break;
+    }
+
+    switch(status.panelSwitch){
+        case EPOS2_TRUE:
+            panelSwitch = @"SWITCH_ON";
+            break;
+        case EPOS2_FALSE:
+            panelSwitch = @"SWITCH_OFF";
+            break;
+        case EPOS2_UNKNOWN:
+            panelSwitch = @"UNKNOWN";
+            break;
+        default:
+            break;
+    }
+
+    switch(status.drawer){
+        case EPOS2_DRAWER_HIGH:
+            //This status depends on the drawer setting.
+            drawer = @"DRAWER_HIGH(Drawer close)";
+            break;
+        case EPOS2_DRAWER_LOW:
+            //This status depends on the drawer setting.
+            drawer = @"DRAWER_LOW(Drawer open)";
+            break;
+        case EPOS2_UNKNOWN:
+            drawer = @"UNKNOWN";
+            break;
+        default:
+            break;
+    }
+
+    switch(status.errorStatus){
+        case EPOS2_NO_ERR:
+            errorStatus = @"NO_ERR";
+            break;
+        case EPOS2_MECHANICAL_ERR:
+            errorStatus = @"MECHANICAL_ERR";
+            break;
+        case EPOS2_AUTOCUTTER_ERR:
+            errorStatus = @"AUTOCUTTER_ERR";
+            break;
+        case EPOS2_UNRECOVER_ERR:
+            errorStatus = @"UNRECOVER_ERR";
+            break;
+        case EPOS2_AUTORECOVER_ERR:
+            errorStatus = @"AUTORECOVER_ERR";
+            break;
+        case EPOS2_UNKNOWN:
+            errorStatus = @"UNKNOWN";
+            break;
+        default:
+            break;
+    }
+
+    switch(status.autoRecoverError){
+        case EPOS2_HEAD_OVERHEAT:
+            autoRecoverErr = @"HEAD_OVERHEAT";
+            break;
+        case EPOS2_MOTOR_OVERHEAT:
+            autoRecoverErr = @"MOTOR_OVERHEAT";
+            break;
+        case EPOS2_BATTERY_OVERHEAT:
+            autoRecoverErr = @"BATTERY_OVERHEAT";
+            break;
+        case EPOS2_WRONG_PAPER:
+            autoRecoverErr = @"WRONG_PAPER";
+            break;
+        case EPOS2_COVER_OPEN:
+            autoRecoverErr = @"COVER_OPEN";
+            break;
+        case EPOS2_UNKNOWN:
+            autoRecoverErr = @"UNKNOWN";
+            break;
+        default:
+            break;
+    }
+
+    switch(status.adapter){
+        case EPOS2_TRUE:
+            adapter = @"AC ADAPTER CONNECT";
+            break;
+        case EPOS2_FALSE:
+            adapter = @"AC ADAPTER DISCONNECT";
+            break;
+        case EPOS2_UNKNOWN:
+            adapter = @"UNKNOWN";
+            break;
+        default:
+            break;
+    }
+
+    switch(status.batteryLevel){
+        case EPOS2_BATTERY_LEVEL_0:
+           batteryLevel = @"BATTERY_LEVEL_0";
+            break;
+        case EPOS2_BATTERY_LEVEL_1:
+           batteryLevel = @"BATTERY_LEVEL_1";
+            break;
+        case EPOS2_BATTERY_LEVEL_2:
+           batteryLevel = @"BATTERY_LEVEL_2";
+            break;
+        case EPOS2_BATTERY_LEVEL_3:
+           batteryLevel = @"BATTERY_LEVEL_3";
+            break;
+        case EPOS2_BATTERY_LEVEL_4:
+           batteryLevel = @"BATTERY_LEVEL_4";
+            break;
+        case EPOS2_BATTERY_LEVEL_5:
+           batteryLevel = @"BATTERY_LEVEL_5";
+            break;
+        case EPOS2_BATTERY_LEVEL_6:
+           batteryLevel = @"BATTERY_LEVEL_6";
+            break;
+        case EPOS2_UNKNOWN:
+           batteryLevel = @"UNKNOWN";
+            break;
+        default:
+            break;
+    }
+
+    return @{
+      @"connection": connection,
+      @"online": online,
+      @"coverOpen": coverOpen,
+      @"paper": paper,
+      @"paperFeed": paperFeed,
+      @"panelSwitch": panelSwitch,
+      @"drawer": drawer,
+      @"errorStatus": errorStatus,
+      @"autoRecoverErr": autoRecoverErr,
+      @"adapter": adapter,
+      @"batteryLevel": batteryLevel
+    };
+}
+
++ (NSDictionary *)getOfflineStatusMessage {
+   return @{
+      @"connection": @"DISCONNECT",
+      @"online": @"OFFLINE",
+      @"coverOpen": @"UNKNOWN",
+      @"paper": @"UNKNOWN",
+      @"paperFeed": @"UNKNOWN",
+      @"panelSwitch": @"UNKNOWN",
+      @"drawer": @"UNKNOWN",
+      @"errorStatus": @"UNKNOWN",
+      @"autoRecoverErr": @"UNKNOWN",
+      @"adapter": @"UNKNOWN",
+      @"batteryLevel": @"UNKNOWN"
+    };
+}
+
+
+
 @end

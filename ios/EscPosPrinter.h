@@ -7,5 +7,7 @@
 @interface EscPosPrinter : RCTEventEmitter <RCTBridgeModule>
 {
     Epos2Printer *printer;
+    Boolean isMonitoring_;
+    dispatch_queue_t tasksQueue;
 }
 @end
