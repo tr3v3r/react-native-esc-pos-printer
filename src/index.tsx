@@ -170,6 +170,25 @@ const _default = {
   disconnect() {
     EscPosPrinter.disconnect();
   },
+
+  startMonitorPrinter(interval: number = 5) {
+    return EscPosPrinter.startMonitorPrinter(Math.min(5, Math.floor(interval)));
+  },
+
+  stopMonitorPrinter() {
+    return EscPosPrinter.stopMonitorPrinter();
+  },
+
+  addPrinterStatusListener(listener: (status: string) => void) {
+    const statusListener = printEventEmmiter.addListener(
+      'onMonitorStatusUpdate',
+      listener
+    );
+
+    return () => {
+      statusListener.remove();
+    };
+  },
 };
 
 export { getPrinterSeriesByName, PRINTER_SERIES };

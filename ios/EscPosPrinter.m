@@ -11,8 +11,17 @@
 
 RCT_EXPORT_MODULE()
 
+- (id)init {
+    self = [super init];
+    if (self) {
+        tasksQueue = dispatch_queue_create("serial_queue", NULL);
+    }
+
+    return  self;
+}
+
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"onPrintSuccess", @"onPrintFailure", @"onGetPaperWidthSuccess", @"onGetPaperWidthFailure"];
+    return @[@"onPrintSuccess", @"onPrintFailure", @"onGetPaperWidthSuccess", @"onGetPaperWidthFailure", @"onMonitorStatusUpdate"];
 }
 
 - (NSDictionary *)constantsToExport
@@ -70,21 +79,25 @@ RCT_EXPORT_METHOD(printBase64: (NSString *)base64string
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 {
+  dispatch_async(tasksQueue, ^{
     [self printFromBase64:base64string onSuccess:^(NSString *result) {
             resolve(result);
         } onError:^(NSString *error) {
             reject(@"event_failure",error, nil);
     }];
+  });
 }
 
 RCT_EXPORT_METHOD(getPaperWidth:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 {
+  dispatch_async(tasksQueue, ^{
     [self getPrinterSettings:EPOS2_PRINTER_SETTING_PAPERWIDTH onSuccess:^(NSString *result) {
             resolve(result);
         } onError:^(NSString *error) {
             reject(@"event_failure",error, nil);
     }];
+  });
 }
 
 
@@ -103,19 +116,41 @@ RCT_EXPORT_METHOD(disconnect)
     [self disconnectPrinter];
 }
 
+RCT_EXPORT_METHOD(startMonitorPrinter:(int) interval
+                  withResolver: (RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+{
+
+    [self startMonitorPrinter:interval onSuccess:^(NSString *result) {
+            resolve(result);
+        } onError:^(NSString *error) {
+            reject(@"event_failure",error, nil);
+    }];
+}
+
+RCT_EXPORT_METHOD(stopMonitorPrinter:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+{
+    [self stopMonitorPrinter:^(NSString *result) {
+            resolve(result);
+        } onError:^(NSString *error) {
+            reject(@"event_failure",error, nil);
+    }];
+}
+
 
 
 - (void) onPtrReceive:(Epos2Printer *)printerObj code:(int)code status:(Epos2PrinterStatusInfo *)status printJobId:(NSString *)printJobId
 {
     NSString *result = [ErrorManager getEposResultText: code];
     if (code == EPOS2_CODE_SUCCESS) {
-      [self sendEventWithName:@"onPrintSuccess" body: result];
+      NSDictionary *msg = [ErrorManager makeStatusMessage: status];
+      [self sendEventWithName:@"onPrintSuccess" body: msg];
     }
     else {
       [self sendEventWithName:@"onPrintFailure" body: result];
     }
 
-    [printer endTransaction];
     [self performSelectorInBackground:@selector(disconnectPrinter) withObject:nil];
 }
 
@@ -134,7 +169,6 @@ RCT_EXPORT_METHOD(disconnect)
     }
   }
 
-  [printer endTransaction];
   [self performSelectorInBackground:@selector(disconnectPrinter) withObject:nil];
 }
 
@@ -142,38 +176,27 @@ RCT_EXPORT_METHOD(disconnect)
 
 // Methods
 
-- (void)printData: (void(^)(NSString *))onSuccess onError: (void(^)(NSString *))onError
+- (int)printData
 {
-    int result = EPOS2_SUCCESS;
 
-    if (printer == nil) {
-        NSString *errorString = [ErrorManager getEposErrorText: EPOS2_ERR_PARAM];
-        onError(errorString);
-        return;
-    }
-
-    result = [printer connect: self.printerAddress timeout:EPOS2_PARAM_DEFAULT];
+    int result = [self connectPrinter];
 
     if (result != EPOS2_SUCCESS) {
         [printer clearCommandBuffer];
-        NSString *errorString = [ErrorManager getEposErrorText: result];
-        onError(errorString);
-        return;
+        return result;
     }
 
 
-    [printer beginTransaction];
+
     result = [printer sendData:EPOS2_PARAM_DEFAULT];
     if (result != EPOS2_SUCCESS) {
         [printer clearCommandBuffer];
-        NSString *errorString = [ErrorManager getEposErrorText: result];
-        onError(errorString);
         [printer disconnect];
-        return;
+        return result;
     }
 
-    NSString *successString = [ErrorManager getEposErrorText: EPOS2_SUCCESS];
-    onSuccess(successString);
+    return result;
+
 }
 
 
@@ -211,6 +234,22 @@ RCT_EXPORT_METHOD(disconnect)
      printer = nil;
 }
 
+- (int)connectPrinter {
+    int result = EPOS2_SUCCESS;
+    if (printer == nil) {
+        return EPOS2_ERR_PARAM;
+    }
+
+    result = [printer connect: self.printerAddress timeout:EPOS2_PARAM_DEFAULT];
+
+    if (result != EPOS2_SUCCESS) {
+        [printer clearCommandBuffer];
+        return result;
+    }
+    [printer beginTransaction];
+    return result;
+}
+
 - (void)disconnectPrinter
 {
     int result = EPOS2_SUCCESS;
@@ -232,47 +271,48 @@ RCT_EXPORT_METHOD(disconnect)
     }
 
     [printer clearCommandBuffer];
+    [printer endTransaction];
+
     NSLog(@"Disconnected!");
 }
 
 - (void)printFromBase64: (NSString*)base64String onSuccess: (void(^)(NSString *))onSuccess onError: (void(^)(NSString *))onError
 {
-    int result = EPOS2_SUCCESS;
 
-    if (printer == nil) {
-        NSString *errorString = [ErrorManager getEposErrorText: EPOS2_ERR_PARAM];
-        onError(errorString);
-        return;
-    }
+        int result = EPOS2_SUCCESS;
 
-    NSData *data = [[NSData alloc] initWithBase64EncodedString: base64String options:0];
+        if (self->printer == nil) {
+            NSString *errorString = [ErrorManager getEposErrorText: EPOS2_ERR_PARAM];
+            onError(errorString);
+            return;
+        }
 
-    result = [printer addCommand:data];
-    if (result != EPOS2_SUCCESS) {
-        [printer clearCommandBuffer];
-        onError(@"Error - addFeedLine");
-        return;
-    }
+        NSData *data = [[NSData alloc] initWithBase64EncodedString: base64String options:0];
+
+        result = [self->printer addCommand:data];
+        if (result != EPOS2_SUCCESS) {
+            [self->printer clearCommandBuffer];
+            NSString *errorString = [ErrorManager getEposErrorText: result];
+            onError(errorString);
+            return;
+        }
+
+        result = [self printData];
+        if (result != EPOS2_SUCCESS) {
+            NSString *errorString = [ErrorManager getEposErrorText: result];
+            onError(errorString);
+            return;
+        }
 
 
-    [self printData:^(NSString *result) {
-            onSuccess(result);
-        } onError:^(NSString *error) {
-            onError(error);
-    }];
+        NSString *successString = [ErrorManager getEposErrorText: EPOS2_SUCCESS];
+        onSuccess(successString);
 }
 
 - (void)getPrinterSettings:(int)type
                            onSuccess: (void(^)(NSString *))onSuccess
                            onError: (void(^)(NSString *))onError {
-    int result = EPOS2_SUCCESS;
-    if (printer == nil) {
-        NSString *errorString = [ErrorManager getEposErrorText: EPOS2_ERR_PARAM];
-        onError(errorString);
-        return;
-    }
-
-    result = [printer connect: self.printerAddress timeout:EPOS2_PARAM_DEFAULT];
+    int result = [self connectPrinter];
 
     if (result != EPOS2_SUCCESS) {
         [printer clearCommandBuffer];
@@ -281,7 +321,6 @@ RCT_EXPORT_METHOD(disconnect)
         return;
     }
 
-    [printer beginTransaction];
     result = [printer getPrinterSetting:EPOS2_PARAM_DEFAULT type:type delegate:self];
 
    if (result != EPOS2_SUCCESS) {
@@ -314,6 +353,77 @@ RCT_EXPORT_METHOD(disconnect)
 
 - (void)onSetPrinterSetting:(int)code {
     // nothing to do
+}
+
+- (void)performMonitoring: (NSTimer*)timer {
+    int interval = [timer.userInfo intValue];
+
+    __block Epos2PrinterStatusInfo *info;
+    __block int result = EPOS2_SUCCESS;
+
+    if(self->isMonitoring_) {
+        dispatch_async(self->tasksQueue, ^{
+            result = [self connectPrinter];
+
+            if (result != EPOS2_SUCCESS) {
+                if(result != EPOS2_ERR_ILLEGAL && result != EPOS2_ERR_PROCESSING) {
+                    NSDictionary *msg = [ErrorManager getOfflineStatusMessage];
+                    [self sendEventWithName:@"onMonitorStatusUpdate" body: msg];
+                }
+            } else {
+                info = [self->printer getStatus];
+
+                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                    NSDictionary *msg = [ErrorManager makeStatusMessage: info];
+                    if(msg != nil){
+                     [self sendEventWithName:@"onMonitorStatusUpdate" body: msg];
+                    }
+                }];
+                [self disconnectPrinter];
+            }
+
+                dispatch_async( dispatch_get_main_queue(), ^{
+                    [NSTimer scheduledTimerWithTimeInterval: (int)interval target:self selector: @selector(performMonitoring:) userInfo: @(interval) repeats:NO];
+                });
+
+        });
+    }
+}
+
+- (void)startMonitorPrinter:(int)interval onSuccess:(void(^)(NSString *))onSuccess
+                               onError: (void(^)(NSString *))onError {
+
+    if(isMonitoring_) {
+        onError(@"Already monitoring!");
+        return;
+    }
+
+    if (printer == nil) {
+        NSString *errorString = [ErrorManager getEposErrorText: EPOS2_ERR_PARAM];
+        onError(errorString);
+        return;
+    }
+
+    isMonitoring_ = true;
+
+    NSTimer* timer = [NSTimer timerWithTimeInterval: 0.0 target:self selector: @selector(performMonitoring:) userInfo: @(interval) repeats:NO];
+    [timer fire];
+
+    NSString *successString = [ErrorManager getEposErrorText: EPOS2_SUCCESS];
+    onSuccess(successString);
+}
+
+-(void)stopMonitorPrinter:(void(^)(NSString *))onSuccess
+                  onError: (void(^)(NSString *))onError
+{
+    if(!isMonitoring_){
+        onError(@"Printer is not monitorring!");
+        return;
+    }
+    isMonitoring_= false;
+
+    NSString *successString = [ErrorManager getEposErrorText: EPOS2_SUCCESS];
+    onSuccess(successString);
 }
 
 

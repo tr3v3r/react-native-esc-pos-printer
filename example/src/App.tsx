@@ -55,6 +55,50 @@ export default function App() {
       />
 
       <Button
+        title="Start monitor printer status"
+        disabled={!printer}
+        color={!printer ? 'gray' : 'blue'}
+        onPress={async () => {
+          if (printer) {
+            if (!init) {
+              await EscPosPrinter.init({
+                target: printer.target,
+                seriesName: getPrinterSeriesByName(printer.name),
+              });
+              setInit(true);
+            }
+            EscPosPrinter.addPrinterStatusListener((status) => {
+              console.log('current printer status:', status);
+            });
+            const status = await EscPosPrinter.startMonitorPrinter();
+
+            console.log('Printer status:', status);
+          }
+        }}
+      />
+
+      <Button
+        title="Stop monitor printer status"
+        disabled={!printer}
+        color={!printer ? 'gray' : 'blue'}
+        onPress={async () => {
+          if (printer) {
+            if (!init) {
+              await EscPosPrinter.init({
+                target: printer.target,
+                seriesName: getPrinterSeriesByName(printer.name),
+              });
+              setInit(true);
+            }
+
+            const status = await EscPosPrinter.stopMonitorPrinter();
+
+            console.log('Printer status:', status);
+          }
+        }}
+      />
+
+      <Button
         title="testt"
         disabled={!printer}
         color={!printer ? 'gray' : 'blue'}
