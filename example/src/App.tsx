@@ -12,6 +12,11 @@ export default function App() {
   const [init, setInit] = React.useState(false);
   const [printer, setPrinter] = React.useState<IPrinter | null>(null);
   React.useEffect(() => {
+    EscPosPrinter.addPrinterStatusListener((status) => {
+      console.log('current printer status:', status);
+    });
+  }, []);
+  React.useEffect(() => {
     console.log(printer);
   }, [printer]);
   return (
@@ -67,9 +72,7 @@ export default function App() {
               });
               setInit(true);
             }
-            EscPosPrinter.addPrinterStatusListener((status) => {
-              console.log('current printer status:', status);
-            });
+
             const status = await EscPosPrinter.startMonitorPrinter();
 
             console.log('Printer status:', status);
