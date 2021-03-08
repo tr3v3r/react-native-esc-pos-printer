@@ -21,6 +21,10 @@ Add the following permissions to `android/app/src/main/AndroidManifest.xml`
 <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
 ```
+For Android >= 10 add:
+```xml
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+```
 
 ### iOS RN >= 0.60
 
@@ -66,8 +70,6 @@ EscPosPrinter.init({ target:  "TCP:192.168.192.168", seriesName: "EPOS2_TM_M10" 
 
 `For iOS you must pair printer with device to search Bluetooth printers`
 
-`For Android you need to request COARSE_LOCATION persmission using dialog`
-
 Starts searching for device.
 Returns list of printers.
 
@@ -112,6 +114,23 @@ Prints with the given binary data (Uint8Array)
 | ---- | :--: | :------: | :----------: |
 | `binaryData` | `Uint8Array` | `Yes` | string representing in JS Uint8Array data |
 
+
+##### return type
+```typescript
+interface IMonitorStatus {
+  connection: string;
+  online: string;
+  coverOpen: string;
+  paper: string;
+  paperFeed: string;
+  panelSwitch: string;
+  drawer: string;
+  errorStatus: string;
+  autoRecoverErr: string;
+  adapter: string;
+  batteryLevel: string;
+}
+```
 
 ```javascript
 import EscPosPrinter, { getPrinterSeriesByName } from "react-native-esc-pos-printer"
@@ -178,13 +197,43 @@ Supports only `font A` for now.
 ```
 
 ```javascript
-import { getPrinterCharsPerLine, getPrinterSeriesByName } from "react-native-esc-pos-printer"
+import EscPosPrinter , { getPrinterSeriesByName } from "react-native-esc-pos-printer"
 
  const { name } = printer;
 
 EscPosPrinter.getPrinterCharsPerLine(getPrinterSeriesByName(name))
 .then((result) => console.log(result)) // { fontA: 48 }
 .catch((e) => console.log("error:", e.message))
+
+```
+
+#### startMonitorPrinter(interval: number)
+
+Monitors printer status with a given interval in seconds.
+
+```javascript
+import EscPosPrinter from "react-native-esc-pos-printer"
+
+EscPosPrinter.addPrinterStatusListener((status) => {
+  console.log(status.connection, status.online, status.paper); // will be executed every 5 sec
+})
+
+EscPosPrinter.startMonitorPrinter(5)
+.then(() => console.log("Start monitor success!"))
+.catch((e) => console.log("Start monitor error:", e.message))
+
+```
+
+#### stopMonitorPrinter()
+
+Monitors printer status with a given interval in seconds.
+
+```javascript
+import EscPosPrinter from "react-native-esc-pos-printer"
+
+EscPosPrinter.stopMonitorPrinter()
+.then(() => console.log("Stopped!"))
+.catch((e) => console.log("Stop error:", e.message))
 
 ```
 
