@@ -16,6 +16,7 @@ import type {
   IPrinter,
   IPrinterInitParams,
   PrinterSeriesName,
+  IMonitorStatus,
 } from './types';
 import {
   PRINTER_SERIES,
@@ -68,7 +69,7 @@ const _default = {
 
     return Promise.reject('No permissions granted');
   },
-  printRawData(uint8Array: Uint8Array): Promise<string> {
+  printRawData(uint8Array: Uint8Array): Promise<IMonitorStatus> {
     const buffer = new BufferHelper();
     const base64String = buffer.bytesToString(uint8Array, 'base64');
 
@@ -179,7 +180,7 @@ const _default = {
     return EscPosPrinter.stopMonitorPrinter();
   },
 
-  addPrinterStatusListener(listener: (status: string) => void) {
+  addPrinterStatusListener(listener: (status: IMonitorStatus) => void) {
     const statusListener = printEventEmmiter.addListener(
       'onMonitorStatusUpdate',
       listener

@@ -44,3 +44,37 @@ export interface IPrinterInitParams {
   target: string;
   seriesName: PrinterSeriesName;
 }
+
+export interface IMonitorStatus {
+  connection: 'DISCONNECT' | 'DISCONNECT' | 'UNKNOWN';
+  online: 'OFFLINE' | 'OFFLINE' | 'UNKNOWN';
+  coverOpen: 'COVER_OPEN' | 'COVER_CLOSE' | 'UNKNOWN';
+  paper: 'PAPER_OK' | 'PAPER_NEAR_END' | 'PAPER_EMPTY' | 'UNKNOWN';
+  paperFeed: 'PAPER_FEED' | 'PAPER_STOP' | 'UNKNOWN';
+  panelSwitch: 'SWITCH_ON' | 'SWITCH_OFF' | 'UNKNOWN';
+  drawer: 'DRAWER_HIGH(Drawer close)' | 'DRAWER_LOW(Drawer open)' | 'UNKNOWN';
+  errorStatus:
+    | 'NO_ERR'
+    | 'MECHANICAL_ERR'
+    | 'AUTOCUTTER_ERR'
+    | 'UNRECOVER_ERR'
+    | 'AUTORECOVER_ERR'
+    | 'UNKNOWN';
+  autoRecoverErr:
+    | 'HEAD_OVERHEAT'
+    | 'MOTOR_OVERHEAT'
+    | 'BATTERY_OVERHEAT'
+    | 'WRONG_PAPER'
+    | 'COVER_OPEN'
+    | 'UNKNOWN';
+  adapter: 'AC ADAPTER CONNECT' | 'AC ADAPTER DISCONNECT' | 'UNKNOWN';
+  batteryLevel:
+    | 'BATTERY_LEVEL_0'
+    | 'BATTERY_LEVEL_1'
+    | 'BATTERY_LEVEL_2'
+    | 'BATTERY_LEVEL_3'
+    | 'BATTERY_LEVEL_4'
+    | 'BATTERY_LEVEL_5'
+    | 'BATTERY_LEVEL_6'
+    | 'UNKNOWN';
+}
