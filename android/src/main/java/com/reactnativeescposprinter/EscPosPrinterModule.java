@@ -24,6 +24,14 @@ import com.epson.epos2.printer.PrinterSettingListener;
 
 import com.facebook.react.bridge.UiThreadUtil;
 import android.util.Base64;
+
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.Timer;
+import java.util.TimerTask;
+import com.facebook.react.bridge.WritableMap;
+import android.os.Handler;
+import java.util.concurrent.Callable;
 @ReactModule(name = EscPosPrinterModule.NAME)
 public class EscPosPrinterModule extends ReactContextBaseJavaModule implements ReceiveListener {
     private static final int DISCONNECT_INTERVAL = 500;
@@ -31,7 +39,10 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
     public static Printer  mPrinter = null;
     private final ReactApplicationContext reactContext;
     private String printerAddress = null;
+    private Runnable monitor = null;
 
+    ExecutorService tasksQueue = Executors.newSingleThreadExecutor();
+    private Boolean mIsMonitoring = false;
     interface MyCallbackInterface {
       void onSuccess(String result);
       void onError(String result);
@@ -89,6 +100,65 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       .emit(eventName, params);
   }
 
+  @ReactMethod
+  public void init(String target, int series, Promise promise) {
+    this.finalizeObject();
+    this.initializeObject(series, new MyCallbackInterface() {
+      @Override
+      public void onSuccess(String result) {
+        promise.resolve(result);
+      }
+      @Override
+      public void onError(String result) {
+        promise.reject(result);
+      }
+    });
+
+    this.printerAddress = target;
+  }
+
+  @ReactMethod
+  public void printBase64(String base64string, Promise promise) {
+
+    tasksQueue.submit(new Runnable() {
+      @Override
+      public void run() {
+        printFromBase64(base64string, new MyCallbackInterface() {
+          @Override
+          public void onSuccess(String result) {
+            promise.resolve(result);
+          }
+          @Override
+          public void onError(String result) {
+            promise.reject(result);
+          }
+        });
+      }
+  });
+
+  }
+
+  @ReactMethod
+  public void getPaperWidth(Promise promise) {
+
+    tasksQueue.submit(new Runnable() {
+      @Override
+      public void run() {
+        getPrinterSettings(Printer.SETTING_PAPERWIDTH, new MyCallbackInterface() {
+          @Override
+          public void onSuccess(String result) {
+            promise.resolve(result);
+          }
+          @Override
+          public void onError(String result) {
+            promise.reject(result);
+          }
+        });
+      }
+    });
+
+  }
+
     private void initializeObject(int series, MyCallbackInterface callback) {
        try {
         mPrinter = new Printer(series, Printer.MODEL_ANK, mContext);
@@ -113,9 +183,25 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
      mPrinter = null;
    }
 
+   private void connectPrinter() throws Epos2Exception {
+
+    if (mPrinter == null) {
+      throw new Epos2Exception(Epos2Exception.ERR_PARAM);
+    }
+
+    mPrinter.connect(this.printerAddress, Printer.PARAM_DEFAULT);
+    mPrinter.beginTransaction();
+   }
+
    private void disconnectPrinter() {
     if (mPrinter == null) {
         return;
+    }
+
+    try {
+      mPrinter.endTransaction();
+    } catch(Epos2Exception e) {
+
     }
 
     while (true) {
@@ -132,67 +218,23 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
                     } catch (Exception ex) {
                     }
                 }else{
-                  UiThreadUtil.runOnUiThread(new Runnable() {
-                        public synchronized void run() {
-
-                        }
-                    });
-                    break;
+                  break;
                 }
             }else{
-                   UiThreadUtil.runOnUiThread(new Runnable() {
-                    public synchronized void run() {
-
-                    }
-                });
                 break;
             }
         }
     }
 
+
+
       mPrinter.clearCommandBuffer();
     }
 
-    private void printData(MyCallbackInterface callback) {
-      if (mPrinter == null) {
-        String errorString = EscPosPrinterErrorManager.getEposExceptionText(Epos2Exception.ERR_PARAM);
-        callback.onError(errorString);
-        return;
-      }
+    private void printData() throws Epos2Exception {
+      this.connectPrinter();
+      mPrinter.sendData(Printer.PARAM_DEFAULT);
 
-      try {
-        mPrinter.connect(this.printerAddress, Printer.PARAM_DEFAULT);
-      }
-      catch (Epos2Exception e) {
-          int status = EscPosPrinterErrorManager.getErrorStatus(e);
-          String errorString = EscPosPrinterErrorManager.getEposExceptionText(status);
-          callback.onError(errorString);
-          return;
-      }
-
-      try {
-          mPrinter.beginTransaction();
-      } catch(Epos2Exception e) {
-          int status = EscPosPrinterErrorManager.getErrorStatus(e);
-          String errorString = EscPosPrinterErrorManager.getEposExceptionText(status);
-          callback.onError(errorString);
-          return;
-      }
-
-      try {
-          mPrinter.sendData(Printer.PARAM_DEFAULT);
-      }
-      catch (Epos2Exception e) {
-          mPrinter.clearCommandBuffer();
-          int status = EscPosPrinterErrorManager.getErrorStatus(e);
-          String errorString = EscPosPrinterErrorManager.getEposExceptionText(status);
-          callback.onError(errorString);
-          this.disconnectPrinter();
-          return;
-      }
-
-      String successString = EscPosPrinterErrorManager.getCodeText(Epos2CallbackCode.CODE_SUCCESS);
-      callback.onSuccess(successString);
   }
 
   private void printFromBase64(String base64String, MyCallbackInterface callback) {
@@ -215,17 +257,15 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
         return;
     }
 
-    this.printData(new MyCallbackInterface() {
-      @Override
-      public void onSuccess(String result) {
-        callback.onSuccess(result);
-      }
-      @Override
-      public void onError(String result) {
-        callback.onError(result);
-      }
-    });
-
+    try {
+      this.printData();
+      String successString = EscPosPrinterErrorManager.getCodeText(Epos2CallbackCode.CODE_SUCCESS);
+      callback.onSuccess(successString);
+    } catch (Epos2Exception e) {
+      int status = EscPosPrinterErrorManager.getErrorStatus(e);
+       String errorString = EscPosPrinterErrorManager.getEposExceptionText(status);
+       callback.onError(errorString);
+    }
   }
 
   @Override
@@ -235,15 +275,16 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
           public synchronized void run() {
               String result = EscPosPrinterErrorManager.getCodeText(code);
               if(code == Epos2CallbackCode.CODE_SUCCESS) {
-                sendEvent(reactContext, "onPrintSuccess", result);
+                WritableMap msg = EscPosPrinterErrorManager.makeStatusMassage(status);
+
+                reactContext
+                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit("onPrintSuccess", msg);
+
               } else {
                 sendEvent(reactContext, "onPrintFailure", result);
               }
-              try {
-               mPrinter.endTransaction();
-              } catch(Exception e) {
 
-              }
               new Thread(new Runnable() {
                   @Override
                   public void run() {
@@ -262,18 +303,9 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
     }
 
     try {
-      mPrinter.connect(this.printerAddress, Printer.PARAM_DEFAULT);
+      this.connectPrinter();
     }
     catch (Epos2Exception e) {
-        int status = EscPosPrinterErrorManager.getErrorStatus(e);
-        String errorString = EscPosPrinterErrorManager.getEposExceptionText(status);
-        callback.onError(errorString);
-        return;
-    }
-
-    try {
-      mPrinter.beginTransaction();
-    } catch(Epos2Exception e) {
         int status = EscPosPrinterErrorManager.getErrorStatus(e);
         String errorString = EscPosPrinterErrorManager.getEposExceptionText(status);
         callback.onError(errorString);
@@ -316,11 +348,6 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
                   sendEvent(reactContext, "onGetPaperWidthFailure", result);
                 }
               }
-              try {
-               mPrinter.endTransaction();
-              } catch(Exception e) {
-
-              }
               new Thread(new Runnable() {
                   @Override
                   public void run() {
@@ -337,62 +364,88 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
     }
   };
 
-  @ReactMethod
-  public void init(String target, int series, Promise promise) {
-    this.finalizeObject();
-    this.initializeObject(series, new MyCallbackInterface() {
-      @Override
-      public void onSuccess(String result) {
-        promise.resolve(result);
-      }
-      @Override
-      public void onError(String result) {
-        promise.reject(result);
-      }
-    });
+  private void performMonitoring(int inteval) {
+    final Handler handler = new Handler();
+    monitor = new Runnable(){
 
-    this.printerAddress = target;
-  }
-
-  @ReactMethod
-  public void printBase64(String base64string, Promise promise) {
-
-    new Thread(new Runnable() {
       @Override
       public void run() {
-        printFromBase64(base64string, new MyCallbackInterface() {
-          @Override
-          public void onSuccess(String result) {
-            promise.resolve(result);
-          }
-          @Override
-          public void onError(String result) {
-            promise.reject(result);
-          }
-        });
-      }
-  }).start();
 
+        if(mIsMonitoring) {
+         tasksQueue.submit(new Callable<String>() {
+          @Override
+          public String call() {
+            PrinterStatusInfo statusInfo = null;
+             try {
+               connectPrinter();
+               statusInfo = mPrinter.getStatus();
+               WritableMap msg = EscPosPrinterErrorManager.makeStatusMassage(statusInfo);
+
+               reactContext
+               .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+               .emit("onMonitorStatusUpdate", msg);
+               disconnectPrinter();
+               return null;
+             } catch(Epos2Exception e) {
+               int errorStatus = ((Epos2Exception) e).getErrorStatus();
+
+              if (errorStatus != Epos2Exception.ERR_PROCESSING && errorStatus != Epos2Exception.ERR_ILLEGAL) {
+
+                WritableMap msg = EscPosPrinterErrorManager.getOfflineStatusMessage();
+
+                reactContext
+                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                .emit("onMonitorStatusUpdate", msg);
+               }
+               return null;
+             } finally {
+               handler.postDelayed(monitor, inteval);
+             }
+
+          }
+      });
+    }
+      }
+    };
+
+
+    monitor.run();
   }
 
   @ReactMethod
-  public void getPaperWidth(Promise promise) {
+  public void startMonitorPrinter(int interval, Promise promise) {
 
-    new Thread(new Runnable() {
-      @Override
-      public void run() {
-        getPrinterSettings(Printer.SETTING_PAPERWIDTH, new MyCallbackInterface() {
-          @Override
-          public void onSuccess(String result) {
-            promise.resolve(result);
-          }
-          @Override
-          public void onError(String result) {
-            promise.reject(result);
-          }
-        });
-      }
-    }).start();
+    if (mIsMonitoring){
+      promise.reject("Already monitoring!");
+      return;
+    }
 
+    if (mPrinter == null) {
+      String errorString = EscPosPrinterErrorManager.getEposExceptionText(Epos2Exception.ERR_PARAM);
+      promise.reject(errorString);
+      return;
+    }
+
+    mIsMonitoring = true;
+    this.performMonitoring(interval * 1000);
+
+
+    String successString = EscPosPrinterErrorManager.getCodeText(Epos2CallbackCode.CODE_SUCCESS);
+    promise.resolve(successString);
   }
+
+  @ReactMethod
+  public void stopMonitorPrinter(Promise promise) {
+    if(!mIsMonitoring) {
+      promise.reject("Printer is not monitorring!");
+      return;
+    }
+
+    mIsMonitoring = false;
+    monitor = null;
+    String successString = EscPosPrinterErrorManager.getCodeText(Epos2CallbackCode.CODE_SUCCESS);
+    promise.resolve(successString);
+  }
+
+
 }
