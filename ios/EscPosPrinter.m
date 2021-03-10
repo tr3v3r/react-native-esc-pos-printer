@@ -14,11 +14,18 @@ RCT_EXPORT_MODULE()
 - (id)init {
     self = [super init];
     if (self) {
-        tasksQueue = dispatch_queue_create("serial_queue", NULL);
+         tasksQueue = [[NSOperationQueue alloc] init];
+         tasksQueue.maxConcurrentOperationCount = 1;
+
     }
 
     return  self;
 }
+
+-(void)dealloc {
+  [tasksQueue waitUntilAllOperationsAreFinished];
+  tasksQueue = nil;
+  }
 
 - (NSArray<NSString *> *)supportedEvents {
     return @[@"onPrintSuccess", @"onPrintFailure", @"onGetPaperWidthSuccess", @"onGetPaperWidthFailure", @"onMonitorStatusUpdate"];
@@ -79,25 +86,25 @@ RCT_EXPORT_METHOD(printBase64: (NSString *)base64string
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 {
-  dispatch_async(tasksQueue, ^{
+ [tasksQueue addOperationWithBlock: ^{
     [self printFromBase64:base64string onSuccess:^(NSString *result) {
             resolve(result);
         } onError:^(NSString *error) {
             reject(@"event_failure",error, nil);
     }];
-  });
+  }];
 }
 
 RCT_EXPORT_METHOD(getPaperWidth:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 {
-  dispatch_async(tasksQueue, ^{
+  [tasksQueue addOperationWithBlock: ^{
     [self getPrinterSettings:EPOS2_PRINTER_SETTING_PAPERWIDTH onSuccess:^(NSString *result) {
             resolve(result);
         } onError:^(NSString *error) {
             reject(@"event_failure",error, nil);
     }];
-  });
+  }];
 }
 
 
@@ -362,7 +369,7 @@ RCT_EXPORT_METHOD(stopMonitorPrinter:(RCTPromiseResolveBlock)resolve
     __block int result = EPOS2_SUCCESS;
 
     if(self->isMonitoring_) {
-        dispatch_async(self->tasksQueue, ^{
+        [self->tasksQueue addOperationWithBlock: ^{
             result = [self connectPrinter];
 
             if (result != EPOS2_SUCCESS) {
@@ -382,11 +389,11 @@ RCT_EXPORT_METHOD(stopMonitorPrinter:(RCTPromiseResolveBlock)resolve
                 [self disconnectPrinter];
             }
 
-                dispatch_async( dispatch_get_main_queue(), ^{
-                    [NSTimer scheduledTimerWithTimeInterval: (int)interval target:self selector: @selector(performMonitoring:) userInfo: @(interval) repeats:NO];
-                });
+               [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                 [NSTimer scheduledTimerWithTimeInterval: (int)interval target:self selector: @selector(performMonitoring:) userInfo: @(interval) repeats:NO];
+               }];
 
-        });
+        }];
     }
 }
 
@@ -420,6 +427,7 @@ RCT_EXPORT_METHOD(stopMonitorPrinter:(RCTPromiseResolveBlock)resolve
         onError(@"Printer is not monitorring!");
         return;
     }
+    [tasksQueue waitUntilAllOperationsAreFinished];
     isMonitoring_= false;
 
     NSString *successString = [ErrorManager getEposErrorText: EPOS2_SUCCESS];
