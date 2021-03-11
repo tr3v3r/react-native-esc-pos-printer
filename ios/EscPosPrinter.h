@@ -8,6 +8,6 @@
 {
     Epos2Printer *printer;
     Boolean isMonitoring_;
-    dispatch_queue_t tasksQueue;
+    NSOperationQueue* tasksQueue;
 }
 @end

@@ -165,7 +165,7 @@ const _default = {
     if (Platform.OS === 'ios') {
       return EscPosPrinter.pairingBluetoothPrinter();
     }
-    return Promise.resolve('Success');
+    return Promise.resolve('Successs');
   },
 
   disconnect() {
@@ -173,7 +173,7 @@ const _default = {
   },
 
   startMonitorPrinter(interval: number = 5) {
-    return EscPosPrinter.startMonitorPrinter(Math.min(5, Math.floor(interval)));
+    return EscPosPrinter.startMonitorPrinter(Math.max(5, Math.floor(interval)));
   },
 
   stopMonitorPrinter() {
