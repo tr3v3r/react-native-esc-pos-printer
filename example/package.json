@@ -4,7 +4,9 @@
   "version": "0.0.1",
   "private": true,
   "scripts": {
+    "preandroid": "adb reverse tcp:8081 tcp:8081",
     "android": "react-native run-android",
+    "gradle": "cd android/ && ./gradlew",
     "ios": "react-native run-ios",
     "start": "react-native start"
   },
