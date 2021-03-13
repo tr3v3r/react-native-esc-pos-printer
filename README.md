@@ -46,6 +46,14 @@ When the Bluetooth or USB is used, set the protocol name. Set the protocol name 
 
 ## API
 
+1. [init](#init-target-seriesname-)
+1. [discover](#discover)
+1. [printRawData](#printrawdatabinarydata)
+1. [pairingBluetoothPrinter](#pairingbluetoothprinter---ios-only)
+1. [getPrinterCharsPerLine](#getprintercharsperlineseriesname)
+1. [startMonitorPrinter](#startmonitorprinterinterval-number)
+1. [startMonitorPrinter](#stopmonitorprinter)
+
 #### init({ target, seriesName })
 
 Initializes printer using it's target and series name.
