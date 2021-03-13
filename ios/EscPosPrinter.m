@@ -22,11 +22,6 @@ RCT_EXPORT_MODULE()
     return  self;
 }
 
--(void)dealloc {
-  [tasksQueue waitUntilAllOperationsAreFinished];
-  tasksQueue = nil;
-  }
-
 - (NSArray<NSString *> *)supportedEvents {
     return @[@"onPrintSuccess", @"onPrintFailure", @"onGetPaperWidthSuccess", @"onGetPaperWidthFailure", @"onMonitorStatusUpdate"];
 }
@@ -375,7 +370,11 @@ RCT_EXPORT_METHOD(stopMonitorPrinter:(RCTPromiseResolveBlock)resolve
             if (result != EPOS2_SUCCESS) {
                 if(result != EPOS2_ERR_ILLEGAL && result != EPOS2_ERR_PROCESSING) {
                     NSDictionary *msg = [ErrorManager getOfflineStatusMessage];
-                    [self sendEventWithName:@"onMonitorStatusUpdate" body: msg];
+                    @try {
+                      [self sendEventWithName:@"onMonitorStatusUpdate" body: msg];
+                    } @catch(NSException *e) {
+                    }
+
                 }
             } else {
                 info = [self->printer getStatus];
@@ -383,7 +382,10 @@ RCT_EXPORT_METHOD(stopMonitorPrinter:(RCTPromiseResolveBlock)resolve
                 [[NSOperationQueue mainQueue] addOperationWithBlock:^{
                     NSDictionary *msg = [ErrorManager makeStatusMessage: info];
                     if(msg != nil){
-                     [self sendEventWithName:@"onMonitorStatusUpdate" body: msg];
+                      @try {
+                        [self sendEventWithName:@"onMonitorStatusUpdate" body: msg];
+                      } @catch(NSException *e) {
+                      }
                     }
                 }];
                 [self disconnectPrinter];
