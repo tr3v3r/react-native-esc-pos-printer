@@ -13,6 +13,7 @@ import {
 import type {
   PrinerEvents,
   EventListenerCallback,
+  IDiscoverParams,
   IPrinter,
   IPrinterInitParams,
   PrinterSeriesName,
@@ -35,7 +36,7 @@ const _default = {
     const series = PRINTER_SERIES[seriesName];
     return EscPosPrinter.init(target, series);
   },
-  async discover(): Promise<IPrinter[]> {
+  async discover(params?: IDiscoverParams): Promise<IPrinter[]> {
     if (
       Platform.OS === 'ios' ||
       ((await requestAndroidPermissions()) &&
@@ -55,7 +56,7 @@ const _default = {
           }
         );
 
-        EscPosPrinterDiscovery.discover()
+        EscPosPrinterDiscovery.discover(params)
           .then(() => {
             removeListener();
             res([]);

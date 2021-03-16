@@ -45,6 +45,10 @@ export interface IPrinterInitParams {
   seriesName: PrinterSeriesName;
 }
 
+export interface IDiscoverParams {
+  serialNumber?: boolean;
+}
+
 export interface IMonitorStatus {
   connection: 'DISCONNECT' | 'DISCONNECT' | 'UNKNOWN';
   online: 'OFFLINE' | 'OFFLINE' | 'UNKNOWN';
