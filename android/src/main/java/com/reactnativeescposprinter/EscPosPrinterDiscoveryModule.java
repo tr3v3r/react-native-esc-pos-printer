@@ -157,7 +157,9 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
     this.stopDiscovery();
 
     if (paramsMap != null) {
-      mExtractUsbSerialNumber = paramsMap.getBoolean("usbSerialNumber");
+      if (paramsMap.hasKey("usbSerialNumber")) {
+        mExtractUsbSerialNumber = paramsMap.getBoolean("usbSerialNumber");
+      }
     }
 
     FilterOption mFilterOption = new FilterOption();
