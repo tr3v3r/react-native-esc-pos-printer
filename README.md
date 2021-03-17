@@ -105,6 +105,30 @@ EscPosPrinter.discovery()
 .catch((e) => console.log("Print error:", e.message))
 ```
 
+To extract the serialnumber of an usbdevice on Android, add the option `usbSerialNumber: true` e.g:
+
+```javascript
+import EscPosPrinter from 'react-native-esc-pos-printer';
+
+EscPosPrinter.discovery({ usbSerialNumber: true })
+  .then((printers) => {
+    console.log(printers[0]);
+    /*
+    {
+      name: "TM_M10",
+      ip: "192.168.192.168" or "",
+      mac: "12:34:56:78:56:78" or "",
+      target: "TCP:192.168.192.168" or "BT:00:22:15:7D:70:9C" or "USB:000000000000000000",
+      bt: "12:34:56:78:56:78" or "",
+      usb: "000000000000000000" or "",
+      usbSerialNumber: "123456789012345678" or ""
+      };
+    }
+  */
+  })
+  .catch((e) => console.log('Print error:', e.message));
+```
+
 #### printRawData(binaryData)
 
 Prints with the given binary data (Uint8Array)
