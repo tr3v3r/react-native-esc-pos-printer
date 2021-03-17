@@ -5,6 +5,7 @@ export interface IPrinter {
   target: string;
   bt: string;
   usb: string;
+  usbSerialNumber?: string;
 }
 
 export type PrinerEvents =
