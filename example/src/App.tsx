@@ -25,7 +25,7 @@ export default function App() {
         title="discover"
         onPress={() => {
           console.log('discovering');
-          EscPosPrinter.discover()
+          EscPosPrinter.discover({ usbSerialNumber: true })
             .then((printers) => {
               console.log('done!', printers);
               if (printers[0]) {
