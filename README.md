@@ -74,12 +74,17 @@ EscPosPrinter.init({ target:  "TCP:192.168.192.168", seriesName: "EPOS2_TM_M10" 
 
 ```
 
-#### discover()
+#### discover(params?)
 
 `For iOS you must pair printer with device to search Bluetooth printers`
 
 Starts searching for device.
 Returns list of printers.
+
+##### params
+| Name | Type | Required | Description  |
+| ---- | :--: | :------: | :----------: |
+| `usbSerialNumber` | `boolean` | `No` | To extract the serial number of the usb device on Android |
 
 ##### return type
 ```typescript
@@ -107,14 +112,12 @@ EscPosPrinter.discovery()
       target: "TCP:192.168.192.168" or "BT:00:22:15:7D:70:9C" or "USB:000000000000000000",
       bt: "12:34:56:78:56:78" or "",
       usb: "000000000000000000" or "";
+      usbSerialNumber: "123456789012345678" or ""; // available if usbSerialNumber === true
     }
   */
 })
 .catch((e) => console.log("Print error:", e.message))
 ```
-
-To extract the serialnumber of an usbdevice on Android, add the option `usbSerialNumber: true` e.g:
-
 ```javascript
 import EscPosPrinter from 'react-native-esc-pos-printer';
 
