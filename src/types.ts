@@ -5,6 +5,7 @@ export interface IPrinter {
   target: string;
   bt: string;
   usb: string;
+  usbSerialNumber?: string;
 }
 
 export type PrinerEvents =
@@ -43,6 +44,10 @@ export type PrinterSeriesName =
 export interface IPrinterInitParams {
   target: string;
   seriesName: PrinterSeriesName;
+}
+
+export interface IDiscoverParams {
+  usbSerialNumber?: boolean;
 }
 
 export interface IMonitorStatus {
