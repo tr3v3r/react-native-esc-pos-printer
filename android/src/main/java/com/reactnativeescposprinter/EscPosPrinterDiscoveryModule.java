@@ -48,7 +48,7 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
   private ArrayList<DeviceInfo> mPrinterList = null;
   private UsbManager mUsbManager = null;
   private final ReactApplicationContext reactContext;
-  private boolean mExtractSerialNumber = false;
+  private boolean mExtractUsbSerialNumber = false;
 
   public static final String NAME = "EscPosPrinterDiscovery";
 
@@ -157,7 +157,7 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
     this.stopDiscovery();
 
     if (paramsMap != null) {
-      mExtractSerialNumber = paramsMap.getBoolean("serialNumber");
+      mExtractUsbSerialNumber = paramsMap.getBoolean("usbSerialNumber");
     }
 
     FilterOption mFilterOption = new FilterOption();
@@ -196,6 +196,16 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
     }
   }
 
+  private String getUsbSerialNumber(String usbAddress) {
+    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
+      UsbDevice device = mUsbManager.getDeviceList().get(usbAddress);
+      if (device != null) {
+        return device.getSerialNumber();
+      }
+    }
+    return "";
+  }
+
   private DiscoveryListener mDiscoveryListener = new DiscoveryListener() {
     @Override
     public void onDiscovery(final DeviceInfo deviceInfo) {
@@ -212,14 +222,10 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
             WritableMap printerData = Arguments.createMap();
 
             String usbAddress = getUSBAddress(info.getTarget());
-            if (mExtractSerialNumber && usbAddress != "") {
-              if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-                UsbDevice device = mUsbManager.getDeviceList().get(usbAddress);
-                if (device != null) {
-                  String serialNumber = device.getSerialNumber();
-                  printerData.putString("serial", serialNumber);
-                }
-              }
+
+            if (mExtractUsbSerialNumber && usbAddress != "") {
+              String usbSerialNumber = getUsbSerialNumber(usbAddress);
+              printerData.putString("usbSerialNumber", usbSerialNumber);
             }
 
             printerData.putString("name", info.getDeviceName());

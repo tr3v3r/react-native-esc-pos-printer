@@ -46,7 +46,7 @@ export interface IPrinterInitParams {
 }
 
 export interface IDiscoverParams {
-  serialNumber?: boolean;
+  usbSerialNumber?: boolean;
 }
 
 export interface IMonitorStatus {
