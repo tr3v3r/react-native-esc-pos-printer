@@ -77,8 +77,6 @@ enum PrintingCommands : int {
     COMMAND_ADD_IMAGE,
     COMMAND_ADD_CUT,
 };
-   };
-}
 
 + (BOOL)requiresMainQueueSetup
 {
