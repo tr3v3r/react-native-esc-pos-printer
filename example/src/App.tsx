@@ -137,6 +137,51 @@ export default function App() {
           }
         }}
       />
+      <Button
+        title="test the new shit"
+        disabled={!printer}
+        color={!printer ? 'gray' : 'blue'}
+        onPress={async () => {
+          try {
+            if (printer) {
+              if (!init) {
+                await EscPosPrinter.init({
+                  target: printer.target,
+                  seriesName: getPrinterSeriesByName(printer.name),
+                });
+                setInit(true);
+              }
+              // const paper = await EscPosPrinter.getPaperWidth();
+              // console.log(paper);
+              const printing = new EscPosPrinter.printing();
+
+              const status = await printing
+                .initialize()
+                .line('big cats dancing in the yard')
+                .newline()
+                .align('center')
+                .size(4, 4)
+                .text('WHAM-O')
+                .size(1, 1)
+                .newline()
+                .bold()
+                .text('bold baby')
+                .newline()
+                .underline()
+                .text('bold underlined baby')
+                .newline()
+                .cut()
+                .send();
+
+              // const pairingSatus = await EscPosPrinter.pairingBluetoothPrinter();
+              // console.log(pairingSatus);
+              console.log('print', status);
+            }
+          } catch (error) {
+            console.log('error', error);
+          }
+        }}
+      />
     </View>
   );
 }
