@@ -30,6 +30,7 @@ const { EscPosPrinter, EscPosPrinterDiscovery } = NativeModules;
 
 const discoveryEventEmmiter = new NativeEventEmitter(EscPosPrinterDiscovery);
 const printEventEmmiter = new NativeEventEmitter(EscPosPrinter);
+import printing from './printing';
 
 const _default = {
   init({ target, seriesName }: IPrinterInitParams): Promise<number> {
@@ -197,6 +198,7 @@ const _default = {
       statusListener.remove();
     };
   },
+  printing,
 };
 
 export { getPrinterSeriesByName, PRINTER_SERIES };

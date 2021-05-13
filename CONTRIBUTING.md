@@ -2,6 +2,12 @@
 
 We want this community to be friendly and respectful to each other. Please follow it in all your interactions with the project.
 
+## Before cloning this repository
+
+This repository relies on [git large file storage](https://github.com/git-lfs/git-lfs)
+
+Ensure that you have installed git-lfs prior to cloning the repository.
+
 ## Development workflow
 
 To get started with the project, run `yarn` in the root directory to install the required dependencies for each package:
