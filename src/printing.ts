@@ -196,7 +196,11 @@ class Printing {
    * @return {object} Return the object, for easy chaining commands
    *
    */
-  size(height: TScalingFactors, width: TScalingFactors) {
+  size(height: TScalingFactors, width?: TScalingFactors) {
+    if (typeof width === 'undefined') {
+      width = height;
+    }
+
     this._queue([
       PRINTING_COMMANDS.COMMAND_ADD_TEXT_SIZE,
       [height || 1, width || 1],
