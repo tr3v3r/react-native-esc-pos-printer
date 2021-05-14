@@ -7,6 +7,7 @@ import EscPosPrinter, {
   IPrinter,
 } from 'react-native-esc-pos-printer';
 import {} from 'react-native';
+import { image } from './image';
 
 export default function App() {
   const [init, setInit] = React.useState(false);
@@ -138,7 +139,7 @@ export default function App() {
         }}
       />
       <Button
-        title="test the new shit"
+        title="test print chaining"
         disabled={!printer}
         color={!printer ? 'gray' : 'blue'}
         onPress={async () => {
@@ -151,30 +152,27 @@ export default function App() {
                 });
                 setInit(true);
               }
-              // const paper = await EscPosPrinter.getPaperWidth();
-              // console.log(paper);
+
               const printing = new EscPosPrinter.printing();
 
               const status = await printing
                 .initialize()
-                .line('big cats dancing in the yard')
-                .newline()
                 .align('center')
-                .size(4, 4)
-                .text('WHAM-O')
+                .size(6, 6)
+                .line('DUDE!')
                 .size(1, 1)
-                .newline()
+                .text('is that a ')
                 .bold()
-                .text('bold baby')
-                .newline()
                 .underline()
-                .text('bold underlined baby')
-                .newline()
+                .text('printer?')
+                .bold()
+                .underline()
+                .newline(2)
+                .align('center')
+                .image(image, 200)
                 .cut()
                 .send();
 
-              // const pairingSatus = await EscPosPrinter.pairingBluetoothPrinter();
-              // console.log(pairingSatus);
               console.log('print', status);
             }
           } catch (error) {

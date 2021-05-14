@@ -6,6 +6,7 @@ import {
   PRINTING_COMMANDS,
   EPOS_BOOLEANS,
 } from './constants';
+
 const { EscPosPrinter } = NativeModules;
 
 type TCommandValue = [key: string, params?: any[]];
@@ -222,6 +223,19 @@ class Printing {
       PRINTING_COMMANDS.COMMAND_ADD_ALIGN,
       [PRINTING_ALIGNMENT[value]],
     ]);
+
+    return this;
+  }
+
+  /**
+   * Image
+   *
+   * @param {string} image base64encoded image string
+   * @param {number} width Width of the image 1 to 65535
+   * @returns
+   */
+  image(image: string, width: number) {
+    this._queue([PRINTING_COMMANDS.COMMAND_ADD_IMAGE, [image, width]]);
 
     return this;
   }

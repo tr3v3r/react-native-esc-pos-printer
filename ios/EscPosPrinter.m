@@ -473,6 +473,52 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
 }
 
 
+- (UIImage *)scaleImage:(UIImage *)image scaledToFillSize:(CGSize)size
+{
+    CGFloat scale = MAX(size.width/image.size.width, size.height/image.size.height);
+    CGFloat width = image.size.width * scale;
+    CGFloat height = image.size.height * scale;
+    CGRect imageRect = CGRectMake((size.width - width)/2.0f,
+                                  (size.height - height)/2.0f,
+                                  width,
+                                  height);
+    
+    UIGraphicsBeginImageContextWithOptions(size, NO, 0);
+    [image drawInRect:imageRect];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return newImage;
+}
+
+- (enum Epos2ErrorStatus)printFromImage: (NSString*)base64encodeStr width:(int)width
+{
+
+    int result = EPOS2_SUCCESS;
+
+    int color = EPOS2_COLOR_1;
+    int mode = EPOS2_MODE_GRAY16;
+    int halftone = EPOS2_HALFTONE_ERROR_DIFFUSION;
+    double brightness = 1.0;
+    int compress = EPOS2_COMPRESS_DEFLATE;
+
+    NSData *decoded = [[NSData alloc] initWithBase64EncodedString:base64encodeStr options:0 ];
+    UIImage *srcImage = [[UIImage alloc] initWithData:decoded scale:1];
+    NSData *jpgData = UIImageJPEGRepresentation(srcImage, 1);
+    UIImage *jpgImage = [[UIImage alloc] initWithData:jpgData];
+
+    NSInteger x = 0;
+    NSInteger y = 0;
+    
+    NSInteger imgHeight = jpgImage.size.height;
+    NSInteger imagWidth = jpgImage.size.width;
+    CGSize size = CGSizeMake(width, imgHeight*width/imagWidth);
+    UIImage *scaled = [self scaleImage:jpgImage scaledToFillSize:size];
+
+    result = [self->printer addImage:scaled x:x y:y width:size.width height:size.height color:color mode:mode halftone:halftone brightness:brightness compress:compress];
+    
+    return result;
+}
+
 - (enum Epos2ErrorStatus)handleCommand: (enum PrintingCommands)command params:(NSArray*)params {
     int result = EPOS2_SUCCESS;
     NSString* text = @"";
@@ -495,7 +541,7 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
             result = [self->printer addTextAlign:[params[0] intValue]];
           break;
         case COMMAND_ADD_IMAGE :
-            result = [self->printer addFeedLine:1];
+            result = [self printFromImage:params[0] width:[params[1] intValue]];
           break;
         case COMMAND_ADD_CUT :
             result = [self->printer addCut:EPOS2_CUT_FEED];
