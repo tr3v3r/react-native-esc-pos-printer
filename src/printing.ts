@@ -9,18 +9,11 @@ import {
 
 const { EscPosPrinter } = NativeModules;
 
-type TCommandValue = [key: string, params?: any[]];
+type TCommandValue = [key: string, params: any[]];
 type TScalingFactors = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
-export enum EDitherAlgorithm {
-  threshold = 'threshold',
-  bayer = 'bayer',
-  floydsteinberg = 'floydsteinberg',
-  atkinson = 'atkinson',
-}
-
 /**
- * Create a byte stream based on commands for ESC/POS printers
+ * Create an array of commands to send to the printer
  */
 class Printing {
   private _buffer: any[];
@@ -55,7 +48,7 @@ class Printing {
   }
 
   /**
-   * Encode a string with the current code page
+   * Send the current array of commands to the printer
    *
    * @param  {string}   value  String to encode
    * @return {object}          Encoded string as a ArrayBuffer
@@ -66,9 +59,9 @@ class Printing {
   }
 
   /**
-   * Add commands to the buffer
+   * Add a command to the buffer
    *
-   * @param  {array}   value  And array of numbers, arrays, buffers or Uint8Arrays to add to the buffer
+   * @param  {array}   value  Array containing the command to call and parameters
    *
    */
   _queue(value: TCommandValue) {
@@ -136,8 +129,8 @@ class Printing {
   /**
    * Underline text
    *
-   * @param  {boolean|number}   value  true to turn on underline, false to turn off, or 2 for double underline
-   * @return {object}                  Return the object, for easy chaining commands
+   * @param  {boolean}   value  true to turn on underline, false to turn off, or 2 for double underline
+   * @return {object}           Return the object, for easy chaining commands
    *
    */
   underline(value?: boolean) {
@@ -158,17 +151,22 @@ class Printing {
     return this;
   }
 
+  /**
+   * Convert To Esc Pos Bool
+   *
+   * @param value boolean value to change
+   * @returns The equivalent esc pos boolean
+   */
   _convertToEposBool(value: boolean) {
     const res = value ? EPOS_BOOLEANS.EPOS2_TRUE : EPOS_BOOLEANS.EPOS2_FALSE;
 
-    console.log('res', res);
     return res;
   }
 
   /**
    * Bold text
    *
-   * @param  {boolean}          value  true to turn on bold, false to turn off, or 2 for double underline
+   * @param  {boolean}          value  true to turn on bold, false to turn off bold
    * @return {object}                  Return the object, for easy chaining commands
    *
    */
@@ -243,8 +241,7 @@ class Printing {
   /**
    * Cut paper
    *
-   * @param  {string}          value   full or partial. When not specified a full cut will be assumed
-   * @return {object}                  Return the object, for easy chaining commands
+   * @return {object} Return the object, for easy chaining commands
    *
    */
   cut() {
