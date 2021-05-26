@@ -173,7 +173,7 @@ export default function App() {
                 .cut()
                 .send();
 
-              console.log('print', status);
+              console.log('printing', status);
             }
           } catch (error) {
             console.log('error', error);

@@ -1,4 +1,8 @@
-import { NativeModules } from 'react-native';
+import {
+  NativeModules,
+  EmitterSubscription,
+  NativeEventEmitter,
+} from 'react-native';
 
 import lineWrap from 'word-wrap';
 import {
@@ -6,8 +10,10 @@ import {
   PRINTING_COMMANDS,
   EPOS_BOOLEANS,
 } from './constants';
+import type { IMonitorStatus } from './types';
 
 const { EscPosPrinter } = NativeModules;
+const printEventEmmiter = new NativeEventEmitter(EscPosPrinter);
 
 type TCommandValue = [key: string, params: any[]];
 type TScalingFactors = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
@@ -54,8 +60,40 @@ class Printing {
    * @return {object}          Encoded string as a ArrayBuffer
    *
    */
-  _send(value: any) {
-    return EscPosPrinter.printBuffer(value);
+  _send(value: any): Promise<IMonitorStatus> {
+    let successListener: EmitterSubscription | null;
+    let errorListener: EmitterSubscription | null;
+
+    function removeListeners() {
+      successListener?.remove();
+      errorListener?.remove();
+
+      successListener = null;
+      errorListener = null;
+    }
+
+    return new Promise((res, rej) => {
+      successListener = printEventEmmiter.addListener(
+        'onPrintSuccess',
+        (status) => {
+          removeListeners();
+          res(status);
+        }
+      );
+
+      errorListener = printEventEmmiter.addListener(
+        'onPrintFailure',
+        (status) => {
+          removeListeners();
+          rej(status);
+        }
+      );
+
+      EscPosPrinter.printBuffer(value).catch((e: Error) => {
+        removeListeners();
+        rej(e);
+      });
+    });
   }
 
   /**
@@ -255,9 +293,7 @@ class Printing {
   }
 
   send() {
-    const result = this._send(this._buffer);
-
-    return result;
+    return this._send(this._buffer);
   }
 }
 
