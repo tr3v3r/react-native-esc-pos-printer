@@ -53,6 +53,7 @@ When the Bluetooth or USB is used, set the protocol name. Set the protocol name 
 1. [getPrinterCharsPerLine](#getprintercharsperlineseriesname)
 1. [startMonitorPrinter](#startmonitorprinterinterval-number)
 1. [startMonitorPrinter](#stopmonitorprinter)
+1. [printing](#printing)
 
 #### init({ target, seriesName })
 
@@ -272,6 +273,35 @@ EscPosPrinter.stopMonitorPrinter()
 
 ```
 
+#### printing()
+
+Initializes printing class for chained printing.
+
+```javascript
+import EscPosPrinter from 'react-native-esc-pos-printer';
+
+const printing = new EscPosPrinter.printing();
+
+printing
+  .initialize()
+  .align('center')
+  .size(6, 6)
+  .line('DUDE!')
+  .size(1, 1)
+  .text('is that a ')
+  .bold()
+  .underline()
+  .text('printer?')
+  .bold()
+  .underline()
+  .newline(2)
+  .align('center')
+  .image(image, 200)
+  .cut()
+  .send()
+  .then(() => console.log('Stopped!'))
+  .catch((e) => console.log('Stop error:', e.message));
+```
 
 ## Limitations
 1. For now it's not possible to print and discover on Android simulator. But you can always use real device.
