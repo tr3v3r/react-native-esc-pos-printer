@@ -7,6 +7,7 @@ import EscPosPrinter, {
   IPrinter,
 } from 'react-native-esc-pos-printer';
 import {} from 'react-native';
+import { image } from './image';
 
 export default function App() {
   const [init, setInit] = React.useState(false);
@@ -131,6 +132,48 @@ export default function App() {
               // const pairingSatus = await EscPosPrinter.pairingBluetoothPrinter();
               // console.log(pairingSatus);
               console.log('print', status);
+            }
+          } catch (error) {
+            console.log('error', error);
+          }
+        }}
+      />
+      <Button
+        title="test print chaining"
+        disabled={!printer}
+        color={!printer ? 'gray' : 'blue'}
+        onPress={async () => {
+          try {
+            if (printer) {
+              if (!init) {
+                await EscPosPrinter.init({
+                  target: printer.target,
+                  seriesName: getPrinterSeriesByName(printer.name),
+                });
+                setInit(true);
+              }
+
+              const printing = new EscPosPrinter.printing();
+
+              const status = await printing
+                .initialize()
+                .align('center')
+                .size(6, 6)
+                .line('DUDE!')
+                .size(1, 1)
+                .text('is that a ')
+                .bold()
+                .underline()
+                .text('printer?')
+                .bold()
+                .underline()
+                .newline(2)
+                .align('center')
+                .image(image, 200)
+                .cut()
+                .send();
+
+              console.log('printing', status);
             }
           } catch (error) {
             console.log('error', error);
