@@ -52,9 +52,31 @@ RCT_EXPORT_MODULE()
       @"EPOS2_TM_T100": @(EPOS2_TM_T100),
       @"EPOS2_TM_M30II": @(EPOS2_TM_M30II),
       @"EPOS2_TS_100": @(EPOS2_TS_100),
-      @"EPOS2_TM_M50": @(EPOS2_TM_M50)
+      @"EPOS2_TM_M50": @(EPOS2_TM_M50),
+      @"COMMAND_ADD_TEXT": @(COMMAND_ADD_TEXT),
+      @"COMMAND_ADD_NEW_LINE": @(COMMAND_ADD_NEW_LINE),
+      @"COMMAND_ADD_TEXT_STYLE": @(COMMAND_ADD_TEXT_STYLE),
+      @"COMMAND_ADD_TEXT_SIZE": @(COMMAND_ADD_TEXT_SIZE),
+      @"COMMAND_ADD_ALIGN": @(COMMAND_ADD_ALIGN),
+      @"COMMAND_ADD_IMAGE": @(COMMAND_ADD_IMAGE),
+      @"COMMAND_ADD_CUT": @(COMMAND_ADD_CUT),
+      @"EPOS2_ALIGN_LEFT": @(EPOS2_ALIGN_LEFT),
+      @"EPOS2_ALIGN_RIGHT": @(EPOS2_ALIGN_RIGHT),
+      @"EPOS2_ALIGN_CENTER": @(EPOS2_ALIGN_CENTER),
+      @"EPOS2_TRUE": @(EPOS2_TRUE),
+      @"EPOS2_FALSE": @(EPOS2_FALSE),
    };
 }
+
+enum PrintingCommands : int {
+    COMMAND_ADD_TEXT = 0,
+    COMMAND_ADD_NEW_LINE,
+    COMMAND_ADD_TEXT_STYLE,
+    COMMAND_ADD_TEXT_SIZE,
+    COMMAND_ADD_ALIGN,
+    COMMAND_ADD_IMAGE,
+    COMMAND_ADD_CUT,
+};
 
 + (BOOL)requiresMainQueueSetup
 {
@@ -137,6 +159,20 @@ RCT_EXPORT_METHOD(stopMonitorPrinter:(RCTPromiseResolveBlock)resolve
             resolve(result);
         } onError:^(NSString *error) {
             reject(@"event_failure",error, nil);
+    }];
+}
+
+
+RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+{
+    [tasksQueue addOperationWithBlock: ^{
+        [self printFromBuffer:printBuffer onSuccess:^(NSString *result) {
+                resolve(result);
+            } onError:^(NSString *error) {
+                reject(@"event_failure",error, nil);
+        }];
     }];
 }
 
@@ -432,6 +468,119 @@ RCT_EXPORT_METHOD(stopMonitorPrinter:(RCTPromiseResolveBlock)resolve
     [tasksQueue waitUntilAllOperationsAreFinished];
     isMonitoring_= false;
 
+    NSString *successString = [ErrorManager getEposErrorText: EPOS2_SUCCESS];
+    onSuccess(successString);
+}
+
+
+- (UIImage *)scaleImage:(UIImage *)image scaledToFillSize:(CGSize)size
+{
+    CGFloat scale = MAX(size.width/image.size.width, size.height/image.size.height);
+    CGFloat width = image.size.width * scale;
+    CGFloat height = image.size.height * scale;
+    CGRect imageRect = CGRectMake((size.width - width)/2.0f,
+                                  (size.height - height)/2.0f,
+                                  width,
+                                  height);
+    
+    UIGraphicsBeginImageContextWithOptions(size, NO, 0);
+    [image drawInRect:imageRect];
+    UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
+    return newImage;
+}
+
+- (enum Epos2ErrorStatus)printFromImage: (NSString*)base64encodeStr width:(int)width
+{
+
+    int result = EPOS2_SUCCESS;
+
+    int color = EPOS2_COLOR_1;
+    int mode = EPOS2_MODE_GRAY16;
+    int halftone = EPOS2_HALFTONE_ERROR_DIFFUSION;
+    double brightness = 1.0;
+    int compress = EPOS2_COMPRESS_DEFLATE;
+
+    NSData *decoded = [[NSData alloc] initWithBase64EncodedString:base64encodeStr options:0 ];
+    UIImage *srcImage = [[UIImage alloc] initWithData:decoded scale:1];
+    NSData *jpgData = UIImageJPEGRepresentation(srcImage, 1);
+    UIImage *jpgImage = [[UIImage alloc] initWithData:jpgData];
+
+    NSInteger x = 0;
+    NSInteger y = 0;
+    
+    NSInteger imgHeight = jpgImage.size.height;
+    NSInteger imagWidth = jpgImage.size.width;
+    CGSize size = CGSizeMake(width, imgHeight*width/imagWidth);
+    UIImage *scaled = [self scaleImage:jpgImage scaledToFillSize:size];
+
+    result = [self->printer addImage:scaled x:x y:y width:size.width height:size.height color:color mode:mode halftone:halftone brightness:brightness compress:compress];
+    
+    return result;
+}
+
+- (enum Epos2ErrorStatus)handleCommand: (enum PrintingCommands)command params:(NSArray*)params {
+    int result = EPOS2_SUCCESS;
+    NSString* text = @"";
+    
+    switch(command) {
+        case COMMAND_ADD_TEXT  :
+            text = params[0];
+            result = [self->printer addText:text];
+          break;
+        case COMMAND_ADD_NEW_LINE :
+            result = [self->printer addFeedLine:[params[0] intValue]];
+          break;
+        case COMMAND_ADD_TEXT_STYLE :
+            result = [self->printer addTextStyle:EPOS2_FALSE ul:[params[0] intValue] em:[params[1] intValue] color:EPOS2_COLOR_1];
+          break;
+        case COMMAND_ADD_TEXT_SIZE :
+            result = [self->printer addTextSize:[params[0] intValue] height:[params[1] intValue]];
+          break;
+        case COMMAND_ADD_ALIGN:
+            result = [self->printer addTextAlign:[params[0] intValue]];
+          break;
+        case COMMAND_ADD_IMAGE :
+            result = [self printFromImage:params[0] width:[params[1] intValue]];
+          break;
+        case COMMAND_ADD_CUT :
+            result = [self->printer addCut:EPOS2_CUT_FEED];
+          break;
+    }
+    
+    return result;
+}
+
+- (void)printFromBuffer: (NSArray*)buffer onSuccess: (void(^)(NSString *))onSuccess onError: (void(^)(NSString *))onError
+{
+    int result = EPOS2_SUCCESS;
+
+    if (self->printer == nil) {
+        NSString *errorString = [ErrorManager getEposErrorText: EPOS2_ERR_PARAM];
+        onError(errorString);
+        return;
+    }
+    
+    NSUInteger length = [buffer count];
+    for (int j = 0; j < length; j++ ) {
+        result = [self handleCommand:[buffer[j][0] intValue] params:buffer[j][1]];
+        
+        if (result != EPOS2_SUCCESS) {
+            [self->printer clearCommandBuffer];
+            NSString *errorString = [ErrorManager getEposErrorText: result];
+            onError(errorString);
+            return;
+        }
+    }
+    
+    result = [self printData];
+    if (result != EPOS2_SUCCESS) {
+        NSString *errorString = [ErrorManager getEposErrorText: result];
+        onError(errorString);
+        return;
+    }
+
+    [self->printer clearCommandBuffer];
     NSString *successString = [ErrorManager getEposErrorText: EPOS2_SUCCESS];
     onSuccess(successString);
 }
