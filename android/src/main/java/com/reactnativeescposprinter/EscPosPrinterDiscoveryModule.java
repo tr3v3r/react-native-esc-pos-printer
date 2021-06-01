@@ -49,6 +49,7 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
   private UsbManager mUsbManager = null;
   private final ReactApplicationContext reactContext;
   private boolean mExtractUsbSerialNumber = false;
+  private Runnable mOnDiscoveryReporter = null;
 
   public static final String NAME = "EscPosPrinterDiscovery";
 
@@ -216,32 +217,39 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
         @Override
         public synchronized void run() {
           mPrinterList.add(deviceInfo);
-          WritableArray stringArray = Arguments.createArray();
-
-          for (int counter = 0; counter < mPrinterList.size(); counter++) {
-
-            final DeviceInfo info = mPrinterList.get(counter);
-            WritableMap printerData = Arguments.createMap();
-
-            String usbAddress = getUSBAddress(info.getTarget());
-
-            if (mExtractUsbSerialNumber && usbAddress != "") {
-              String usbSerialNumber = getUsbSerialNumber(usbAddress);
-              printerData.putString("usbSerialNumber", usbSerialNumber);
-            }
-
-            printerData.putString("name", info.getDeviceName());
-            printerData.putString("ip", info.getIpAddress());
-            printerData.putString("mac", info.getMacAddress());
-            printerData.putString("target", info.getTarget());
-            printerData.putString("bt", info.getBdAddress());
-            printerData.putString("usb", usbAddress);
-            stringArray.pushMap(printerData);
-          }
-
-          sendEvent(reactContext, "onDiscoveryDone", stringArray);
         }
       });
+
+      if (mOnDiscoveryReporter == null) {
+        mOnDiscoveryReporter = new Runnable() {
+          public synchronized void run() {
+            WritableArray stringArray = Arguments.createArray();
+
+            for (int counter = 0; counter < mPrinterList.size(); counter++) {
+
+              final DeviceInfo info = mPrinterList.get(counter);
+              WritableMap printerData = Arguments.createMap();
+
+              String usbAddress = getUSBAddress(info.getTarget());
+
+              if (mExtractUsbSerialNumber && usbAddress != "") {
+                String usbSerialNumber = getUsbSerialNumber(usbAddress);
+                printerData.putString("usbSerialNumber", usbSerialNumber);
+              }
+              printerData.putString("name", info.getDeviceName());
+              printerData.putString("ip", info.getIpAddress());
+              printerData.putString("mac", info.getMacAddress());
+              printerData.putString("target", info.getTarget());
+              printerData.putString("bt", info.getBdAddress());
+              printerData.putString("usb", usbAddress);
+              stringArray.pushMap(printerData);
+            }
+            sendEvent(reactContext, "onDiscoveryDone", stringArray);
+            mOnDiscoveryReporter = null;
+          }
+        };
+        UiThreadUtil.runOnUiThread(mOnDiscoveryReporter, 5000);
+      }
     }
   };
 
