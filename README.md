@@ -286,7 +286,7 @@ EscPosPrinter.stopMonitorPrinter()
   .catch((e) => console.log('Stop error:', e.message));
 ```
 
-#### printing()
+#### printing() (iOS only)
 
 Initializes printing class for chained printing.
 
@@ -384,10 +384,10 @@ printing.initialize().align('center');
 
 ##### image
 
-Prints an image. Accepts a base64 encoded string and a width of the image.
+Prints an image from iOS/Android local assets folder.
 
 ```javascript
-printing.initialize().image('base64ImageString', 200);
+printing.initialize().imageAsset('image asset name', 200);
 ```
 
 ##### cut

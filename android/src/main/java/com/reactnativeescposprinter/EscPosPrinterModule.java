@@ -94,11 +94,12 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       constants.put("COMMAND_ADD_TEXT_STYLE", 2);
       constants.put("COMMAND_ADD_TEXT_SIZE", 3);
       constants.put("COMMAND_ADD_ALIGN", 4);
-      constants.put("COMMAND_ADD_IMAGE", 5);
+      constants.put("COMMAND_ADD_IMAGE_BASE_64", 5);
       constants.put("COMMAND_ADD_CUT", 6);
       constants.put("EPOS2_ALIGN_LEFT", 7);
       constants.put("EPOS2_ALIGN_RIGHT", 8);
       constants.put("EPOS2_ALIGN_CENTER", 9);
+      constants.put("COMMAND_ADD_IMAGE_ASSET", 10);
       constants.put("EPOS2_TRUE", true);
       constants.put("EPOS2_FALSE", false);
       return constants;
@@ -128,13 +129,6 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
 
     this.printerAddress = target;
   }
-
-
-  @ReactMethod
-  public String printBuffer(Array printBuffer) {
-    return "send is not yet supported on android";
-  }
-
 
   @ReactMethod
   public void printBase64(String base64string, Promise promise) {

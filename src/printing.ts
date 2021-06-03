@@ -2,6 +2,7 @@ import {
   NativeModules,
   EmitterSubscription,
   NativeEventEmitter,
+  Platform,
 } from 'react-native';
 
 import lineWrap from 'word-wrap';
@@ -274,8 +275,20 @@ class Printing {
    * @param {number} width Width of the image 1 to 65535
    * @returns
    */
-  image(image: string, width: number) {
-    this._queue([PRINTING_COMMANDS.COMMAND_ADD_IMAGE, [image, width]]);
+  imageBase64(image: string, width: number) {
+    this._queue([PRINTING_COMMANDS.COMMAND_ADD_IMAGE_BASE_64, [image, width]]);
+
+    return this;
+  }
+
+  /**
+   * Image
+   *
+   * @param {string} image image asset name string
+   * @returns
+   */
+  imageAsset(image: string, width?: number) {
+    this._queue([PRINTING_COMMANDS.COMMAND_ADD_IMAGE_ASSET, [image, width]]);
 
     return this;
   }
@@ -293,7 +306,11 @@ class Printing {
   }
 
   send() {
-    return this._send(this._buffer);
+    if (Platform.OS === 'ios') {
+      return this._send(this._buffer);
+    }
+
+    return Promise.resolve('Android is not supported yet');
   }
 }
 
