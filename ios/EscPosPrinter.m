@@ -58,7 +58,8 @@ RCT_EXPORT_MODULE()
       @"COMMAND_ADD_TEXT_STYLE": @(COMMAND_ADD_TEXT_STYLE),
       @"COMMAND_ADD_TEXT_SIZE": @(COMMAND_ADD_TEXT_SIZE),
       @"COMMAND_ADD_ALIGN": @(COMMAND_ADD_ALIGN),
-      @"COMMAND_ADD_IMAGE": @(COMMAND_ADD_IMAGE),
+      @"COMMAND_ADD_IMAGE_BASE_64": @(COMMAND_ADD_IMAGE_BASE_64),
+      @"COMMAND_ADD_IMAGE_ASSET": @(COMMAND_ADD_IMAGE_ASSET),
       @"COMMAND_ADD_CUT": @(COMMAND_ADD_CUT),
       @"EPOS2_ALIGN_LEFT": @(EPOS2_ALIGN_LEFT),
       @"EPOS2_ALIGN_RIGHT": @(EPOS2_ALIGN_RIGHT),
@@ -74,7 +75,8 @@ enum PrintingCommands : int {
     COMMAND_ADD_TEXT_STYLE,
     COMMAND_ADD_TEXT_SIZE,
     COMMAND_ADD_ALIGN,
-    COMMAND_ADD_IMAGE,
+    COMMAND_ADD_IMAGE_BASE_64,
+    COMMAND_ADD_IMAGE_ASSET,
     COMMAND_ADD_CUT,
 };
 
@@ -482,7 +484,7 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
                                   (size.height - height)/2.0f,
                                   width,
                                   height);
-    
+
     UIGraphicsBeginImageContextWithOptions(size, NO, 0);
     [image drawInRect:imageRect];
     UIImage *newImage = UIGraphicsGetImageFromCurrentImageContext();
@@ -508,21 +510,22 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
 
     NSInteger x = 0;
     NSInteger y = 0;
-    
+
     NSInteger imgHeight = jpgImage.size.height;
     NSInteger imagWidth = jpgImage.size.width;
+    NSLog(@"width: %li height: %li",imagWidth, imgHeight);
     CGSize size = CGSizeMake(width, imgHeight*width/imagWidth);
     UIImage *scaled = [self scaleImage:jpgImage scaledToFillSize:size];
-
+    NSLog(@"width: %f height: %f",size.width, size.height);
     result = [self->printer addImage:scaled x:x y:y width:size.width height:size.height color:color mode:mode halftone:halftone brightness:brightness compress:compress];
-    
+
     return result;
 }
 
 - (enum Epos2ErrorStatus)handleCommand: (enum PrintingCommands)command params:(NSArray*)params {
     int result = EPOS2_SUCCESS;
     NSString* text = @"";
-    
+
     switch(command) {
         case COMMAND_ADD_TEXT  :
             text = params[0];
@@ -540,14 +543,37 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
         case COMMAND_ADD_ALIGN:
             result = [self->printer addTextAlign:[params[0] intValue]];
           break;
-        case COMMAND_ADD_IMAGE :
+        case COMMAND_ADD_IMAGE_ASSET : {
+            UIImage *imageData = [UIImage imageNamed: params[0]];
+            
+            
+            NSInteger imgHeight = imageData.size.height;
+            NSInteger imagWidth = imageData.size.width;
+            
+            NSInteger width = [params[1] intValue];
+
+            CGSize size = CGSizeMake(width, imgHeight*width/imagWidth);
+            UIImage *scaled = [self scaleImage:imageData scaledToFillSize:size];
+    
+
+            result = [self->printer addImage:scaled x:0 y:0
+              width: size.width
+              height: size.height
+              color:EPOS2_COLOR_1
+              mode:EPOS2_MODE_MONO
+              halftone:EPOS2_HALFTONE_DITHER
+              brightness:EPOS2_PARAM_DEFAULT
+              compress:EPOS2_COMPRESS_AUTO];
+          break;
+        }
+        case COMMAND_ADD_IMAGE_BASE_64 :
             result = [self printFromImage:params[0] width:[params[1] intValue]];
           break;
         case COMMAND_ADD_CUT :
             result = [self->printer addCut:EPOS2_CUT_FEED];
           break;
     }
-    
+
     return result;
 }
 
@@ -560,11 +586,11 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
         onError(errorString);
         return;
     }
-    
+
     NSUInteger length = [buffer count];
     for (int j = 0; j < length; j++ ) {
         result = [self handleCommand:[buffer[j][0] intValue] params:buffer[j][1]];
-        
+
         if (result != EPOS2_SUCCESS) {
             [self->printer clearCommandBuffer];
             NSString *errorString = [ErrorManager getEposErrorText: result];
@@ -572,7 +598,7 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
             return;
         }
     }
-    
+
     result = [self printData];
     if (result != EPOS2_SUCCESS) {
         NSString *errorString = [ErrorManager getEposErrorText: result];

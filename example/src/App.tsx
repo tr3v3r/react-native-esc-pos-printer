@@ -7,7 +7,6 @@ import EscPosPrinter, {
   IPrinter,
 } from 'react-native-esc-pos-printer';
 import {} from 'react-native';
-import { image } from './image';
 
 export default function App() {
   const [init, setInit] = React.useState(false);
@@ -154,7 +153,6 @@ export default function App() {
               }
 
               const printing = new EscPosPrinter.printing();
-
               const status = await printing
                 .initialize()
                 .align('center')
@@ -169,7 +167,7 @@ export default function App() {
                 .underline()
                 .newline(2)
                 .align('center')
-                .image(image, 200)
+                .imageAsset('store.png', 75)
                 .cut()
                 .send();
 
