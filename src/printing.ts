@@ -16,7 +16,7 @@ import type { IMonitorStatus } from './types';
 const { EscPosPrinter } = NativeModules;
 const printEventEmmiter = new NativeEventEmitter(EscPosPrinter);
 
-type TCommandValue = [key: string, params: any[]];
+type TCommandValue = [string, any[]];
 type TScalingFactors = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8;
 
 /**
