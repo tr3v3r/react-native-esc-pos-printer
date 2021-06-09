@@ -306,11 +306,7 @@ class Printing {
   }
 
   send() {
-    if (Platform.OS === 'ios') {
-      return this._send(this._buffer);
-    }
-
-    return Promise.resolve('Android is not supported yet');
+    return this._send(this._buffer);
   }
 }
 
