@@ -7,9 +7,12 @@ import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
+import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -23,6 +26,10 @@ import com.epson.epos2.printer.PrinterStatusInfo;
 import com.epson.epos2.printer.PrinterSettingListener;
 
 import com.facebook.react.bridge.UiThreadUtil;
+
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.Base64;
 
 import java.util.concurrent.ExecutorService;
@@ -32,6 +39,18 @@ import java.util.TimerTask;
 import com.facebook.react.bridge.WritableMap;
 import android.os.Handler;
 import java.util.concurrent.Callable;
+
+class PrintingCommands {
+  public static final int COMMAND_ADD_TEXT = 0;
+  public static final int COMMAND_ADD_NEW_LINE = 1;
+  public static final int COMMAND_ADD_TEXT_STYLE = 2;
+  public static final int COMMAND_ADD_TEXT_SIZE = 3;
+  public static final int COMMAND_ADD_ALIGN = 4;
+  public static final int COMMAND_ADD_IMAGE_BASE_64 = 5;
+  public static final int COMMAND_ADD_IMAGE_ASSET = 6;
+  public static final int COMMAND_ADD_CUT = 7;
+}
+
 @ReactModule(name = EscPosPrinterModule.NAME)
 public class EscPosPrinterModule extends ReactContextBaseJavaModule implements ReceiveListener {
     private static final int DISCONNECT_INTERVAL = 500;
@@ -89,19 +108,19 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       constants.put("EPOS2_TM_M30II", Printer.TM_M30II);
       constants.put("EPOS2_TS_100", Printer.TS_100);
       constants.put("EPOS2_TM_M50", Printer.TM_M50);
-      constants.put("COMMAND_ADD_TEXT", 0);
-      constants.put("COMMAND_ADD_NEW_LINE", 1);
-      constants.put("COMMAND_ADD_TEXT_STYLE", 2);
-      constants.put("COMMAND_ADD_TEXT_SIZE", 3);
-      constants.put("COMMAND_ADD_ALIGN", 4);
-      constants.put("COMMAND_ADD_IMAGE_BASE_64", 5);
-      constants.put("COMMAND_ADD_CUT", 6);
-      constants.put("EPOS2_ALIGN_LEFT", 7);
-      constants.put("EPOS2_ALIGN_RIGHT", 8);
-      constants.put("EPOS2_ALIGN_CENTER", 9);
-      constants.put("COMMAND_ADD_IMAGE_ASSET", 10);
-      constants.put("EPOS2_TRUE", true);
-      constants.put("EPOS2_FALSE", false);
+      constants.put("COMMAND_ADD_TEXT", PrintingCommands.COMMAND_ADD_TEXT);
+      constants.put("COMMAND_ADD_NEW_LINE", PrintingCommands.COMMAND_ADD_NEW_LINE);
+      constants.put("COMMAND_ADD_TEXT_STYLE", PrintingCommands.COMMAND_ADD_TEXT_STYLE);
+      constants.put("COMMAND_ADD_TEXT_SIZE", PrintingCommands.COMMAND_ADD_TEXT_SIZE);
+      constants.put("COMMAND_ADD_ALIGN", PrintingCommands.COMMAND_ADD_ALIGN);
+      constants.put("COMMAND_ADD_IMAGE_BASE_64", PrintingCommands.COMMAND_ADD_IMAGE_BASE_64);
+      constants.put("COMMAND_ADD_IMAGE_ASSET", PrintingCommands.COMMAND_ADD_IMAGE_ASSET);
+      constants.put("COMMAND_ADD_CUT", PrintingCommands.COMMAND_ADD_CUT);
+      constants.put("EPOS2_ALIGN_LEFT", Printer.ALIGN_LEFT);
+      constants.put("EPOS2_ALIGN_RIGHT", Printer.ALIGN_RIGHT);
+      constants.put("EPOS2_ALIGN_CENTER", Printer.ALIGN_CENTER);
+      constants.put("EPOS2_TRUE", Printer.TRUE);
+      constants.put("EPOS2_FALSE", Printer.FALSE);
       return constants;
     }
 
@@ -460,5 +479,122 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
     promise.resolve(successString);
   }
 
+  @ReactMethod
+  public void printBuffer(ReadableArray printBuffer, Promise promise) {
+    tasksQueue.submit(new Runnable() {
+      @Override
+      public void run() {
+        printFromBuffer(printBuffer, new MyCallbackInterface() {
+          @Override
+          public void onSuccess(String result) {
+            promise.resolve(result);
+          }
 
+          @Override
+          public void onError(String result) {
+            promise.reject(result);
+          }
+        });
+      }
+    });
+  }
+
+  public void printFromBuffer(ReadableArray printBuffer, MyCallbackInterface callback) {
+    if (mPrinter == null) {
+      String errorString = EscPosPrinterErrorManager.getEposExceptionText(Epos2Exception.ERR_PARAM);
+      callback.onError(errorString);
+      return;
+    }
+
+    try {
+      int bufferLength = printBuffer.size();
+      for (int curr = 0; curr < bufferLength; curr++) {
+        ReadableArray command = printBuffer.getArray(curr);
+        handleCommand(command.getInt(0), command.getArray(1));
+      }
+    } catch (Epos2Exception e) {
+      mPrinter.clearCommandBuffer();
+      int status = EscPosPrinterErrorManager.getErrorStatus(e);
+      String errorString = EscPosPrinterErrorManager.getEposExceptionText(status);
+      callback.onError(errorString);
+      return;
+    } catch (IOException e){
+      mPrinter.clearCommandBuffer();
+      callback.onError(e.getMessage());
+      return;
+    }
+    try {
+      this.printData();
+      String successString = EscPosPrinterErrorManager.getCodeText(Epos2CallbackCode.CODE_SUCCESS);
+      callback.onSuccess(successString);
+    } catch (Epos2Exception e) {
+      int status = EscPosPrinterErrorManager.getErrorStatus(e);
+      String errorString = EscPosPrinterErrorManager.getEposExceptionText(status);
+      callback.onError(errorString);
+    }
+  }
+
+  private void handleCommand(int command, ReadableArray params) throws Epos2Exception, IOException {
+    switch (command) {
+      case PrintingCommands.COMMAND_ADD_TEXT:
+        mPrinter.addText(params.getString(0));
+        break;
+      case PrintingCommands.COMMAND_ADD_NEW_LINE:
+        mPrinter.addFeedLine(params.getInt(0));
+        break;
+      case PrintingCommands.COMMAND_ADD_TEXT_STYLE:
+        mPrinter.addTextStyle(Printer.FALSE, params.getInt(0), params.getInt(1), Printer.COLOR_1);
+        break;
+      case PrintingCommands.COMMAND_ADD_TEXT_SIZE:
+        mPrinter.addTextSize(params.getInt(0), params.getInt(1));
+        break;
+      case PrintingCommands.COMMAND_ADD_ALIGN:
+        mPrinter.addTextAlign(params.getInt(0));
+        break;
+      case PrintingCommands.COMMAND_ADD_IMAGE_BASE_64:
+        String base64ImageString = params.getString(0);
+        int inputWidth = params.getInt(1);
+
+        byte[] decodeBase64ImageString = Base64.decode(base64ImageString, Base64.URL_SAFE);
+        Bitmap base64Image = BitmapFactory.decodeByteArray(decodeBase64ImageString, 0, decodeBase64ImageString.length);
+
+        handlePrintImage(base64Image, inputWidth);
+        break;
+      case PrintingCommands.COMMAND_ADD_IMAGE_ASSET:
+        String imageName = params.getString(0);
+        int width = params.getInt(1);
+
+        AssetManager assetManager = mContext.getAssets();
+        InputStream inputStream = assetManager.open(params.getString(0));
+        Bitmap assetBitmap = BitmapFactory.decodeStream(inputStream);
+        inputStream.close();
+
+        handlePrintImage(assetBitmap, width);
+        break;
+      case PrintingCommands.COMMAND_ADD_CUT:
+        mPrinter.addCut(Printer.CUT_FEED);
+        break;
+      default:
+        throw new IllegalArgumentException("Invalid Printing Command");
+    }
+  }
+
+  private void handlePrintImage(Bitmap bitmap, int width) throws Epos2Exception {
+    float aspectRatio = bitmap.getWidth() / (float) bitmap.getHeight();
+    int newHeight = Math.round(width / aspectRatio);
+    bitmap = Bitmap.createScaledBitmap(bitmap, width, newHeight, false);
+
+    mPrinter.addImage(
+      bitmap,
+      0,
+      0,
+      width,
+      newHeight,
+      Printer.COLOR_1,
+      Printer.MODE_MONO,
+      Printer.HALFTONE_DITHER,
+      Printer.PARAM_DEFAULT,
+      Printer.COMPRESS_AUTO
+    );
+  }
 }
