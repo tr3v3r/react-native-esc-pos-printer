@@ -2,7 +2,6 @@ import {
   NativeModules,
   EmitterSubscription,
   NativeEventEmitter,
-  Platform,
 } from 'react-native';
 
 import lineWrap from 'word-wrap';

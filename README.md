@@ -286,7 +286,7 @@ EscPosPrinter.stopMonitorPrinter()
   .catch((e) => console.log('Stop error:', e.message));
 ```
 
-#### printing() (iOS only)
+#### printing()
 
 Initializes printing class for chained printing.
 
@@ -409,12 +409,10 @@ printing.initialize().text("hello, is it me you're looking for").send();
 ## Limitations
 
 1. For now it's not possible to print and discover on Android simulator. But you can always use real device.
-2. For now you can print just using Uint8Array. Fortunately it's quite easy with [https://www.npmjs.com/package/esc-pos-encoder](https://www.npmjs.com/package/esc-pos-encoder).
-3. You can not print images for now but work in progress ;)
 
 ## TODO
-
-- [ ] Export all build in mehods including print image
+- [x] Prining images
+- [ ] Export all build in mehods
 - [ ] Make possible to print on Android simulator
 
 ## License
