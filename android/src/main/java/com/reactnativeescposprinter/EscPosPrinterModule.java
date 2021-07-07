@@ -49,6 +49,7 @@ class PrintingCommands {
   public static final int COMMAND_ADD_IMAGE_BASE_64 = 5;
   public static final int COMMAND_ADD_IMAGE_ASSET = 6;
   public static final int COMMAND_ADD_CUT = 7;
+  public static final int COMMAND_ADD_DATA = 8;
 }
 
 @ReactModule(name = EscPosPrinterModule.NAME)
@@ -116,6 +117,7 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       constants.put("COMMAND_ADD_IMAGE_BASE_64", PrintingCommands.COMMAND_ADD_IMAGE_BASE_64);
       constants.put("COMMAND_ADD_IMAGE_ASSET", PrintingCommands.COMMAND_ADD_IMAGE_ASSET);
       constants.put("COMMAND_ADD_CUT", PrintingCommands.COMMAND_ADD_CUT);
+      constants.put("COMMAND_ADD_DATA", PrintingCommands.COMMAND_ADD_DATA);
       constants.put("EPOS2_ALIGN_LEFT", Printer.ALIGN_LEFT);
       constants.put("EPOS2_ALIGN_RIGHT", Printer.ALIGN_RIGHT);
       constants.put("EPOS2_ALIGN_CENTER", Printer.ALIGN_CENTER);
@@ -147,27 +149,6 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
     });
 
     this.printerAddress = target;
-  }
-
-  @ReactMethod
-  public void printBase64(String base64string, Promise promise) {
-
-    tasksQueue.submit(new Runnable() {
-      @Override
-      public void run() {
-        printFromBase64(base64string, new MyCallbackInterface() {
-          @Override
-          public void onSuccess(String result) {
-            promise.resolve(result);
-          }
-          @Override
-          public void onError(String result) {
-            promise.reject(result);
-          }
-        });
-      }
-  });
-
   }
 
   @ReactMethod
@@ -267,37 +248,6 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       this.connectPrinter();
       mPrinter.sendData(Printer.PARAM_DEFAULT);
 
-  }
-
-  private void printFromBase64(String base64String, MyCallbackInterface callback) {
-    if (mPrinter == null) {
-      String errorString = EscPosPrinterErrorManager.getEposExceptionText(Epos2Exception.ERR_PARAM);
-      callback.onError(errorString);
-      return;
-    }
-
-    byte[] data = Base64.decode(base64String, Base64.DEFAULT);
-
-    try {
-      mPrinter.addCommand(data);
-    }
-    catch (Epos2Exception e) {
-        mPrinter.clearCommandBuffer();
-        int status = EscPosPrinterErrorManager.getErrorStatus(e);
-        String errorString = EscPosPrinterErrorManager.getEposExceptionText(status);
-        callback.onError(errorString);
-        return;
-    }
-
-    try {
-      this.printData();
-      String successString = EscPosPrinterErrorManager.getCodeText(Epos2CallbackCode.CODE_SUCCESS);
-      callback.onSuccess(successString);
-    } catch (Epos2Exception e) {
-      int status = EscPosPrinterErrorManager.getErrorStatus(e);
-       String errorString = EscPosPrinterErrorManager.getEposExceptionText(status);
-       callback.onError(errorString);
-    }
   }
 
   @Override
@@ -573,6 +523,11 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
         break;
       case PrintingCommands.COMMAND_ADD_CUT:
         mPrinter.addCut(Printer.CUT_FEED);
+        break;
+      case PrintingCommands.COMMAND_ADD_DATA:
+        String base64String = params.getString(0);
+        byte[] data = Base64.decode(base64String, Base64.DEFAULT);
+        mPrinter.addCommand(data);
         break;
       default:
         throw new IllegalArgumentException("Invalid Printing Command");
