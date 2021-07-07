@@ -11,6 +11,7 @@ import {
   EPOS_BOOLEANS,
 } from './constants';
 import type { IMonitorStatus } from './types';
+import { BufferHelper } from './utils/BufferHelper';
 
 const { EscPosPrinter } = NativeModules;
 const printEventEmmiter = new NativeEventEmitter(EscPosPrinter);
@@ -300,6 +301,20 @@ class Printing {
    */
   cut() {
     this._queue([PRINTING_COMMANDS.COMMAND_ADD_CUT, []]);
+
+    return this;
+  }
+
+  /**
+   * Cut paper
+   *
+   * @return {object} Return the object, for easy chaining commands
+   *
+   */
+  data(uint8Array: Uint8Array) {
+    const buffer = new BufferHelper();
+    const base64String = buffer.bytesToString(uint8Array, 'base64');
+    this._queue([PRINTING_COMMANDS.COMMAND_ADD_DATA, [base64String]]);
 
     return this;
   }

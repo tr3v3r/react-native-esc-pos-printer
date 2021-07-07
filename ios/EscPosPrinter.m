@@ -61,6 +61,7 @@ RCT_EXPORT_MODULE()
       @"COMMAND_ADD_IMAGE_BASE_64": @(COMMAND_ADD_IMAGE_BASE_64),
       @"COMMAND_ADD_IMAGE_ASSET": @(COMMAND_ADD_IMAGE_ASSET),
       @"COMMAND_ADD_CUT": @(COMMAND_ADD_CUT),
+      @"COMMAND_ADD_DATA": @(COMMAND_ADD_DATA),
       @"EPOS2_ALIGN_LEFT": @(EPOS2_ALIGN_LEFT),
       @"EPOS2_ALIGN_RIGHT": @(EPOS2_ALIGN_RIGHT),
       @"EPOS2_ALIGN_CENTER": @(EPOS2_ALIGN_CENTER),
@@ -78,6 +79,7 @@ enum PrintingCommands : int {
     COMMAND_ADD_IMAGE_BASE_64,
     COMMAND_ADD_IMAGE_ASSET,
     COMMAND_ADD_CUT,
+    COMMAND_ADD_DATA
 };
 
 + (BOOL)requiresMainQueueSetup
@@ -99,19 +101,6 @@ RCT_EXPORT_METHOD(init:(NSString *)target
     }];
 
     self.printerAddress = target;
-}
-
-RCT_EXPORT_METHOD(printBase64: (NSString *)base64string
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-{
- [tasksQueue addOperationWithBlock: ^{
-    [self printFromBase64:base64string onSuccess:^(NSString *result) {
-            resolve(result);
-        } onError:^(NSString *error) {
-            reject(@"event_failure",error, nil);
-    }];
-  }];
 }
 
 RCT_EXPORT_METHOD(getPaperWidth:(RCTPromiseResolveBlock)resolve
@@ -316,39 +305,6 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
     NSLog(@"Disconnected!");
 }
 
-- (void)printFromBase64: (NSString*)base64String onSuccess: (void(^)(NSString *))onSuccess onError: (void(^)(NSString *))onError
-{
-
-        int result = EPOS2_SUCCESS;
-
-        if (self->printer == nil) {
-            NSString *errorString = [ErrorManager getEposErrorText: EPOS2_ERR_PARAM];
-            onError(errorString);
-            return;
-        }
-
-        NSData *data = [[NSData alloc] initWithBase64EncodedString: base64String options:0];
-
-        result = [self->printer addCommand:data];
-        if (result != EPOS2_SUCCESS) {
-            [self->printer clearCommandBuffer];
-            NSString *errorString = [ErrorManager getEposErrorText: result];
-            onError(errorString);
-            return;
-        }
-
-        result = [self printData];
-        if (result != EPOS2_SUCCESS) {
-            NSString *errorString = [ErrorManager getEposErrorText: result];
-            onError(errorString);
-            return;
-        }
-
-
-        NSString *successString = [ErrorManager getEposErrorText: EPOS2_SUCCESS];
-        onSuccess(successString);
-}
-
 - (void)getPrinterSettings:(int)type
                            onSuccess: (void(^)(NSString *))onSuccess
                            onError: (void(^)(NSString *))onError {
@@ -545,16 +501,16 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
           break;
         case COMMAND_ADD_IMAGE_ASSET : {
             UIImage *imageData = [UIImage imageNamed: params[0]];
-            
-            
+
+
             NSInteger imgHeight = imageData.size.height;
             NSInteger imagWidth = imageData.size.width;
-            
+
             NSInteger width = [params[1] intValue];
 
             CGSize size = CGSizeMake(width, imgHeight*width/imagWidth);
             UIImage *scaled = [self scaleImage:imageData scaledToFillSize:size];
-    
+
 
             result = [self->printer addImage:scaled x:0 y:0
               width: size.width
@@ -572,6 +528,13 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
         case COMMAND_ADD_CUT :
             result = [self->printer addCut:EPOS2_CUT_FEED];
           break;
+        case COMMAND_ADD_DATA: {
+            NSData *data = [[NSData alloc] initWithBase64EncodedString: params[0] options:0];
+
+           result = [self->printer addCommand:data];
+          break;
+        }
+           
     }
 
     return result;

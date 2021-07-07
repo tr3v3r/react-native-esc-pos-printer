@@ -5,7 +5,6 @@ import {
   Platform,
 } from 'react-native';
 import {
-  BufferHelper,
   getPrinterSeriesByName,
   requestAndroidPermissions,
   enableLocationAccessAndroid10,
@@ -76,44 +75,6 @@ const _default = {
     }
 
     return Promise.reject('No permissions granted');
-  },
-  printRawData(uint8Array: Uint8Array): Promise<IMonitorStatus> {
-    const buffer = new BufferHelper();
-    const base64String = buffer.bytesToString(uint8Array, 'base64');
-
-    let successListener: EmitterSubscription | null;
-    let errorListener: EmitterSubscription | null;
-
-    function removeListeners() {
-      successListener?.remove();
-      errorListener?.remove();
-
-      successListener = null;
-      errorListener = null;
-    }
-
-    return new Promise((res, rej) => {
-      successListener = printEventEmmiter.addListener(
-        'onPrintSuccess',
-        (status) => {
-          removeListeners();
-          res(status);
-        }
-      );
-
-      errorListener = printEventEmmiter.addListener(
-        'onPrintFailure',
-        (status) => {
-          removeListeners();
-          rej(status);
-        }
-      );
-
-      EscPosPrinter.printBase64(base64String).catch((e: Error) => {
-        removeListeners();
-        rej(e);
-      });
-    });
   },
 
   getPaperWidth(): Promise<80 | 60 | 58> {

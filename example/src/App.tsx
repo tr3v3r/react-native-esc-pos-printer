@@ -19,10 +19,11 @@ export default function App() {
   React.useEffect(() => {
     console.log(printer);
   }, [printer]);
+
   return (
     <View style={styles.container}>
       <Button
-        title="discover"
+        title="Discover"
         onPress={() => {
           console.log('discovering');
           EscPosPrinter.discover({ usbSerialNumber: true })
@@ -37,7 +38,7 @@ export default function App() {
       />
 
       <Button
-        title="gett lines per row"
+        title="Get lines per row"
         disabled={!printer}
         color={!printer ? 'gray' : 'blue'}
         onPress={async () => {
@@ -102,7 +103,7 @@ export default function App() {
       />
 
       <Button
-        title="testt"
+        title="Print from data"
         disabled={!printer}
         color={!printer ? 'gray' : 'blue'}
         onPress={async () => {
@@ -113,8 +114,7 @@ export default function App() {
             .line('The quick brown fox jumps over the lazy dog')
             .newline()
             .newline()
-            .newline()
-            .cut('partial');
+            .newline();
 
           try {
             if (printer) {
@@ -125,11 +125,11 @@ export default function App() {
                 });
                 setInit(true);
               }
-              // const paper = await EscPosPrinter.getPaperWidth();
-              // console.log(paper);
-              const status = await EscPosPrinter.printRawData(encoder.encode());
-              // const pairingSatus = await EscPosPrinter.pairingBluetoothPrinter();
-              // console.log(pairingSatus);
+
+              const printing = new EscPosPrinter.printing();
+
+              const status = await printing.data(encoder.encode()).cut().send();
+
               console.log('print', status);
             }
           } catch (error) {
@@ -138,7 +138,7 @@ export default function App() {
         }}
       />
       <Button
-        title="test print chaining"
+        title="Test print chaining"
         disabled={!printer}
         color={!printer ? 'gray' : 'blue'}
         onPress={async () => {
