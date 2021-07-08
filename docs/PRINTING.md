@@ -70,7 +70,7 @@ Prints an image from iOS/Android local assets folder.
 
 - Android: Save your image file under the directory `android/app/src/main/assets`. Note that files in this directory must be lowercase.
 - iOS: Open Xcode and add your image file to the project (Right-click the project and select `Add Files to [PROJECTNAME]`)
-- Use file name as first argument and image with as a second (width of the image 1 to 65535)
+- Use file name as first argument and image width as a second (width of the image 1 to 65535)
 
 ```javascript
 printing.initialize().imageAsset('logo.png', 200);
@@ -78,7 +78,7 @@ printing.initialize().imageAsset('logo.png', 200);
 
 ### data
 Adds the given binary data (Uint8Array) to the print queue
-See [example](../example/src/App.js) for more details.
+See example folder for more details.
 
 ```javascript
 printing.initialize().data(uint8ArrayData);

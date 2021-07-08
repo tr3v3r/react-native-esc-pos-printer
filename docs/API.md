@@ -1,7 +1,7 @@
 # API
 
 1. [init](#init-target-seriesname-)
-2. [discover](#discover)
+2. [discover](#discoverparams)
 3. [pairingBluetoothPrinter](#pairingbluetoothprinter---ios-only)
 4. [getPrinterCharsPerLine](#getprintercharsperlineseriesname)
 5. [startMonitorPrinter](#startmonitorprinterinterval-number)
@@ -33,7 +33,7 @@ EscPosPrinter.init({
 
 ### discover(params?)
 
-`For iOS you must [pair printer](#pairingbluetoothprinter---ios-only) with device to search Bluetooth printers`
+`For iOS you must` [pair printer](#pairingbluetoothprinter---ios-only) `with device to search Bluetooth printers`
 
 Starts searching for device.
 Returns list of printers.

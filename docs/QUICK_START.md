@@ -48,4 +48,4 @@ async function testPrint() {
 testPrint()
 
 ```
-See [example](../example/src/App.js) and [API docs](./API.md) for more details.
+See example folder and [API docs](./API.md) for more details.
