@@ -5,7 +5,7 @@
 3. [pairingBluetoothPrinter](#pairingbluetoothprinter---ios-only)
 4. [getPrinterCharsPerLine](#getprintercharsperlineseriesname)
 5. [startMonitorPrinter](#startmonitorprinterinterval-number)
-6. [startMonitorPrinter](#stopmonitorprinter)
+6. [stopMonitorPrinter](#stopmonitorprinter)
 1. [printing](./PRINTING.md)
 
 
