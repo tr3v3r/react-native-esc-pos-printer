@@ -60,7 +60,7 @@ interface IPrinter {
 ```javascript
 import EscPosPrinter from 'react-native-esc-pos-printer';
 
-EscPosPrinter.discovery()
+EscPosPrinter.discover()
   .then((printers) => {
     console.log(printers[0]);
     /*
@@ -81,7 +81,7 @@ EscPosPrinter.discovery()
 ```javascript
 import EscPosPrinter from 'react-native-esc-pos-printer';
 
-EscPosPrinter.discovery({ usbSerialNumber: true })
+EscPosPrinter.discover({ usbSerialNumber: true })
   .then((printers) => {
     console.log(printers[0]);
     /*
