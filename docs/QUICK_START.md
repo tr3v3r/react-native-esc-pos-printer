@@ -19,7 +19,7 @@ async function testPrint() {
 
       const status = await printing
         .initialize()
-        .align('center')printing
+        .align('center')
         .initialize()
         .align('center')
         .size(6, 6)
