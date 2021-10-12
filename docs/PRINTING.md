@@ -76,6 +76,21 @@ Prints an image from iOS/Android local assets folder.
 printing.initialize().imageAsset('logo.png', 200);
 ```
 
+### base64 image
+
+Prints an image represented by base64 data (i.e. "data:image/png;base64,...").
+
+- Use base64 string as first argument and image width as a second (width of the image 1 to 65535)
+- If image is not printing for some reason try to play with width
+- See example of usage in `example` folder
+
+```javascript
+export const base64Image =
+  'data:image/png;base64,....'
+
+printing.initialize().imageBase64(base64Image, 75);
+```
+
 ### data
 Adds the given binary data (Uint8Array) to the print queue
 See example folder for more details.
