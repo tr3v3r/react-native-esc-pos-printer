@@ -481,7 +481,7 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
 - (enum Epos2ErrorStatus)handleCommand: (enum PrintingCommands)command params:(NSArray*)params {
     int result = EPOS2_SUCCESS;
     NSString* text = @"";
-
+    NSError *error = nil;
     switch(command) {
         case COMMAND_ADD_TEXT  :
             text = params[0];
@@ -522,9 +522,32 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
               compress:EPOS2_COMPRESS_AUTO];
           break;
         }
-        case COMMAND_ADD_IMAGE_BASE_64 :
-            result = [self printFromImage:params[0] width:[params[1] intValue]];
-          break;
+        case COMMAND_ADD_IMAGE_BASE_64 : {
+            NSString *urlString = params[0];
+            NSURL *imageURL = [NSURL URLWithString:urlString];
+            NSData *jpgData = [NSData dataWithContentsOfURL:imageURL options:NSDataReadingUncached error:&error];
+
+            UIImage *imageData = [[UIImage alloc] initWithData:jpgData];
+            
+            NSInteger imgHeight = imageData.size.height;
+            NSInteger imagWidth = imageData.size.width;
+
+            NSInteger width = [params[1] intValue];
+
+            CGSize size = CGSizeMake(width, imgHeight*width/imagWidth);
+            UIImage *scaled = [self scaleImage:imageData scaledToFillSize:size];
+
+
+            result = [self->printer addImage:scaled x:0 y:0
+              width: size.width
+              height: size.height
+              color:EPOS2_COLOR_1
+              mode:EPOS2_MODE_MONO
+              halftone:EPOS2_HALFTONE_DITHER
+              brightness:EPOS2_PARAM_DEFAULT
+              compress:EPOS2_COMPRESS_AUTO];
+            break;
+        }
         case COMMAND_ADD_CUT :
             result = [self->printer addCut:EPOS2_CUT_FEED];
           break;
@@ -534,7 +557,6 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
            result = [self->printer addCommand:data];
           break;
         }
-           
     }
 
     return result;

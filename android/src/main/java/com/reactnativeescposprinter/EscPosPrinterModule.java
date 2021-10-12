@@ -502,13 +502,13 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
         mPrinter.addTextAlign(params.getInt(0));
         break;
       case PrintingCommands.COMMAND_ADD_IMAGE_BASE_64:
-        String base64ImageString = params.getString(0);
+        String uriString = params.getString(0);
+        final String pureBase64Encoded = uriString.substring(uriString.indexOf(",") + 1);
+        byte[] decodedString = Base64.decode(pureBase64Encoded, Base64.DEFAULT);
+        Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         int inputWidth = params.getInt(1);
 
-        byte[] decodeBase64ImageString = Base64.decode(base64ImageString, Base64.URL_SAFE);
-        Bitmap base64Image = BitmapFactory.decodeByteArray(decodeBase64ImageString, 0, decodeBase64ImageString.length);
-
-        handlePrintImage(base64Image, inputWidth);
+        handlePrintImage(bitmap, inputWidth);
         break;
       case PrintingCommands.COMMAND_ADD_IMAGE_ASSET:
         String imageName = params.getString(0);
