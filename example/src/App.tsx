@@ -7,7 +7,7 @@ import EscPosPrinter, {
   IPrinter,
 } from 'react-native-esc-pos-printer';
 import {} from 'react-native';
-
+import { base64Image } from './base64Image';
 export default function App() {
   const [init, setInit] = React.useState(false);
   const [printer, setPrinter] = React.useState<IPrinter | null>(null);
@@ -26,7 +26,7 @@ export default function App() {
         title="Discover"
         onPress={() => {
           console.log('discovering');
-          EscPosPrinter.discover({ usbSerialNumber: true })
+          EscPosPrinter.discover()
             .then((printers) => {
               console.log('done!', printers);
               if (printers[0]) {
@@ -167,6 +167,7 @@ export default function App() {
                 .underline()
                 .newline(2)
                 .align('center')
+                .imageBase64(base64Image, 75)
                 .imageAsset('store.png', 75)
                 .cut()
                 .send();
