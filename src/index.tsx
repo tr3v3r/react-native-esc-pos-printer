@@ -23,6 +23,7 @@ import {
   FONT_A_CHARS_PER_LINE,
   DEFAULT_FONT_A_CHARS_PER_LINE,
   DEFAULT_PAPER_WIDTHT,
+  PRINTER_LANGUAGE,
 } from './constants';
 
 const { EscPosPrinter, EscPosPrinterDiscovery } = NativeModules;
@@ -32,9 +33,10 @@ const printEventEmmiter = new NativeEventEmitter(EscPosPrinter);
 import printing from './printing';
 
 const _default = {
-  init({ target, seriesName }: IPrinterInitParams): Promise<number> {
+  init({ target, seriesName, language}: IPrinterInitParams): Promise<number> {
     const series = PRINTER_SERIES[seriesName];
-    return EscPosPrinter.init(target, series);
+    const lang = PRINTER_LANGUAGE[language];
+    return EscPosPrinter.init(target, series, lang);
   },
   async discover(params?: IDiscoverParams): Promise<IPrinter[]> {
     if (
@@ -162,7 +164,7 @@ const _default = {
   printing,
 };
 
-export { getPrinterSeriesByName, PRINTER_SERIES };
+export { getPrinterSeriesByName, PRINTER_SERIES, PRINTER_LANGUAGE };
 export type {
   PrinerEvents,
   EventListenerCallback,

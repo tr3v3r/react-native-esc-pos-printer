@@ -1,5 +1,5 @@
 import { NativeModules } from 'react-native';
-import type { PrinterSeriesName } from './types';
+import type { PrinterSeriesName, PrinterLanguage } from './types';
 
 const { EscPosPrinter } = NativeModules;
 const {
@@ -41,6 +41,14 @@ const {
   EPOS2_ALIGN_CENTER,
   EPOS2_TRUE,
   EPOS2_FALSE,
+  EPOS2_LANG_EN,
+  EPOS2_LANG_JA,
+  EPOS2_LANG_ZH_CN,
+  EPOS2_LANG_ZH_TW,
+  EPOS2_LANG_KO,
+  EPOS2_LANG_TH,
+  EPOS2_LANG_VI,
+  EPOS2_LANG_MULTI,
 } = EscPosPrinter.getConstants();
 
 export const PRINTING_COMMANDS = {
@@ -194,3 +202,14 @@ export const DEFAULT_FONT_A_CHARS_PER_LINE = {
 };
 
 export const DEFAULT_PAPER_WIDTHT = 60;
+
+export const PRINTER_LANGUAGE: { [key in PrinterLanguage]: number } = {
+  EPOS2_LANG_EN,
+  EPOS2_LANG_JA,
+  EPOS2_LANG_ZH_CN,
+  EPOS2_LANG_ZH_TW,
+  EPOS2_LANG_KO,
+  EPOS2_LANG_TH,
+  EPOS2_LANG_VI,
+  EPOS2_LANG_MULTI
+};
