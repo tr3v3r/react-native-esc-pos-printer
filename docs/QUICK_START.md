@@ -13,6 +13,7 @@ async function testPrint() {
       await EscPosPrinter.init({
         target: printer.target,
         seriesName: getPrinterSeriesByName(printer.name),
+        language: 'EPOS2_LANG_EN',
       })
 
       const printing = new EscPosPrinter.printing();

@@ -47,6 +47,7 @@ export default function App() {
               await EscPosPrinter.init({
                 target: printer.target,
                 seriesName: getPrinterSeriesByName(printer.name),
+                language: 'EPOS2_LANG_EN',
               });
               setInit(true);
             }
