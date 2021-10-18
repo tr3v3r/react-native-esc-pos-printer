@@ -41,7 +41,7 @@ export type PrinterSeriesName =
   | 'EPOS2_TS_100'
   | 'EPOS2_TM_M50';
 
-  export type PrinterLanguage = 
+export type PrinterLanguage = 
   | 'EPOS2_LANG_EN'
   | 'EPOS2_LANG_JA'
   | 'EPOS2_LANG_ZH_CN'
