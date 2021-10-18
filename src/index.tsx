@@ -17,6 +17,7 @@ import type {
   IPrinterInitParams,
   PrinterSeriesName,
   IMonitorStatus,
+  PrinterLanguage,
 } from './types';
 import {
   PRINTER_SERIES,

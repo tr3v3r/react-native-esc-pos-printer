@@ -27,6 +27,7 @@ class Printing {
   private _state: {
     bold: boolean;
     underline: boolean;
+    smooth: boolean;
   };
 
   /**
@@ -38,6 +39,7 @@ class Printing {
     this._state = {
       bold: false,
       underline: false,
+      smooth: false,
     };
   }
 
@@ -51,6 +53,7 @@ class Printing {
     this._state = {
       bold: false,
       underline: false,
+      smooth: false,
     };
   }
 
@@ -221,6 +224,30 @@ class Printing {
       [
         this._convertToEposBool(this._state.underline),
         this._convertToEposBool(this._state.bold),
+      ],
+    ]);
+
+    return this;
+  }
+
+  /**
+   * Smooth text
+   *
+   * @param  {boolean}          value  true to turn on smooth, false to turn off smooth
+   * @return {object}                  Return the object, for easy chaining commands
+   *
+   */
+   smooth(value?: boolean) {
+    if (typeof value === 'undefined') {
+      value = !this._state.smooth;
+    }
+
+    this._state.smooth = value;
+
+    this._queue([
+      PRINTING_COMMANDS.COMMAND_ADD_TEXT_SMOOTH,
+      [
+        this._convertToEposBool(this._state.smooth),
       ],
     ]);
 
