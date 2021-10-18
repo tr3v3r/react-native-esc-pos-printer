@@ -50,6 +50,7 @@ class PrintingCommands {
   public static final int COMMAND_ADD_IMAGE_ASSET = 6;
   public static final int COMMAND_ADD_CUT = 7;
   public static final int COMMAND_ADD_DATA = 8;
+  public static final int COMMAND_ADD_TEXT_SMOOTH = 9;
 }
 
 @ReactModule(name = EscPosPrinterModule.NAME)
@@ -113,6 +114,7 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       constants.put("COMMAND_ADD_NEW_LINE", PrintingCommands.COMMAND_ADD_NEW_LINE);
       constants.put("COMMAND_ADD_TEXT_STYLE", PrintingCommands.COMMAND_ADD_TEXT_STYLE);
       constants.put("COMMAND_ADD_TEXT_SIZE", PrintingCommands.COMMAND_ADD_TEXT_SIZE);
+      constants.put("COMMAND_ADD_TEXT_SMOOTH", PrintingCommands.COMMAND_ADD_TEXT_SMOOTH);
       constants.put("COMMAND_ADD_ALIGN", PrintingCommands.COMMAND_ADD_ALIGN);
       constants.put("COMMAND_ADD_IMAGE_BASE_64", PrintingCommands.COMMAND_ADD_IMAGE_BASE_64);
       constants.put("COMMAND_ADD_IMAGE_ASSET", PrintingCommands.COMMAND_ADD_IMAGE_ASSET);
@@ -537,6 +539,9 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
         String base64String = params.getString(0);
         byte[] data = Base64.decode(base64String, Base64.DEFAULT);
         mPrinter.addCommand(data);
+        break;
+      case PrintingCommands.COMMAND_ADD_TEXT_SMOOTH:
+        mPrinter.addTextSmooth(params.getInt(0));
         break;
       default:
         throw new IllegalArgumentException("Invalid Printing Command");
