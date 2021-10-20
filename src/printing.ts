@@ -237,7 +237,7 @@ class Printing {
    * @return {object}                  Return the object, for easy chaining commands
    *
    */
-   smooth(value?: boolean) {
+  smooth(value?: boolean) {
     if (typeof value === 'undefined') {
       value = !this._state.smooth;
     }
@@ -246,9 +246,7 @@ class Printing {
 
     this._queue([
       PRINTING_COMMANDS.COMMAND_ADD_TEXT_SMOOTH,
-      [
-        this._convertToEposBool(this._state.smooth),
-      ],
+      [this._convertToEposBool(this._state.smooth)],
     ]);
 
     return this;

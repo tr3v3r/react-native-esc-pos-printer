@@ -213,5 +213,5 @@ export const PRINTER_LANGUAGE: { [key in PrinterLanguage]: number } = {
   EPOS2_LANG_KO,
   EPOS2_LANG_TH,
   EPOS2_LANG_VI,
-  EPOS2_LANG_MULTI
+  EPOS2_LANG_MULTI,
 };
