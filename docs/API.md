@@ -9,7 +9,7 @@
 1. [printing](./PRINTING.md)
 
 
-### init({ target, seriesName })
+### init({ target, seriesName, language })
 
 Initializes printer using it's target and series name.
 
