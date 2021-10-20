@@ -9,7 +9,7 @@
 1. [printing](./PRINTING.md)
 
 
-### init({ target, seriesName, language })
+### init({ target, seriesName, language? })
 
 Initializes printer using it's target and series name.
 
@@ -19,7 +19,7 @@ Initializes printer using it's target and series name.
 | ------------ | :------: | :------: | :---------------------------------------------------------------------------------------------------------------------------------------------: |
 | `target`     | `string` |  `Yes`   | The connection target of a device which can be specified by connectAPI: ("TCP:192.168.192.168" "BT:00:22:15:7D:70:9C" "USB:000000000000000000") |
 | `seriesName` | `string` |  `Yes`   |                                                       Specifies the target printer model.                                                       |
-| `language`   | `string` |  `Yes`   |                                    Specifies the language : EPOS2_LANG_EN, EPOS2_LANG_JA, EPOS2_LANG_ZH_CN...                                   |
+| `language`   | `string` |   `No`   |                                    Specifies the language : EPOS2_LANG_EN, EPOS2_LANG_JA, EPOS2_LANG_ZH_CN...                                   |
 
 ```javascript
 import EscPosPrinter from 'react-native-esc-pos-printer';
