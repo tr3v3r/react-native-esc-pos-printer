@@ -57,6 +57,7 @@ RCT_EXPORT_MODULE()
       @"COMMAND_ADD_NEW_LINE": @(COMMAND_ADD_NEW_LINE),
       @"COMMAND_ADD_TEXT_STYLE": @(COMMAND_ADD_TEXT_STYLE),
       @"COMMAND_ADD_TEXT_SIZE": @(COMMAND_ADD_TEXT_SIZE),
+      @"COMMAND_ADD_TEXT_SMOOTH": @(COMMAND_ADD_TEXT_SMOOTH),
       @"COMMAND_ADD_ALIGN": @(COMMAND_ADD_ALIGN),
       @"COMMAND_ADD_IMAGE_BASE_64": @(COMMAND_ADD_IMAGE_BASE_64),
       @"COMMAND_ADD_IMAGE_ASSET": @(COMMAND_ADD_IMAGE_ASSET),
@@ -67,6 +68,14 @@ RCT_EXPORT_MODULE()
       @"EPOS2_ALIGN_CENTER": @(EPOS2_ALIGN_CENTER),
       @"EPOS2_TRUE": @(EPOS2_TRUE),
       @"EPOS2_FALSE": @(EPOS2_FALSE),
+      @"EPOS2_LANG_EN": @(EPOS2_LANG_EN),
+      @"EPOS2_LANG_JA": @(EPOS2_LANG_JA),
+      @"EPOS2_LANG_ZH_CN": @(EPOS2_LANG_ZH_CN),
+      @"EPOS2_LANG_ZH_TW": @(EPOS2_LANG_ZH_TW),
+      @"EPOS2_LANG_KO": @(EPOS2_LANG_KO),
+      @"EPOS2_LANG_TH": @(EPOS2_LANG_TH),
+      @"EPOS2_LANG_VI": @(EPOS2_LANG_VI),
+      @"EPOS2_LANG_MULTI": @(EPOS2_LANG_MULTI),
    };
 }
 
@@ -79,7 +88,8 @@ enum PrintingCommands : int {
     COMMAND_ADD_IMAGE_BASE_64,
     COMMAND_ADD_IMAGE_ASSET,
     COMMAND_ADD_CUT,
-    COMMAND_ADD_DATA
+    COMMAND_ADD_DATA,
+    COMMAND_ADD_TEXT_SMOOTH
 };
 
 + (BOOL)requiresMainQueueSetup
@@ -89,11 +99,12 @@ enum PrintingCommands : int {
 
 RCT_EXPORT_METHOD(init:(NSString *)target
                   series:(int)series
+                  lang:(int)lang
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 {
     [self finalizeObject];
-    [self initializeObject: series onSuccess:^(NSString *result) {
+    [self initializeObject: series lang:lang onSuccess:^(NSString *result) {
         resolve(result);
     } onError:^(NSString *error) {
        reject(@"event_failure",error, nil);
@@ -230,6 +241,7 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
 
 
 - (void)initializeObject: (int)series
+                          lang:(int)lang
                           onSuccess: (void(^)(NSString *))onSuccess
                           onError: (void(^)(NSString *))onError
 {
@@ -247,7 +259,7 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
     }
 
     [printer setReceiveEventDelegate:self];
-
+    [printer addTextLang:lang];
     NSString *successString = [ErrorManager getEposErrorText: EPOS2_SUCCESS];
     onSuccess(successString);
 }
@@ -527,6 +539,9 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
            result = [self->printer addCommand:data];
           break;
         }
+        case COMMAND_ADD_TEXT_SMOOTH :
+            result = [self->printer addTextSmooth:[params[0] intValue]];
+          break;
     }
 
     return result;

@@ -41,9 +41,20 @@ export type PrinterSeriesName =
   | 'EPOS2_TS_100'
   | 'EPOS2_TM_M50';
 
+export type PrinterLanguage =
+  | 'EPOS2_LANG_EN'
+  | 'EPOS2_LANG_JA'
+  | 'EPOS2_LANG_ZH_CN'
+  | 'EPOS2_LANG_ZH_TW'
+  | 'EPOS2_LANG_KO'
+  | 'EPOS2_LANG_TH'
+  | 'EPOS2_LANG_VI'
+  | 'EPOS2_LANG_MULTI';
+
 export interface IPrinterInitParams {
   target: string;
   seriesName: PrinterSeriesName;
+  language: PrinterLanguage;
 }
 
 export interface IDiscoverParams {
