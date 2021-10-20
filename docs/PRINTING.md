@@ -48,6 +48,14 @@ Sets the bold state - optional boolean parameter, if no parameter is supplied it
 printing.initialize().bold();
 ```
 
+### smooth
+
+Sets the smooth state - optional boolean parameter, if no parameter is supplied it will toggle the smooth state
+
+```javascript
+printing.initialize().smooth();
+```
+
 ### size
 
 Sets the text size. Text can be scaled from size 1 - 8. Optional width parameter, if not provided text will be scaled equal to the height.
