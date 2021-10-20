@@ -33,9 +33,19 @@ const printEventEmmiter = new NativeEventEmitter(EscPosPrinter);
 import printing from './printing';
 
 const _default = {
-  init({ target, seriesName, language }: IPrinterInitParams): Promise<number> {
+  init({
+    target,
+    seriesName,
+    language = 'EPOS2_LANG_EN',
+  }: IPrinterInitParams): Promise<number> {
     const series = PRINTER_SERIES[seriesName];
-    const lang = PRINTER_LANGUAGE[language];
+    let lang;
+    if (typeof PRINTER_LANGUAGE[language] === 'number') {
+      lang = PRINTER_LANGUAGE[language];
+    } else {
+      console.warn('An invalid parameter of language was passed.');
+      lang = PRINTER_LANGUAGE.EPOS2_LANG_EN;
+    }
     return EscPosPrinter.init(target, series, lang);
   },
   async discover(params?: IDiscoverParams): Promise<IPrinter[]> {
