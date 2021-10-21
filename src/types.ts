@@ -54,7 +54,7 @@ export type PrinterLanguage =
 export interface IPrinterInitParams {
   target: string;
   seriesName: PrinterSeriesName;
-  language: PrinterLanguage;
+  language?: PrinterLanguage;
 }
 
 export interface IDiscoverParams {
