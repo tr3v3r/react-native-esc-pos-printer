@@ -99,6 +99,25 @@ export const base64Image =
 printing.initialize().imageBase64(base64Image, 75);
 ```
 
+### barcode
+
+Prints a barcode.
+
+- value : The string of barcode data, it will be restricted by the `type`.
+- type? : Sets the barcode type - optional string parameter, defaults to CODE93.
+- hri? : Sets the position of human-robot interaction - optional string parameter, defaults to BELOW.
+- width? : Sets the width of a single module in dots - optional number parameter, defaults to 2(width of the barcode 2 to 6).
+- height? : Sets the height of the barcode in dots - optional number parameter, defaults to 50(height of the barcode 1 to 255).
+
+```javascript
+printing.initialize().barcode({
+  value:'Test123',
+  type:'EPOS2_BARCODE_CODE93',
+  hri:'EPOS2_HRI_BELOW',
+  width:2, height:50
+});
+```
+
 ### data
 Adds the given binary data (Uint8Array) to the print queue
 See example folder for more details.
