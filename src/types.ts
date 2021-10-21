@@ -94,3 +94,36 @@ export interface IMonitorStatus {
     | 'BATTERY_LEVEL_6'
     | 'UNKNOWN';
 }
+
+export type BarcodeType =
+  | 'EPOS2_BARCODE_UPC_A'
+  | 'EPOS2_BARCODE_UPC_E'
+  | 'EPOS2_BARCODE_EAN13'
+  | 'EPOS2_BARCODE_JAN13'
+  | 'EPOS2_BARCODE_EAN8'
+  | 'EPOS2_BARCODE_JAN8'
+  | 'EPOS2_BARCODE_CODE39'
+  | 'EPOS2_BARCODE_ITF'
+  | 'EPOS2_BARCODE_CODABAR'
+  | 'EPOS2_BARCODE_CODE93'
+  | 'EPOS2_BARCODE_CODE128'
+  | 'EPOS2_BARCODE_GS1_128'
+  | 'EPOS2_BARCODE_GS1_DATABAR_OMNIDIRECTIONAL'
+  | 'EPOS2_BARCODE_GS1_DATABAR_TRUNCATED'
+  | 'EPOS2_BARCODE_GS1_DATABAR_LIMITED'
+  | 'EPOS2_BARCODE_GS1_DATABAR_EXPANDED'
+  | 'EPOS2_BARCODE_CODE128_AUTO';
+
+export type BarcodeHRI =
+  | 'EPOS2_HRI_NONE'
+  | 'EPOS2_HRI_ABOVE'
+  | 'EPOS2_HRI_BELOW'
+  | 'EPOS2_HRI_BOTH';
+
+export interface BarcodeParams {
+  value: string;
+  type?: BarcodeType;
+  width?: number;
+  height?: number;
+  hri?: BarcodeHRI;
+}
