@@ -36,6 +36,13 @@ async function testPrint() {
         .newline(2)
         .align('center')
         .image(image, 200)
+        .barcode({
+          value:'Test123',
+          type:'EPOS2_BARCODE_CODE93',
+          width:2,
+          height:50,
+          hri:'EPOS2_HRI_BELOW'
+        })
         .cut()
         .send()
 
