@@ -1,5 +1,6 @@
 #import "EscPosPrinter.h"
 #import "ErrorManager.h"
+#import <React/RCTConvert.h>
 
 @interface EscPosPrinter() <Epos2PtrReceiveDelegate, Epos2PrinterSettingDelegate>
  @property (strong, nonatomic) NSString* printerAddress;
@@ -59,6 +60,8 @@ RCT_EXPORT_MODULE()
       @"COMMAND_ADD_TEXT_SIZE": @(COMMAND_ADD_TEXT_SIZE),
       @"COMMAND_ADD_ALIGN": @(COMMAND_ADD_ALIGN),
       @"COMMAND_ADD_IMAGE_BASE_64": @(COMMAND_ADD_IMAGE_BASE_64),
+      @"COMMAND_ADD_IMAGE": @(COMMAND_ADD_IMAGE),
+      @"COMMAND_ADD_REMOTE_IMAGE": @(COMMAND_ADD_REMOTE_IMAGE),
       @"COMMAND_ADD_IMAGE_ASSET": @(COMMAND_ADD_IMAGE_ASSET),
       @"COMMAND_ADD_CUT": @(COMMAND_ADD_CUT),
       @"COMMAND_ADD_DATA": @(COMMAND_ADD_DATA),
@@ -79,7 +82,9 @@ enum PrintingCommands : int {
     COMMAND_ADD_IMAGE_BASE_64,
     COMMAND_ADD_IMAGE_ASSET,
     COMMAND_ADD_CUT,
-    COMMAND_ADD_DATA
+    COMMAND_ADD_DATA,
+    COMMAND_ADD_IMAGE,
+    COMMAND_ADD_REMOTE_IMAGE
 };
 
 + (BOOL)requiresMainQueueSetup
@@ -448,6 +453,28 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
     return newImage;
 }
 
+- (int)printImage:(UIImage *)imageData width:(NSInteger)width
+{
+    int result = EPOS2_SUCCESS;
+
+    NSInteger imgHeight = imageData.size.height;
+    NSInteger imagWidth = imageData.size.width;
+
+    CGSize size = CGSizeMake(width, imgHeight*width/imagWidth);
+    UIImage *scaled = [self scaleImage:imageData scaledToFillSize:size];
+
+    result = [self->printer addImage:scaled x:0 y:0
+      width: size.width
+      height: size.height
+      color:EPOS2_COLOR_1
+      mode:EPOS2_MODE_MONO
+      halftone:EPOS2_HALFTONE_DITHER
+      brightness:EPOS2_PARAM_DEFAULT
+      compress:EPOS2_COMPRESS_AUTO];
+
+    return result;
+}
+
 - (enum Epos2ErrorStatus)handleCommand: (enum PrintingCommands)command params:(NSArray*)params {
     int result = EPOS2_SUCCESS;
     NSString* text = @"";
@@ -517,6 +544,21 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
               brightness:EPOS2_PARAM_DEFAULT
               compress:EPOS2_COMPRESS_AUTO];
             break;
+        }
+        case COMMAND_ADD_IMAGE : {
+            NSDictionary *imageObj = params[0];
+            UIImage * imageData = [RCTConvert UIImage:imageObj];
+            result = [self printImage:imageData width: [params[1] intValue]];
+          break;
+        }
+        case COMMAND_ADD_REMOTE_IMAGE : {
+            NSString *urlString = params[0];
+            NSURL *url = [NSURL URLWithString: urlString];
+            NSData *data = [NSData dataWithContentsOfURL:url];
+            UIImage* imageData = [[UIImage alloc] initWithData:data];
+
+            result = [self printImage:imageData width: [params[1] intValue]];
+          break;
         }
         case COMMAND_ADD_CUT :
             result = [self->printer addCut:EPOS2_CUT_FEED];

@@ -8,6 +8,12 @@ export interface IPrinter {
   usbSerialNumber?: string;
 }
 
+export type ImageSource =
+  | number
+  | {
+      uri: string;
+    };
+
 export type PrinerEvents =
   | 'onDiscoveryDone'
   | 'onPrintSuccess'

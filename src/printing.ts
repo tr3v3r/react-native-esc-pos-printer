@@ -2,6 +2,7 @@ import {
   NativeModules,
   EmitterSubscription,
   NativeEventEmitter,
+  Image,
 } from 'react-native';
 
 import lineWrap from 'word-wrap';
@@ -10,8 +11,12 @@ import {
   PRINTING_COMMANDS,
   EPOS_BOOLEANS,
 } from './constants';
-import type { IMonitorStatus } from './types';
+import type { IMonitorStatus, ImageSource } from './types';
 import { BufferHelper } from './utils/BufferHelper';
+import {
+  isImageRemoteSource,
+  assertImageLocalSource,
+} from './utils/validateImageSource';
 
 const { EscPosPrinter } = NativeModules;
 const printEventEmmiter = new NativeEventEmitter(EscPosPrinter);
@@ -264,6 +269,19 @@ class Printing {
       PRINTING_COMMANDS.COMMAND_ADD_ALIGN,
       [PRINTING_ALIGNMENT[value]],
     ]);
+
+    return this;
+  }
+  image(imageSource: ImageSource, width: number) {
+    if (isImageRemoteSource(imageSource)) {
+      const url = (imageSource as { uri: string }).uri;
+      this._queue([PRINTING_COMMANDS.COMMAND_ADD_REMOTE_IMAGE, [url, width]]);
+    } else {
+      assertImageLocalSource(imageSource);
+      const image = Image.resolveAssetSource(imageSource);
+
+      this._queue([PRINTING_COMMANDS.COMMAND_ADD_IMAGE, [image, width]]);
+    }
 
     return this;
   }
