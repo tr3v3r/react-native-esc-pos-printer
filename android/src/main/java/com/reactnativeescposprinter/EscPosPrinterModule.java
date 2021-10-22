@@ -495,6 +495,17 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
     }
   }
 
+  @ReactMethod
+  public void addListener(String eventName) {
+    // Keep: Required for RN built in Event Emitter Calls.
+  }
+  
+  @ReactMethod
+  public void removeListeners(Integer count) {
+    // Keep: Required for RN built in Event Emitter Calls.
+  }    
+
+
   private void handleCommand(int command, ReadableArray params) throws Epos2Exception, IOException {
     switch (command) {
       case PrintingCommands.COMMAND_ADD_TEXT:
