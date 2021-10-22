@@ -127,3 +127,15 @@ export interface BarcodeParams {
   height?: number;
   hri?: BarcodeHRI;
 }
+
+export type QRCodeLevel =
+  | 'EPOS2_LEVEL_L'
+  | 'EPOS2_LEVEL_M'
+  | 'EPOS2_LEVEL_Q'
+  | 'EPOS2_LEVEL_H';
+
+export interface QRCodeParams {
+  value: string;
+  level?: QRCodeLevel;
+  width?: number;
+}

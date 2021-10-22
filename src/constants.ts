@@ -4,6 +4,7 @@ import type {
   PrinterLanguage,
   BarcodeType,
   BarcodeHRI,
+  QRCodeLevel,
 } from './types';
 
 const { EscPosPrinter } = NativeModules;
@@ -41,6 +42,7 @@ const {
   COMMAND_ADD_IMAGE_BASE_64,
   COMMAND_ADD_IMAGE_ASSET,
   COMMAND_ADD_BARCODE,
+  COMMAND_ADD_QRCODE,
   COMMAND_ADD_CUT,
   COMMAND_ADD_DATA,
   EPOS2_ALIGN_LEFT,
@@ -77,6 +79,10 @@ const {
   EPOS2_BARCODE_GS1_DATABAR_LIMITED,
   EPOS2_BARCODE_GS1_DATABAR_EXPANDED,
   EPOS2_BARCODE_CODE128_AUTO,
+  EPOS2_LEVEL_L,
+  EPOS2_LEVEL_M,
+  EPOS2_LEVEL_Q,
+  EPOS2_LEVEL_H,
 } = EscPosPrinter.getConstants();
 
 export const PRINTING_COMMANDS = {
@@ -89,6 +95,7 @@ export const PRINTING_COMMANDS = {
   COMMAND_ADD_IMAGE_BASE_64,
   COMMAND_ADD_IMAGE_ASSET,
   COMMAND_ADD_BARCODE,
+  COMMAND_ADD_QRCODE,
   COMMAND_ADD_CUT,
   COMMAND_ADD_DATA,
 };
@@ -269,4 +276,11 @@ export const BARCODE_HRI: { [key in BarcodeHRI]: number } = {
   EPOS2_HRI_ABOVE,
   EPOS2_HRI_BELOW,
   EPOS2_HRI_BOTH,
+};
+
+export const QRCODE_LEVEL: { [key in QRCodeLevel]: number } = {
+  EPOS2_LEVEL_L,
+  EPOS2_LEVEL_M,
+  EPOS2_LEVEL_Q,
+  EPOS2_LEVEL_H,
 };

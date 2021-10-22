@@ -184,6 +184,11 @@ export default function App() {
                   height: 50,
                   hri: 'EPOS2_HRI_BELOW',
                 })
+                .qrcode({
+                  value: 'Test123',
+                  level: 'EPOS2_LEVEL_M',
+                  width: 5,
+                })
                 .cut()
                 .send();
 
