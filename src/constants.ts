@@ -5,6 +5,7 @@ import type {
   BarcodeType,
   BarcodeHRI,
   QRCodeLevel,
+  QRCodeType,
 } from './types';
 
 const { EscPosPrinter } = NativeModules;
@@ -79,6 +80,9 @@ const {
   EPOS2_BARCODE_GS1_DATABAR_LIMITED,
   EPOS2_BARCODE_GS1_DATABAR_EXPANDED,
   EPOS2_BARCODE_CODE128_AUTO,
+  EPOS2_SYMBOL_QRCODE_MODEL_1,
+  EPOS2_SYMBOL_QRCODE_MODEL_2,
+  EPOS2_SYMBOL_QRCODE_MICRO,
   EPOS2_LEVEL_L,
   EPOS2_LEVEL_M,
   EPOS2_LEVEL_Q,
@@ -276,6 +280,12 @@ export const BARCODE_HRI: { [key in BarcodeHRI]: number } = {
   EPOS2_HRI_ABOVE,
   EPOS2_HRI_BELOW,
   EPOS2_HRI_BOTH,
+};
+
+export const QRCODE_TYPE: { [key in QRCodeType]: number } = {
+  EPOS2_SYMBOL_QRCODE_MODEL_1,
+  EPOS2_SYMBOL_QRCODE_MODEL_2,
+  EPOS2_SYMBOL_QRCODE_MICRO,
 };
 
 export const QRCODE_LEVEL: { [key in QRCodeLevel]: number } = {

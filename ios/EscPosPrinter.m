@@ -103,6 +103,8 @@ RCT_EXPORT_MODULE()
       @"EPOS2_LEVEL_M": @(EPOS2_LEVEL_M),
       @"EPOS2_LEVEL_Q": @(EPOS2_LEVEL_Q),
       @"EPOS2_LEVEL_H": @(EPOS2_LEVEL_H),
+      @"EPOS2_SYMBOL_QRCODE_MODEL_1": @(EPOS2_SYMBOL_QRCODE_MODEL_1),
+      @"EPOS2_SYMBOL_QRCODE_MODEL_2": @(EPOS2_SYMBOL_QRCODE_MODEL_2),
    };
 }
 
@@ -575,7 +577,7 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
             result = [self->printer addBarcode:params[0] type:[params[1] intValue] hri:[params[2] intValue] font:EPOS2_FONT_A width:[params[3] intValue] height:[params[4] intValue]];
           break;
         case COMMAND_ADD_QRCODE :
-            result = [self->printer addSymbol:params[0] type:EPOS2_SYMBOL_QRCODE_MODEL_2 level:[params[1] intValue] width:[params[2] intValue] height:[params[2] intValue] size:[params[2] intValue]];
+            result = [self->printer addSymbol:params[0] type:[params[1] intValue] level:[params[2] intValue] width:[params[3] intValue] height:[params[3] intValue] size:[params[3] intValue]];
           break;
     }
 
