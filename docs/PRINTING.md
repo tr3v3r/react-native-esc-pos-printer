@@ -106,15 +106,32 @@ Prints a barcode.
 - value : The string of barcode data, it will be restricted by the `type`.
 - type? : Sets the barcode type - optional string parameter, defaults to CODE93.
 - hri? : Sets the position of human-robot interaction - optional string parameter, defaults to BELOW.
-- width? : Sets the width of a single module in dots - optional number parameter, defaults to 2(width of the barcode 2 to 6).
-- height? : Sets the height of the barcode in dots - optional number parameter, defaults to 50(height of the barcode 1 to 255).
+- width? : Sets the width of a single module in dots - optional number parameter, defaults to 2 (width of the barcode 2 to 6).
+- height? : Sets the height of the barcode in dots - optional number parameter, defaults to 50 (height of the barcode 1 to 255).
 
 ```javascript
 printing.initialize().barcode({
-  value:'Test123',
-  type:'EPOS2_BARCODE_CODE93',
-  hri:'EPOS2_HRI_BELOW',
-  width:2, height:50
+  value: 'Test123',
+  type: 'EPOS2_BARCODE_CODE93',
+  hri: 'EPOS2_HRI_BELOW',
+  width: 2,
+  height: 50,
+});
+```
+
+### qrcode
+
+Prints a QR Code.
+
+- value : The string of QR Code data.
+- level? : Sets the error correction level - optional string parameter, defaults to LEVEL_M.
+- width? : Sets the size of the QR Code - optional number parameter, defaults to 3 (width of the qrcode 3 to 16).
+
+```javascript
+printing.initialize().qrcode({
+  value: 'Test123',
+  level: 'EPOS2_LEVEL_M',
+  width: 5,
 });
 ```
 
