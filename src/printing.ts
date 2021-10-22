@@ -11,8 +11,9 @@ import {
   EPOS_BOOLEANS,
   BARCODE_TYPE,
   BARCODE_HRI,
+  QRCODE_LEVEL,
 } from './constants';
-import type { IMonitorStatus, BarcodeParams } from './types';
+import type { IMonitorStatus, BarcodeParams, QRCodeParams } from './types';
 import { BufferHelper } from './utils/BufferHelper';
 
 const { EscPosPrinter } = NativeModules;
@@ -354,6 +355,30 @@ class Printing {
     this._queue([
       PRINTING_COMMANDS.COMMAND_ADD_BARCODE,
       [value, BARCODE_TYPE[type], BARCODE_HRI[hri], width, height],
+    ]);
+
+    return this;
+  }
+
+  /**
+   * QR Code
+   *
+   * @param {string} value specifies QR Code data as a text string.
+   * @param {string} level specifies the error correction level.
+   * @param {number} width Width of the image 3 to 16.
+   * @returns
+   */
+  qrcode({ value, level = 'EPOS2_LEVEL_M', width = 3 }: QRCodeParams) {
+    if (!(typeof QRCODE_LEVEL[level] === 'number')) {
+      throw new Error('Unknown error correction level of QR Code');
+    }
+    if (width < 3 || width > 16) {
+      console.warn('The width of qrcode is form 3 to 16');
+      width = 3;
+    }
+    this._queue([
+      PRINTING_COMMANDS.COMMAND_ADD_QRCODE,
+      [value, QRCODE_LEVEL[level], width],
     ]);
 
     return this;
