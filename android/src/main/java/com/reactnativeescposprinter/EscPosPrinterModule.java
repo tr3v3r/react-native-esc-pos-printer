@@ -162,6 +162,9 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       constants.put("EPOS2_LEVEL_M", Printer.LEVEL_M);
       constants.put("EPOS2_LEVEL_Q", Printer.LEVEL_Q);
       constants.put("EPOS2_LEVEL_H", Printer.LEVEL_H);
+      constants.put("EPOS2_SYMBOL_QRCODE_MODEL_1", Printer.SYMBOL_QRCODE_MODEL_1);
+      constants.put("EPOS2_SYMBOL_QRCODE_MODEL_2", Printer.SYMBOL_QRCODE_MODEL_2);
+      constants.put("EPOS2_SYMBOL_QRCODE_MICRO", Printer.SYMBOL_QRCODE_MICRO);
       return constants;
     }
 
@@ -576,7 +579,7 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
         mPrinter.addBarcode(params.getString(0), params.getInt(1), params.getInt(2), Printer.FONT_A, params.getInt(3), params.getInt(4));
         break;
       case PrintingCommands.COMMAND_ADD_QRCODE:
-        mPrinter.addSymbol(params.getString(0), Printer.SYMBOL_QRCODE_MODEL_2, params.getInt(1), params.getInt(2), params.getInt(2), params.getInt(2));
+        mPrinter.addSymbol(params.getString(0), params.getInt(1), params.getInt(2), params.getInt(3), params.getInt(3), params.getInt(3));
         break;
       default:
         throw new IllegalArgumentException("Invalid Printing Command");

@@ -134,8 +134,14 @@ export type QRCodeLevel =
   | 'EPOS2_LEVEL_Q'
   | 'EPOS2_LEVEL_H';
 
+export type QRCodeType =
+  | 'EPOS2_SYMBOL_QRCODE_MODEL_1'
+  | 'EPOS2_SYMBOL_QRCODE_MODEL_2'
+  | 'EPOS2_SYMBOL_QRCODE_MICRO';
+
 export interface QRCodeParams {
   value: string;
+  width: number;
+  type?: QRCodeType;
   level?: QRCodeLevel;
-  width?: number;
 }

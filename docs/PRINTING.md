@@ -124,14 +124,17 @@ printing.initialize().barcode({
 Prints a QR Code.
 
 - value : The string of QR Code data.
+- width : Sets the size of the QR Code, defaults to 3 (width of the qrcode 3 to 16).
+- type : Sets the type of the QR Code - optional string parameter, defaults to QRCODE_MODEL_2, and EPOS2_SYMBOL_QRCODE_MICRO is android only.
 - level? : Sets the error correction level - optional string parameter, defaults to LEVEL_M.
-- width? : Sets the size of the QR Code - optional number parameter, defaults to 3 (width of the qrcode 3 to 16).
+
 
 ```javascript
 printing.initialize().qrcode({
   value: 'Test123',
-  level: 'EPOS2_LEVEL_M',
   width: 5,
+  type: 'EPOS2_SYMBOL_QRCODE_MODEL_2',
+  level: 'EPOS2_LEVEL_M',
 });
 ```
 

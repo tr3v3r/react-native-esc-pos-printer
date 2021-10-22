@@ -2,6 +2,7 @@ import {
   NativeModules,
   EmitterSubscription,
   NativeEventEmitter,
+  Platform,
 } from 'react-native';
 
 import lineWrap from 'word-wrap';
@@ -12,6 +13,7 @@ import {
   BARCODE_TYPE,
   BARCODE_HRI,
   QRCODE_LEVEL,
+  QRCODE_TYPE,
 } from './constants';
 import type { IMonitorStatus, BarcodeParams, QRCodeParams } from './types';
 import { BufferHelper } from './utils/BufferHelper';
@@ -368,7 +370,19 @@ class Printing {
    * @param {number} width Width of the image 3 to 16.
    * @returns
    */
-  qrcode({ value, level = 'EPOS2_LEVEL_M', width = 3 }: QRCodeParams) {
+  qrcode({
+    value,
+    width,
+    type = 'EPOS2_SYMBOL_QRCODE_MODEL_2',
+    level = 'EPOS2_LEVEL_M',
+  }: QRCodeParams) {
+    if (!(typeof QRCODE_TYPE[type] === 'number')) {
+      if (Platform.OS === 'ios' && type === 'EPOS2_SYMBOL_QRCODE_MICRO') {
+        throw new Error('QRCODE_MICRO is not supported on iOS');
+      } else {
+        throw new Error('Unknown type of QR Code');
+      }
+    }
     if (!(typeof QRCODE_LEVEL[level] === 'number')) {
       throw new Error('Unknown error correction level of QR Code');
     }
@@ -378,7 +392,7 @@ class Printing {
     }
     this._queue([
       PRINTING_COMMANDS.COMMAND_ADD_QRCODE,
-      [value, QRCODE_LEVEL[level], width],
+      [value, QRCODE_TYPE[type], QRCODE_LEVEL[level], width],
     ]);
 
     return this;
