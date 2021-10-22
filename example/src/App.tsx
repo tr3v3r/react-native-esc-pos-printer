@@ -167,8 +167,15 @@ export default function App() {
                 .underline()
                 .newline(2)
                 .align('center')
-                .imageBase64(base64Image, 75)
-                .imageAsset('store.png', 75)
+                .image(require('./store.png'), 75)
+                .image({ uri: base64Image }, 75)
+                .image(
+                  {
+                    uri:
+                      'https://raw.githubusercontent.com/tr3v3r/react-native-esc-pos-printer/main/ios/store.png',
+                  },
+                  75
+                )
                 .cut()
                 .send();
 

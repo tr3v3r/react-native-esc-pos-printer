@@ -4,3 +4,4 @@ export {
   requestAndroidPermissions,
   enableLocationAccessAndroid10,
 } from './androidPermissions';
+export * from './validateImageSource';
