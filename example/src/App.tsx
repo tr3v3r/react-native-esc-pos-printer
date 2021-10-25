@@ -177,6 +177,18 @@ export default function App() {
                 .align('center')
                 .imageBase64(base64Image, 75)
                 .imageAsset('store.png', 75)
+                .barcode({
+                  value: 'Test123',
+                  type: 'EPOS2_BARCODE_CODE93',
+                  width: 2,
+                  height: 50,
+                  hri: 'EPOS2_HRI_BELOW',
+                })
+                .qrcode({
+                  value: 'Test123',
+                  level: 'EPOS2_LEVEL_M',
+                  width: 5,
+                })
                 .cut()
                 .send();
 
