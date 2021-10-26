@@ -50,6 +50,9 @@ class PrintingCommands {
   public static final int COMMAND_ADD_IMAGE_ASSET = 6;
   public static final int COMMAND_ADD_CUT = 7;
   public static final int COMMAND_ADD_DATA = 8;
+  public static final int COMMAND_ADD_TEXT_SMOOTH = 9;
+  public static final int COMMAND_ADD_BARCODE = 10;
+  public static final int COMMAND_ADD_QRCODE = 11;
 }
 
 @ReactModule(name = EscPosPrinterModule.NAME)
@@ -113,9 +116,12 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       constants.put("COMMAND_ADD_NEW_LINE", PrintingCommands.COMMAND_ADD_NEW_LINE);
       constants.put("COMMAND_ADD_TEXT_STYLE", PrintingCommands.COMMAND_ADD_TEXT_STYLE);
       constants.put("COMMAND_ADD_TEXT_SIZE", PrintingCommands.COMMAND_ADD_TEXT_SIZE);
+      constants.put("COMMAND_ADD_TEXT_SMOOTH", PrintingCommands.COMMAND_ADD_TEXT_SMOOTH);
       constants.put("COMMAND_ADD_ALIGN", PrintingCommands.COMMAND_ADD_ALIGN);
       constants.put("COMMAND_ADD_IMAGE_BASE_64", PrintingCommands.COMMAND_ADD_IMAGE_BASE_64);
       constants.put("COMMAND_ADD_IMAGE_ASSET", PrintingCommands.COMMAND_ADD_IMAGE_ASSET);
+      constants.put("COMMAND_ADD_BARCODE", PrintingCommands.COMMAND_ADD_BARCODE);
+      constants.put("COMMAND_ADD_QRCODE", PrintingCommands.COMMAND_ADD_QRCODE);
       constants.put("COMMAND_ADD_CUT", PrintingCommands.COMMAND_ADD_CUT);
       constants.put("COMMAND_ADD_DATA", PrintingCommands.COMMAND_ADD_DATA);
       constants.put("EPOS2_ALIGN_LEFT", Printer.ALIGN_LEFT);
@@ -123,6 +129,42 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       constants.put("EPOS2_ALIGN_CENTER", Printer.ALIGN_CENTER);
       constants.put("EPOS2_TRUE", Printer.TRUE);
       constants.put("EPOS2_FALSE", Printer.FALSE);
+      constants.put("EPOS2_LANG_EN", Printer.LANG_EN);
+      constants.put("EPOS2_LANG_JA", Printer.LANG_JA);
+      constants.put("EPOS2_LANG_ZH_CN", Printer.LANG_ZH_CN);
+      constants.put("EPOS2_LANG_ZH_TW", Printer.LANG_ZH_TW);
+      constants.put("EPOS2_LANG_KO", Printer.LANG_KO);
+      constants.put("EPOS2_LANG_TH", Printer.LANG_TH);
+      constants.put("EPOS2_LANG_VI", Printer.LANG_VI);
+      constants.put("EPOS2_LANG_MULTI", Printer.PARAM_DEFAULT);
+      constants.put("EPOS2_BARCODE_UPC_A", Printer.BARCODE_UPC_A);
+      constants.put("EPOS2_BARCODE_UPC_E", Printer.BARCODE_UPC_E);
+      constants.put("EPOS2_BARCODE_EAN13", Printer.BARCODE_EAN13);
+      constants.put("EPOS2_BARCODE_JAN13", Printer.BARCODE_JAN13);
+      constants.put("EPOS2_BARCODE_EAN8", Printer.BARCODE_EAN8);
+      constants.put("EPOS2_BARCODE_JAN8", Printer.BARCODE_JAN8);
+      constants.put("EPOS2_BARCODE_CODE39", Printer.BARCODE_CODE39);
+      constants.put("EPOS2_BARCODE_ITF", Printer.BARCODE_ITF);
+      constants.put("EPOS2_BARCODE_CODABAR", Printer.BARCODE_CODABAR);
+      constants.put("EPOS2_BARCODE_CODE93", Printer.BARCODE_CODE93);
+      constants.put("EPOS2_BARCODE_CODE128", Printer.BARCODE_CODE128);
+      constants.put("EPOS2_BARCODE_GS1_128", Printer.BARCODE_GS1_128);
+      constants.put("EPOS2_BARCODE_GS1_DATABAR_OMNIDIRECTIONAL", Printer.BARCODE_GS1_DATABAR_OMNIDIRECTIONAL);
+      constants.put("EPOS2_BARCODE_GS1_DATABAR_TRUNCATED", Printer.BARCODE_GS1_DATABAR_TRUNCATED);
+      constants.put("EPOS2_BARCODE_GS1_DATABAR_LIMITED", Printer.BARCODE_GS1_DATABAR_LIMITED);
+      constants.put("EPOS2_BARCODE_GS1_DATABAR_EXPANDED", Printer.BARCODE_GS1_DATABAR_EXPANDED);
+      constants.put("EPOS2_BARCODE_CODE128_AUTO", Printer.BARCODE_CODE128_AUTO);
+      constants.put("EPOS2_HRI_NONE", Printer.HRI_NONE);
+      constants.put("EPOS2_HRI_ABOVE", Printer.HRI_ABOVE);
+      constants.put("EPOS2_HRI_BELOW", Printer.HRI_BELOW);
+      constants.put("EPOS2_HRI_BOTH", Printer.HRI_BOTH);
+      constants.put("EPOS2_LEVEL_L", Printer.LEVEL_L);
+      constants.put("EPOS2_LEVEL_M", Printer.LEVEL_M);
+      constants.put("EPOS2_LEVEL_Q", Printer.LEVEL_Q);
+      constants.put("EPOS2_LEVEL_H", Printer.LEVEL_H);
+      constants.put("EPOS2_SYMBOL_QRCODE_MODEL_1", Printer.SYMBOL_QRCODE_MODEL_1);
+      constants.put("EPOS2_SYMBOL_QRCODE_MODEL_2", Printer.SYMBOL_QRCODE_MODEL_2);
+      constants.put("EPOS2_SYMBOL_QRCODE_MICRO", Printer.SYMBOL_QRCODE_MICRO);
       return constants;
     }
 
@@ -135,9 +177,9 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
   }
 
   @ReactMethod
-  public void init(String target, int series, Promise promise) {
+  public void init(String target, int series, int language,Promise promise) {
     this.finalizeObject();
-    this.initializeObject(series, new MyCallbackInterface() {
+    this.initializeObject(series, language, new MyCallbackInterface() {
       @Override
       public void onSuccess(String result) {
         promise.resolve(result);
@@ -172,9 +214,10 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
 
   }
 
-    private void initializeObject(int series, MyCallbackInterface callback) {
+    private void initializeObject(int series, int language,MyCallbackInterface callback) {
        try {
         mPrinter = new Printer(series, Printer.MODEL_ANK, mContext);
+        mPrinter.addTextLang(language);
        }
         catch (Epos2Exception e) {
           int status = EscPosPrinterErrorManager.getErrorStatus(e);
@@ -484,6 +527,17 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
     }
   }
 
+  @ReactMethod
+  public void addListener(String eventName) {
+    // Keep: Required for RN built in Event Emitter Calls.
+  }
+  
+  @ReactMethod
+  public void removeListeners(Integer count) {
+    // Keep: Required for RN built in Event Emitter Calls.
+  }    
+
+
   private void handleCommand(int command, ReadableArray params) throws Epos2Exception, IOException {
     switch (command) {
       case PrintingCommands.COMMAND_ADD_TEXT:
@@ -528,6 +582,15 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
         String base64String = params.getString(0);
         byte[] data = Base64.decode(base64String, Base64.DEFAULT);
         mPrinter.addCommand(data);
+        break;
+      case PrintingCommands.COMMAND_ADD_TEXT_SMOOTH:
+        mPrinter.addTextSmooth(params.getInt(0));
+        break;
+      case PrintingCommands.COMMAND_ADD_BARCODE:
+        mPrinter.addBarcode(params.getString(0), params.getInt(1), params.getInt(2), Printer.FONT_A, params.getInt(3), params.getInt(4));
+        break;
+      case PrintingCommands.COMMAND_ADD_QRCODE:
+        mPrinter.addSymbol(params.getString(0), params.getInt(1), params.getInt(2), params.getInt(3), params.getInt(3), params.getInt(3));
         break;
       default:
         throw new IllegalArgumentException("Invalid Printing Command");

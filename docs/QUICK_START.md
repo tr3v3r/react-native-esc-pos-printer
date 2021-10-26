@@ -13,6 +13,7 @@ async function testPrint() {
       await EscPosPrinter.init({
         target: printer.target,
         seriesName: getPrinterSeriesByName(printer.name),
+        language: 'EPOS2_LANG_EN',
       })
 
       const printing = new EscPosPrinter.printing();
@@ -20,10 +21,11 @@ async function testPrint() {
       const status = await printing
         .initialize()
         .align('center')
-        .initialize()
-        .align('center')
-        .size(6, 6)
+        .size(3, 3)
         .line('DUDE!')
+        .smooth()
+        .line('DUDE!')
+        .smooth()                
         .size(1, 1)
         .text('is that a ')
         .bold()
@@ -34,6 +36,18 @@ async function testPrint() {
         .newline(2)
         .align('center')
         .image(image, 200)
+        .barcode({
+          value:'Test123',
+          type:'EPOS2_BARCODE_CODE93',
+          hri:'EPOS2_HRI_BELOW',
+          width:2,
+          height:50,
+        })
+        .qrcode({
+          value: 'Test123',
+          level: 'EPOS2_LEVEL_M',
+          width: 5,
+        })
         .cut()
         .send()
 

@@ -3,6 +3,7 @@ import {
   EmitterSubscription,
   NativeEventEmitter,
   Image,
+  Platform,
 } from 'react-native';
 
 import lineWrap from 'word-wrap';
@@ -10,8 +11,17 @@ import {
   PRINTING_ALIGNMENT,
   PRINTING_COMMANDS,
   EPOS_BOOLEANS,
+  BARCODE_TYPE,
+  BARCODE_HRI,
+  QRCODE_LEVEL,
+  QRCODE_TYPE,
 } from './constants';
-import type { IMonitorStatus, ImageSource } from './types';
+import type {
+  IMonitorStatus,
+  ImageSource,
+  BarcodeParams,
+  QRCodeParams,
+} from './types';
 import { BufferHelper } from './utils/BufferHelper';
 import {
   isImageRemoteSource,
@@ -32,6 +42,7 @@ class Printing {
   private _state: {
     bold: boolean;
     underline: boolean;
+    smooth: boolean;
   };
 
   /**
@@ -43,6 +54,7 @@ class Printing {
     this._state = {
       bold: false,
       underline: false,
+      smooth: false,
     };
   }
 
@@ -56,6 +68,7 @@ class Printing {
     this._state = {
       bold: false,
       underline: false,
+      smooth: false,
     };
   }
 
@@ -233,6 +246,28 @@ class Printing {
   }
 
   /**
+   * Smooth text
+   *
+   * @param  {boolean}          value  true to turn on smooth, false to turn off smooth
+   * @return {object}                  Return the object, for easy chaining commands
+   *
+   */
+  smooth(value?: boolean) {
+    if (typeof value === 'undefined') {
+      value = !this._state.smooth;
+    }
+
+    this._state.smooth = value;
+
+    this._queue([
+      PRINTING_COMMANDS.COMMAND_ADD_TEXT_SMOOTH,
+      [this._convertToEposBool(this._state.smooth)],
+    ]);
+
+    return this;
+  }
+
+  /**
    * Change text size
    *
    * @param  {number} height Specifies the vertical scaling factor rate
@@ -307,6 +342,81 @@ class Printing {
    */
   imageAsset(image: string, width?: number) {
     this._queue([PRINTING_COMMANDS.COMMAND_ADD_IMAGE_ASSET, [image, width]]);
+
+    return this;
+  }
+
+  /**
+   * Barcode
+   *
+   * @param {string} value specifies barcode data as a text string.
+   * @param {string} type specifies the barcode type.
+   * @param {number} width specifies the width of a single module in dots.(2-6)
+   * @param {number} height specifies the height of the barcode in dots.(1-255)
+   * @param {string} hri specifies the human-robot interaction position.
+   * @returns
+   */
+  barcode({
+    value,
+    type = 'EPOS2_BARCODE_CODE93',
+    hri = 'EPOS2_HRI_BELOW',
+    width = 2,
+    height = 50,
+  }: BarcodeParams) {
+    if (!(typeof BARCODE_TYPE[type] === 'number')) {
+      throw new Error('Unknown barcode type');
+    }
+    if (!(typeof BARCODE_TYPE[type] === 'number')) {
+      throw new Error('Unknown setting of HRI');
+    }
+    if (width < 2 || width > 6) {
+      console.warn('The width of barcode is form 2 to 6');
+      width = 2;
+    }
+    if (height < 1 || height > 255) {
+      console.warn('The height of barcode is form 1 to 255');
+      height = 50;
+    }
+    this._queue([
+      PRINTING_COMMANDS.COMMAND_ADD_BARCODE,
+      [value, BARCODE_TYPE[type], BARCODE_HRI[hri], width, height],
+    ]);
+
+    return this;
+  }
+
+  /**
+   * QR Code
+   *
+   * @param {string} value specifies QR Code data as a text string.
+   * @param {string} level specifies the error correction level.
+   * @param {number} width Width of the image 3 to 16.
+   * @returns
+   */
+  qrcode({
+    value,
+    width,
+    type = 'EPOS2_SYMBOL_QRCODE_MODEL_2',
+    level = 'EPOS2_LEVEL_M',
+  }: QRCodeParams) {
+    if (!(typeof QRCODE_TYPE[type] === 'number')) {
+      if (Platform.OS === 'ios' && type === 'EPOS2_SYMBOL_QRCODE_MICRO') {
+        throw new Error('QRCODE_MICRO is not supported on iOS');
+      } else {
+        throw new Error('Unknown type of QR Code');
+      }
+    }
+    if (!(typeof QRCODE_LEVEL[level] === 'number')) {
+      throw new Error('Unknown error correction level of QR Code');
+    }
+    if (width < 3 || width > 16) {
+      console.warn('The width of qrcode is form 3 to 16');
+      width = 3;
+    }
+    this._queue([
+      PRINTING_COMMANDS.COMMAND_ADD_QRCODE,
+      [value, QRCODE_TYPE[type], QRCODE_LEVEL[level], width],
+    ]);
 
     return this;
   }

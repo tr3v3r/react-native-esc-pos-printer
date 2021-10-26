@@ -47,9 +47,20 @@ export type PrinterSeriesName =
   | 'EPOS2_TS_100'
   | 'EPOS2_TM_M50';
 
+export type PrinterLanguage =
+  | 'EPOS2_LANG_EN'
+  | 'EPOS2_LANG_JA'
+  | 'EPOS2_LANG_ZH_CN'
+  | 'EPOS2_LANG_ZH_TW'
+  | 'EPOS2_LANG_KO'
+  | 'EPOS2_LANG_TH'
+  | 'EPOS2_LANG_VI'
+  | 'EPOS2_LANG_MULTI';
+
 export interface IPrinterInitParams {
   target: string;
   seriesName: PrinterSeriesName;
+  language?: PrinterLanguage;
 }
 
 export interface IDiscoverParams {
@@ -88,4 +99,55 @@ export interface IMonitorStatus {
     | 'BATTERY_LEVEL_5'
     | 'BATTERY_LEVEL_6'
     | 'UNKNOWN';
+}
+
+export type BarcodeType =
+  | 'EPOS2_BARCODE_UPC_A'
+  | 'EPOS2_BARCODE_UPC_E'
+  | 'EPOS2_BARCODE_EAN13'
+  | 'EPOS2_BARCODE_JAN13'
+  | 'EPOS2_BARCODE_EAN8'
+  | 'EPOS2_BARCODE_JAN8'
+  | 'EPOS2_BARCODE_CODE39'
+  | 'EPOS2_BARCODE_ITF'
+  | 'EPOS2_BARCODE_CODABAR'
+  | 'EPOS2_BARCODE_CODE93'
+  | 'EPOS2_BARCODE_CODE128'
+  | 'EPOS2_BARCODE_GS1_128'
+  | 'EPOS2_BARCODE_GS1_DATABAR_OMNIDIRECTIONAL'
+  | 'EPOS2_BARCODE_GS1_DATABAR_TRUNCATED'
+  | 'EPOS2_BARCODE_GS1_DATABAR_LIMITED'
+  | 'EPOS2_BARCODE_GS1_DATABAR_EXPANDED'
+  | 'EPOS2_BARCODE_CODE128_AUTO';
+
+export type BarcodeHRI =
+  | 'EPOS2_HRI_NONE'
+  | 'EPOS2_HRI_ABOVE'
+  | 'EPOS2_HRI_BELOW'
+  | 'EPOS2_HRI_BOTH';
+
+export interface BarcodeParams {
+  value: string;
+  type?: BarcodeType;
+  width?: number;
+  height?: number;
+  hri?: BarcodeHRI;
+}
+
+export type QRCodeLevel =
+  | 'EPOS2_LEVEL_L'
+  | 'EPOS2_LEVEL_M'
+  | 'EPOS2_LEVEL_Q'
+  | 'EPOS2_LEVEL_H';
+
+export type QRCodeType =
+  | 'EPOS2_SYMBOL_QRCODE_MODEL_1'
+  | 'EPOS2_SYMBOL_QRCODE_MODEL_2'
+  | 'EPOS2_SYMBOL_QRCODE_MICRO';
+
+export interface QRCodeParams {
+  value: string;
+  width: number;
+  type?: QRCodeType;
+  level?: QRCodeLevel;
 }
