@@ -48,6 +48,14 @@ Sets the bold state - optional boolean parameter, if no parameter is supplied it
 printing.initialize().bold();
 ```
 
+### smooth
+
+Sets the smooth state - optional boolean parameter, if no parameter is supplied it will toggle the smooth state
+
+```javascript
+printing.initialize().smooth();
+```
+
 ### size
 
 Sets the text size. Text can be scaled from size 1 - 8. Optional width parameter, if not provided text will be scaled equal to the height.
@@ -89,6 +97,45 @@ export const base64Image =
   'data:image/png;base64,....'
 
 printing.initialize().imageBase64(base64Image, 75);
+```
+
+### barcode
+
+Prints a barcode.
+
+- value : The string of barcode data, it will be restricted by the `type`.
+- type? : Sets the barcode type - optional string parameter, defaults to CODE93.
+- hri? : Sets the position of human-robot interaction - optional string parameter, defaults to BELOW.
+- width? : Sets the width of a single module in dots - optional number parameter, defaults to 2 (width of the barcode 2 to 6).
+- height? : Sets the height of the barcode in dots - optional number parameter, defaults to 50 (height of the barcode 1 to 255).
+
+```javascript
+printing.initialize().barcode({
+  value: 'Test123',
+  type: 'EPOS2_BARCODE_CODE93',
+  hri: 'EPOS2_HRI_BELOW',
+  width: 2,
+  height: 50,
+});
+```
+
+### qrcode
+
+Prints a QR Code.
+
+- value : The string of QR Code data.
+- width : Sets the size of the QR Code, defaults to 3 (width of the qrcode 3 to 16).
+- type : Sets the type of the QR Code - optional string parameter, defaults to QRCODE_MODEL_2, and EPOS2_SYMBOL_QRCODE_MICRO is android only.
+- level? : Sets the error correction level - optional string parameter, defaults to LEVEL_M.
+
+
+```javascript
+printing.initialize().qrcode({
+  value: 'Test123',
+  width: 5,
+  type: 'EPOS2_SYMBOL_QRCODE_MODEL_2',
+  level: 'EPOS2_LEVEL_M',
+});
 ```
 
 ### data

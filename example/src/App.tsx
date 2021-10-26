@@ -47,6 +47,7 @@ export default function App() {
               await EscPosPrinter.init({
                 target: printer.target,
                 seriesName: getPrinterSeriesByName(printer.name),
+                language: 'EPOS2_LANG_EN',
               });
               setInit(true);
             }
@@ -70,6 +71,7 @@ export default function App() {
               await EscPosPrinter.init({
                 target: printer.target,
                 seriesName: getPrinterSeriesByName(printer.name),
+                language: 'EPOS2_LANG_EN',
               });
               setInit(true);
             }
@@ -91,6 +93,7 @@ export default function App() {
               await EscPosPrinter.init({
                 target: printer.target,
                 seriesName: getPrinterSeriesByName(printer.name),
+                language: 'EPOS2_LANG_EN',
               });
               setInit(true);
             }
@@ -122,6 +125,7 @@ export default function App() {
                 await EscPosPrinter.init({
                   target: printer.target,
                   seriesName: getPrinterSeriesByName(printer.name),
+                  language: 'EPOS2_LANG_EN',
                 });
                 setInit(true);
               }
@@ -148,6 +152,7 @@ export default function App() {
                 await EscPosPrinter.init({
                   target: printer.target,
                   seriesName: getPrinterSeriesByName(printer.name),
+                  language: 'EPOS2_LANG_EN',
                 });
                 setInit(true);
               }
@@ -156,8 +161,11 @@ export default function App() {
               const status = await printing
                 .initialize()
                 .align('center')
-                .size(6, 6)
+                .size(3, 3)
                 .line('DUDE!')
+                .smooth(true)
+                .line('DUDE!')
+                .smooth(false)
                 .size(1, 1)
                 .text('is that a ')
                 .bold()
@@ -176,6 +184,18 @@ export default function App() {
                   },
                   75
                 )
+                .barcode({
+                  value: 'Test123',
+                  type: 'EPOS2_BARCODE_CODE93',
+                  width: 2,
+                  height: 50,
+                  hri: 'EPOS2_HRI_BELOW',
+                })
+                .qrcode({
+                  value: 'Test123',
+                  level: 'EPOS2_LEVEL_M',
+                  width: 5,
+                })
                 .cut()
                 .send();
 

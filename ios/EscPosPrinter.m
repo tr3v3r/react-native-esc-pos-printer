@@ -58,11 +58,14 @@ RCT_EXPORT_MODULE()
       @"COMMAND_ADD_NEW_LINE": @(COMMAND_ADD_NEW_LINE),
       @"COMMAND_ADD_TEXT_STYLE": @(COMMAND_ADD_TEXT_STYLE),
       @"COMMAND_ADD_TEXT_SIZE": @(COMMAND_ADD_TEXT_SIZE),
+      @"COMMAND_ADD_TEXT_SMOOTH": @(COMMAND_ADD_TEXT_SMOOTH),
       @"COMMAND_ADD_ALIGN": @(COMMAND_ADD_ALIGN),
       @"COMMAND_ADD_IMAGE_BASE_64": @(COMMAND_ADD_IMAGE_BASE_64),
       @"COMMAND_ADD_IMAGE": @(COMMAND_ADD_IMAGE),
       @"COMMAND_ADD_REMOTE_IMAGE": @(COMMAND_ADD_REMOTE_IMAGE),
       @"COMMAND_ADD_IMAGE_ASSET": @(COMMAND_ADD_IMAGE_ASSET),
+      @"COMMAND_ADD_BARCODE": @(COMMAND_ADD_BARCODE),
+      @"COMMAND_ADD_QRCODE": @(COMMAND_ADD_QRCODE),
       @"COMMAND_ADD_CUT": @(COMMAND_ADD_CUT),
       @"COMMAND_ADD_DATA": @(COMMAND_ADD_DATA),
       @"EPOS2_ALIGN_LEFT": @(EPOS2_ALIGN_LEFT),
@@ -70,6 +73,41 @@ RCT_EXPORT_MODULE()
       @"EPOS2_ALIGN_CENTER": @(EPOS2_ALIGN_CENTER),
       @"EPOS2_TRUE": @(EPOS2_TRUE),
       @"EPOS2_FALSE": @(EPOS2_FALSE),
+      @"EPOS2_LANG_EN": @(EPOS2_LANG_EN),
+      @"EPOS2_LANG_JA": @(EPOS2_LANG_JA),
+      @"EPOS2_LANG_ZH_CN": @(EPOS2_LANG_ZH_CN),
+      @"EPOS2_LANG_ZH_TW": @(EPOS2_LANG_ZH_TW),
+      @"EPOS2_LANG_KO": @(EPOS2_LANG_KO),
+      @"EPOS2_LANG_TH": @(EPOS2_LANG_TH),
+      @"EPOS2_LANG_VI": @(EPOS2_LANG_VI),
+      @"EPOS2_LANG_MULTI": @(EPOS2_LANG_MULTI),
+      @"EPOS2_BARCODE_UPC_A": @(EPOS2_BARCODE_UPC_A),
+      @"EPOS2_BARCODE_UPC_E": @(EPOS2_BARCODE_UPC_E),
+      @"EPOS2_BARCODE_EAN13": @(EPOS2_BARCODE_EAN13),
+      @"EPOS2_BARCODE_JAN13": @(EPOS2_BARCODE_JAN13),
+      @"EPOS2_BARCODE_EAN8": @(EPOS2_BARCODE_EAN8),
+      @"EPOS2_BARCODE_JAN8": @(EPOS2_BARCODE_JAN8),
+      @"EPOS2_BARCODE_CODE39": @(EPOS2_BARCODE_CODE39),
+      @"EPOS2_BARCODE_ITF": @(EPOS2_BARCODE_ITF),
+      @"EPOS2_BARCODE_CODABAR": @(EPOS2_BARCODE_CODABAR),
+      @"EPOS2_BARCODE_CODE93": @(EPOS2_BARCODE_CODE93),
+      @"EPOS2_BARCODE_CODE128": @(EPOS2_BARCODE_CODE128),
+      @"EPOS2_BARCODE_GS1_128": @(EPOS2_BARCODE_GS1_128),
+      @"EPOS2_BARCODE_GS1_DATABAR_OMNIDIRECTIONAL": @(EPOS2_BARCODE_GS1_DATABAR_OMNIDIRECTIONAL),
+      @"EPOS2_BARCODE_GS1_DATABAR_TRUNCATED": @(EPOS2_BARCODE_GS1_DATABAR_TRUNCATED),
+      @"EPOS2_BARCODE_GS1_DATABAR_LIMITED": @(EPOS2_BARCODE_GS1_DATABAR_LIMITED),
+      @"EPOS2_BARCODE_GS1_DATABAR_EXPANDED": @(EPOS2_BARCODE_GS1_DATABAR_EXPANDED),
+      @"EPOS2_BARCODE_CODE128_AUTO": @(EPOS2_BARCODE_CODE128_AUTO),
+      @"EPOS2_HRI_NONE": @(EPOS2_HRI_NONE),
+      @"EPOS2_HRI_ABOVE": @(EPOS2_HRI_ABOVE),
+      @"EPOS2_HRI_BELOW": @(EPOS2_HRI_BELOW),
+      @"EPOS2_HRI_BOTH": @(EPOS2_HRI_BOTH),
+      @"EPOS2_LEVEL_L": @(EPOS2_LEVEL_L),
+      @"EPOS2_LEVEL_M": @(EPOS2_LEVEL_M),
+      @"EPOS2_LEVEL_Q": @(EPOS2_LEVEL_Q),
+      @"EPOS2_LEVEL_H": @(EPOS2_LEVEL_H),
+      @"EPOS2_SYMBOL_QRCODE_MODEL_1": @(EPOS2_SYMBOL_QRCODE_MODEL_1),
+      @"EPOS2_SYMBOL_QRCODE_MODEL_2": @(EPOS2_SYMBOL_QRCODE_MODEL_2),
    };
 }
 
@@ -85,6 +123,9 @@ enum PrintingCommands : int {
     COMMAND_ADD_DATA,
     COMMAND_ADD_IMAGE,
     COMMAND_ADD_REMOTE_IMAGE
+    COMMAND_ADD_TEXT_SMOOTH,
+    COMMAND_ADD_BARCODE,
+    COMMAND_ADD_QRCODE
 };
 
 + (BOOL)requiresMainQueueSetup
@@ -94,11 +135,12 @@ enum PrintingCommands : int {
 
 RCT_EXPORT_METHOD(init:(NSString *)target
                   series:(int)series
+                  lang:(int)lang
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 {
     [self finalizeObject];
-    [self initializeObject: series onSuccess:^(NSString *result) {
+    [self initializeObject: series lang:lang onSuccess:^(NSString *result) {
         resolve(result);
     } onError:^(NSString *error) {
        reject(@"event_failure",error, nil);
@@ -235,6 +277,7 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
 
 
 - (void)initializeObject: (int)series
+                          lang:(int)lang
                           onSuccess: (void(^)(NSString *))onSuccess
                           onError: (void(^)(NSString *))onError
 {
@@ -252,7 +295,7 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
     }
 
     [printer setReceiveEventDelegate:self];
-
+    [printer addTextLang:lang];
     NSString *successString = [ErrorManager getEposErrorText: EPOS2_SUCCESS];
     onSuccess(successString);
 }
@@ -569,6 +612,15 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
            result = [self->printer addCommand:data];
           break;
         }
+        case COMMAND_ADD_TEXT_SMOOTH :
+            result = [self->printer addTextSmooth:[params[0] intValue]];
+          break;
+        case COMMAND_ADD_BARCODE :
+            result = [self->printer addBarcode:params[0] type:[params[1] intValue] hri:[params[2] intValue] font:EPOS2_FONT_A width:[params[3] intValue] height:[params[4] intValue]];
+          break;
+        case COMMAND_ADD_QRCODE :
+            result = [self->printer addSymbol:params[0] type:[params[1] intValue] level:[params[2] intValue] width:[params[3] intValue] height:[params[3] intValue] size:[params[3] intValue]];
+          break;
     }
 
     return result;
