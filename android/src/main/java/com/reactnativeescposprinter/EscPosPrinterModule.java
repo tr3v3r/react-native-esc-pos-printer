@@ -40,6 +40,9 @@ import com.facebook.react.bridge.WritableMap;
 import android.os.Handler;
 import java.util.concurrent.Callable;
 
+import com.facebook.react.bridge.ReadableMap;
+import android.util.Log;
+import java.net.URL;
 class PrintingCommands {
   public static final int COMMAND_ADD_TEXT = 0;
   public static final int COMMAND_ADD_NEW_LINE = 1;
@@ -53,6 +56,8 @@ class PrintingCommands {
   public static final int COMMAND_ADD_TEXT_SMOOTH = 9;
   public static final int COMMAND_ADD_BARCODE = 10;
   public static final int COMMAND_ADD_QRCODE = 11;
+  public static final int COMMAND_ADD_IMAGE = 12;
+  public static final int COMMAND_ADD_REMOTE_IMAGE = 13;
 }
 
 @ReactModule(name = EscPosPrinterModule.NAME)
@@ -120,6 +125,8 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       constants.put("COMMAND_ADD_ALIGN", PrintingCommands.COMMAND_ADD_ALIGN);
       constants.put("COMMAND_ADD_IMAGE_BASE_64", PrintingCommands.COMMAND_ADD_IMAGE_BASE_64);
       constants.put("COMMAND_ADD_IMAGE_ASSET", PrintingCommands.COMMAND_ADD_IMAGE_ASSET);
+      constants.put("COMMAND_ADD_IMAGE", PrintingCommands.COMMAND_ADD_IMAGE);
+      constants.put("COMMAND_ADD_REMOTE_IMAGE", PrintingCommands.COMMAND_ADD_REMOTE_IMAGE);
       constants.put("COMMAND_ADD_BARCODE", PrintingCommands.COMMAND_ADD_BARCODE);
       constants.put("COMMAND_ADD_QRCODE", PrintingCommands.COMMAND_ADD_QRCODE);
       constants.put("COMMAND_ADD_CUT", PrintingCommands.COMMAND_ADD_CUT);
@@ -531,11 +538,42 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
   public void addListener(String eventName) {
     // Keep: Required for RN built in Event Emitter Calls.
   }
-  
+
   @ReactMethod
   public void removeListeners(Integer count) {
     // Keep: Required for RN built in Event Emitter Calls.
-  }    
+  }
+
+  private Bitmap getBitmapFromSource(ReadableMap source) throws Exception {
+    String uriString = source.getString("uri");
+
+    if(uriString.startsWith("data")) {
+        final String pureBase64Encoded = uriString.substring(uriString.indexOf(",") + 1);
+        byte[] decodedString = Base64.decode(pureBase64Encoded, Base64.DEFAULT);
+        Bitmap image = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+        return image;
+    }
+
+    if(uriString.startsWith("http") || uriString.startsWith("https")) {
+      URL url = new URL(uriString);
+      Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+      return image;
+    }
+
+    if(uriString.startsWith("file")) {
+      BitmapFactory.Options options = new BitmapFactory.Options();
+      options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+      Bitmap image = BitmapFactory.decodeFile(uriString, options);
+
+      return image;
+    }
+
+    int resourceId = mContext.getResources().getIdentifier(uriString, "drawable", mContext.getPackageName());
+    Bitmap image = BitmapFactory.decodeResource(mContext.getResources(), resourceId);
+
+    return image;
+  }
 
 
   private void handleCommand(int command, ReadableArray params) throws Epos2Exception, IOException {
@@ -555,6 +593,24 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       case PrintingCommands.COMMAND_ADD_ALIGN:
         mPrinter.addTextAlign(params.getInt(0));
         break;
+
+      case PrintingCommands.COMMAND_ADD_IMAGE:
+        ReadableMap source = params.getMap(0);
+
+        int imgWidth = params.getInt(1);
+        try {
+          Bitmap imgBitmap = getBitmapFromSource(source);
+          handlePrintImage(imgBitmap, imgWidth);
+        } catch(Exception e) {
+          Log.e("MYAPP", "exception", e);
+        }
+
+
+        break;
+      case PrintingCommands.COMMAND_ADD_REMOTE_IMAGE:
+
+
+        break;
       case PrintingCommands.COMMAND_ADD_IMAGE_BASE_64:
         String uriString = params.getString(0);
         final String pureBase64Encoded = uriString.substring(uriString.indexOf(",") + 1);
@@ -564,6 +620,7 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
 
         handlePrintImage(bitmap, inputWidth);
         break;
+
       case PrintingCommands.COMMAND_ADD_IMAGE_ASSET:
         String imageName = params.getString(0);
         int width = params.getInt(1);
