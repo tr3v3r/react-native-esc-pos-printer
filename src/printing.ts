@@ -23,10 +23,7 @@ import type {
   QRCodeParams,
 } from './types';
 import { BufferHelper } from './utils/BufferHelper';
-import {
-  isImageRemoteSource,
-  assertImageLocalSource,
-} from './utils/validateImageSource';
+import { assertImageSource } from './utils/validateImageSource';
 
 const { EscPosPrinter } = NativeModules;
 const printEventEmmiter = new NativeEventEmitter(EscPosPrinter);
@@ -308,15 +305,10 @@ class Printing {
     return this;
   }
   image(imageSource: ImageSource, width: number) {
-    if (isImageRemoteSource(imageSource)) {
-      const url = (imageSource as { uri: string }).uri;
-      this._queue([PRINTING_COMMANDS.COMMAND_ADD_REMOTE_IMAGE, [url, width]]);
-    } else {
-      assertImageLocalSource(imageSource);
-      const image = Image.resolveAssetSource(imageSource);
+    assertImageSource(imageSource);
+    const image = Image.resolveAssetSource(imageSource);
 
-      this._queue([PRINTING_COMMANDS.COMMAND_ADD_IMAGE, [image, width]]);
-    }
+    this._queue([PRINTING_COMMANDS.COMMAND_ADD_IMAGE, [image, width]]);
 
     return this;
   }

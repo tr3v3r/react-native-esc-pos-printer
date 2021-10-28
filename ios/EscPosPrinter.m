@@ -122,7 +122,7 @@ enum PrintingCommands : int {
     COMMAND_ADD_CUT,
     COMMAND_ADD_DATA,
     COMMAND_ADD_IMAGE,
-    COMMAND_ADD_REMOTE_IMAGE
+    COMMAND_ADD_REMOTE_IMAGE,
     COMMAND_ADD_TEXT_SMOOTH,
     COMMAND_ADD_BARCODE,
     COMMAND_ADD_QRCODE
@@ -590,7 +590,15 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
         }
         case COMMAND_ADD_IMAGE : {
             NSDictionary *imageObj = params[0];
-            UIImage * imageData = [RCTConvert UIImage:imageObj];
+            NSString * urlString = imageObj[@"uri"];
+            UIImage * imageData;
+            if([urlString hasPrefix: @"http"] || [urlString hasPrefix: @"https"]) {
+              NSURL *url = [NSURL URLWithString: urlString];
+              NSData *data = [NSData dataWithContentsOfURL:url];
+              imageData = [[UIImage alloc] initWithData:data];
+            } else {
+              imageData = [RCTConvert UIImage:imageObj];
+            }
             result = [self printImage:imageData width: [params[1] intValue]];
           break;
         }

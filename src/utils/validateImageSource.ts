@@ -1,19 +1,14 @@
 import type { ImageSource } from '../types';
 
-export function isImageRemoteSource(imageSource: ImageSource) {
-  const objectTypeSource = imageSource as { uri: string };
+const URI_SHEMES = ['file:', 'data:', 'http:', 'https:'];
 
-  return objectTypeSource?.uri?.startsWith('http');
-}
-
-export function assertImageLocalSource(imageSource: ImageSource) {
+export function assertImageSource(imageSource: ImageSource) {
   const objectTypeSource = imageSource as { uri: string };
 
   if (
     typeof imageSource === 'number' ||
     (objectTypeSource.uri &&
-      (objectTypeSource.uri.startsWith('file:') ||
-        objectTypeSource.uri.startsWith('data:')))
+      URI_SHEMES.some((scheme) => objectTypeSource.uri.startsWith(scheme)))
   ) {
     return;
   }
