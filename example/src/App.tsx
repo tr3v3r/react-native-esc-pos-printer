@@ -175,14 +175,17 @@ export default function App() {
                 .underline()
                 .newline(2)
                 .align('center')
-                .image(require('./store.png'), 75)
-                .image({ uri: base64Image }, 75)
+                .image(require('./store.png'), {
+                  width: 75,
+                  halftone: 'EPOS2_HALFTONE_THRESHOLD',
+                })
+                .image({ uri: base64Image }, { width: 75 })
                 .image(
                   {
                     uri:
                       'https://raw.githubusercontent.com/tr3v3r/react-native-esc-pos-printer/main/ios/store.png',
                   },
-                  75
+                  { width: 75 }
                 )
                 .barcode({
                   value: 'Test123',

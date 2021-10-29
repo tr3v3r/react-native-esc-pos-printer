@@ -5,3 +5,5 @@ export {
   enableLocationAccessAndroid10,
 } from './androidPermissions';
 export * from './validateImageSource';
+export { assertNativeCommands } from './assertNativeCommands';
+export { getNativeCommand } from './getNativeCommand';
