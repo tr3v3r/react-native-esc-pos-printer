@@ -355,6 +355,9 @@ class Printing {
    * @returns
    */
   imageBase64(image: string, width: number) {
+    console.warn(
+      'imageBase64 is depricated and will be removed after release 2+. Use .image() instead'
+    );
     this._queue([PRINTING_COMMANDS.COMMAND_ADD_IMAGE_BASE_64, [image, width]]);
 
     return this;
@@ -367,6 +370,9 @@ class Printing {
    * @returns
    */
   imageAsset(image: string, width?: number) {
+    console.warn(
+      'imageAsset is depricated and will be removed after release 2+. Use .image() instead'
+    );
     this._queue([PRINTING_COMMANDS.COMMAND_ADD_IMAGE_ASSET, [image, width]]);
 
     return this;
