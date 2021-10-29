@@ -72,8 +72,9 @@ Sets the text alignment. Valid values are 'left' | 'center' | 'right'.
 printing.initialize().align('center');
 ```
 
-### image
+### imageAsset
 
+## (Depracted use .image() method instead).
 Prints an image from iOS/Android local assets folder.
 
 - Android: Save your image file under the directory `android/app/src/main/assets`. Note that files in this directory must be lowercase.
@@ -84,8 +85,9 @@ Prints an image from iOS/Android local assets folder.
 printing.initialize().imageAsset('logo.png', 200);
 ```
 
-### base64 image
+### imageBase64
 
+## (Depracted use .image() method instead).
 Prints an image represented by base64 data (i.e. "data:image/png;base64,...").
 
 - Use base64 string as first argument and image width as a second (width of the image 1 to 65535)
@@ -97,6 +99,36 @@ export const base64Image =
   'data:image/png;base64,....'
 
 printing.initialize().imageBase64(base64Image, 75);
+```
+
+### image
+
+Prints image from local/remote source.
+
+- source : Image source. `{ uri: base64String | https:// | http:// | file:// }` or `require('./path_to_local_image/image.png')`
+- params
+  - color? : Specifies the color. `'EPOS2_COLOR_1' | 'EPOS2_COLOR_2' | 'EPOS2_COLOR_3' | 'EPOS2_COLOR_4'`
+  - mode? : Specifies the color mode. `'EPOS2_MODE_MONO' | 'EPOS2_MODE_GRAY16' | 'EPOS2_MODE_MONO_HIGH_DENSITY'`
+  - halftone? : Specifies the halftone processing method. `'EPOS2_HALFTONE_DITHER' | 'EPOS2_HALFTONE_ERROR_DIFFUSION' | 'EPOS2_HALFTONE_THRESHOLD'`
+  - brigtness? : Specifies the brightness compensation value (from 0.1 to 10).
+
+```javascript
+
+printing.initialize()
+    .image(require('./store.png'), {
+        width: 75,
+        halftone: 'EPOS2_HALFTONE_THRESHOLD',
+      })
+    .image({ uri: base64Image }, { width: 75 })
+    .image(
+      {
+        uri:
+          'https://raw.githubusercontent.com/tr3v3r/react-native-esc-pos-printer/main/ios/store.png',
+      },
+      { width: 75 }
+    )
+    .cut()
+    .send();
 ```
 
 ### barcode
