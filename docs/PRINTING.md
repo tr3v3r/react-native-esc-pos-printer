@@ -107,6 +107,7 @@ Prints image from local/remote source.
 
 - source : Image source. `{ uri: base64String | https:// | http:// | file:// }` or `require('./path_to_local_image/image.png')`
 - params
+  - width: Width of the image (from 1 to 65535).
   - color? : Specifies the color. `'EPOS2_COLOR_1' | 'EPOS2_COLOR_2' | 'EPOS2_COLOR_3' | 'EPOS2_COLOR_4'`
   - mode? : Specifies the color mode. `'EPOS2_MODE_MONO' | 'EPOS2_MODE_GRAY16' | 'EPOS2_MODE_MONO_HIGH_DENSITY'`
   - halftone? : Specifies the halftone processing method. `'EPOS2_HALFTONE_DITHER' | 'EPOS2_HALFTONE_ERROR_DIFFUSION' | 'EPOS2_HALFTONE_THRESHOLD'`
