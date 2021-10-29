@@ -2,6 +2,7 @@ import {
   NativeModules,
   EmitterSubscription,
   NativeEventEmitter,
+  Image,
   Platform,
 } from 'react-native';
 
@@ -15,8 +16,19 @@ import {
   QRCODE_LEVEL,
   QRCODE_TYPE,
 } from './constants';
-import type { IMonitorStatus, BarcodeParams, QRCodeParams } from './types';
-import { BufferHelper } from './utils/BufferHelper';
+import type {
+  IMonitorStatus,
+  ImageSource,
+  BarcodeParams,
+  QRCodeParams,
+  ImagePrintParams,
+} from './types';
+import {
+  BufferHelper,
+  assertImageSource,
+  assertNativeCommands,
+  getNativeCommand,
+} from './utils';
 
 const { EscPosPrinter } = NativeModules;
 const printEventEmmiter = new NativeEventEmitter(EscPosPrinter);
@@ -297,6 +309,43 @@ class Printing {
 
     return this;
   }
+  image(
+    imageSource: ImageSource,
+    {
+      width,
+      color = 'EPOS2_COLOR_1',
+      mode = 'EPOS2_MODE_MONO',
+      halftone = 'EPOS2_HALFTONE_DITHER',
+      brightness = 1,
+    }: ImagePrintParams
+  ) {
+    assertNativeCommands([color, mode, halftone], 'image');
+    assertImageSource(imageSource);
+
+    if (width < 1 || width > 65535) {
+      throw new Error('The width of image should be from 1 to 65535');
+    }
+
+    if (brightness < 0.1 || brightness > 10) {
+      throw new Error('The brightness of image should be from 0.1 to 10');
+    }
+
+    const image = Image.resolveAssetSource(imageSource);
+
+    this._queue([
+      PRINTING_COMMANDS.COMMAND_ADD_IMAGE,
+      [
+        image,
+        width,
+        getNativeCommand(color),
+        getNativeCommand(mode),
+        getNativeCommand(halftone),
+        brightness,
+      ],
+    ]);
+
+    return this;
+  }
 
   /**
    * Image
@@ -306,6 +355,9 @@ class Printing {
    * @returns
    */
   imageBase64(image: string, width: number) {
+    console.warn(
+      'imageBase64 is depricated and will be removed after release 2+. Use .image() instead'
+    );
     this._queue([PRINTING_COMMANDS.COMMAND_ADD_IMAGE_BASE_64, [image, width]]);
 
     return this;
@@ -318,6 +370,9 @@ class Printing {
    * @returns
    */
   imageAsset(image: string, width?: number) {
+    console.warn(
+      'imageAsset is depricated and will be removed after release 2+. Use .image() instead'
+    );
     this._queue([PRINTING_COMMANDS.COMMAND_ADD_IMAGE_ASSET, [image, width]]);
 
     return this;

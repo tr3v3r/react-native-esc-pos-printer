@@ -1,5 +1,6 @@
 #import "EscPosPrinter.h"
 #import "ErrorManager.h"
+#import <React/RCTConvert.h>
 
 @interface EscPosPrinter() <Epos2PtrReceiveDelegate, Epos2PrinterSettingDelegate>
  @property (strong, nonatomic) NSString* printerAddress;
@@ -60,6 +61,7 @@ RCT_EXPORT_MODULE()
       @"COMMAND_ADD_TEXT_SMOOTH": @(COMMAND_ADD_TEXT_SMOOTH),
       @"COMMAND_ADD_ALIGN": @(COMMAND_ADD_ALIGN),
       @"COMMAND_ADD_IMAGE_BASE_64": @(COMMAND_ADD_IMAGE_BASE_64),
+      @"COMMAND_ADD_IMAGE": @(COMMAND_ADD_IMAGE),
       @"COMMAND_ADD_IMAGE_ASSET": @(COMMAND_ADD_IMAGE_ASSET),
       @"COMMAND_ADD_BARCODE": @(COMMAND_ADD_BARCODE),
       @"COMMAND_ADD_QRCODE": @(COMMAND_ADD_QRCODE),
@@ -105,6 +107,20 @@ RCT_EXPORT_MODULE()
       @"EPOS2_LEVEL_H": @(EPOS2_LEVEL_H),
       @"EPOS2_SYMBOL_QRCODE_MODEL_1": @(EPOS2_SYMBOL_QRCODE_MODEL_1),
       @"EPOS2_SYMBOL_QRCODE_MODEL_2": @(EPOS2_SYMBOL_QRCODE_MODEL_2),
+
+       // Print image settings
+      @"EPOS2_COLOR_1": @(EPOS2_COLOR_1),
+      @"EPOS2_COLOR_2": @(EPOS2_COLOR_2),
+      @"EPOS2_COLOR_3": @(EPOS2_COLOR_3),
+      @"EPOS2_COLOR_4": @(EPOS2_COLOR_4),
+
+      @"EPOS2_MODE_MONO": @(EPOS2_MODE_MONO),
+      @"EPOS2_MODE_GRAY16": @(EPOS2_MODE_GRAY16),
+      @"EPOS2_MODE_MONO_HIGH_DENSITY": @(EPOS2_MODE_MONO_HIGH_DENSITY),
+
+      @"EPOS2_HALFTONE_DITHER": @(EPOS2_HALFTONE_DITHER),
+      @"EPOS2_HALFTONE_ERROR_DIFFUSION": @(EPOS2_HALFTONE_ERROR_DIFFUSION),
+      @"EPOS2_HALFTONE_THRESHOLD": @(EPOS2_HALFTONE_THRESHOLD),
    };
 }
 
@@ -118,6 +134,7 @@ enum PrintingCommands : int {
     COMMAND_ADD_IMAGE_ASSET,
     COMMAND_ADD_CUT,
     COMMAND_ADD_DATA,
+    COMMAND_ADD_IMAGE,
     COMMAND_ADD_TEXT_SMOOTH,
     COMMAND_ADD_BARCODE,
     COMMAND_ADD_QRCODE
@@ -491,6 +508,34 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
     return newImage;
 }
 
+- (int)printImage:(UIImage *)imageData
+                  width:(NSInteger)width
+                  color:(int)color
+                  mode:(int)mode
+                  halftone:(int)halftone
+                  brightness:(CGFloat)brightness
+
+{
+    int result = EPOS2_SUCCESS;
+
+    NSInteger imgHeight = imageData.size.height;
+    NSInteger imagWidth = imageData.size.width;
+
+    CGSize size = CGSizeMake(width, imgHeight*width/imagWidth);
+    UIImage *scaled = [self scaleImage:imageData scaledToFillSize:size];
+
+    result = [self->printer addImage:scaled x:0 y:0
+      width: size.width
+      height: size.height
+      color: color
+      mode: mode
+      halftone: halftone
+      brightness: brightness
+      compress:EPOS2_COMPRESS_AUTO];
+
+    return result;
+}
+
 - (enum Epos2ErrorStatus)handleCommand: (enum PrintingCommands)command params:(NSArray*)params {
     int result = EPOS2_SUCCESS;
     NSString* text = @"";
@@ -560,6 +605,27 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
               brightness:EPOS2_PARAM_DEFAULT
               compress:EPOS2_COMPRESS_AUTO];
             break;
+        }
+        case COMMAND_ADD_IMAGE : {
+            NSDictionary *imageObj = params[0];
+            NSString * urlString = imageObj[@"uri"];
+            UIImage * imageData;
+            if([urlString hasPrefix: @"http"] || [urlString hasPrefix: @"https"]) {
+              NSURL *url = [NSURL URLWithString: urlString];
+              NSData *data = [NSData dataWithContentsOfURL:url];
+              imageData = [[UIImage alloc] initWithData:data];
+            } else {
+              imageData = [RCTConvert UIImage:imageObj];
+            }
+
+            result = [self printImage:imageData
+                           width: [params[1] intValue]
+                           color: [params[2] intValue]
+                           mode: [params[3] intValue]
+                           halftone: [params[4] intValue]
+                           brightness: [params[5] floatValue]
+                      ];
+          break;
         }
         case COMMAND_ADD_CUT :
             result = [self->printer addCut:EPOS2_CUT_FEED];

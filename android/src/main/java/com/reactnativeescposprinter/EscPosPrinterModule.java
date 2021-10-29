@@ -40,6 +40,9 @@ import com.facebook.react.bridge.WritableMap;
 import android.os.Handler;
 import java.util.concurrent.Callable;
 
+import com.facebook.react.bridge.ReadableMap;
+import android.util.Log;
+import java.net.URL;
 class PrintingCommands {
   public static final int COMMAND_ADD_TEXT = 0;
   public static final int COMMAND_ADD_NEW_LINE = 1;
@@ -53,6 +56,7 @@ class PrintingCommands {
   public static final int COMMAND_ADD_TEXT_SMOOTH = 9;
   public static final int COMMAND_ADD_BARCODE = 10;
   public static final int COMMAND_ADD_QRCODE = 11;
+  public static final int COMMAND_ADD_IMAGE = 12;
 }
 
 @ReactModule(name = EscPosPrinterModule.NAME)
@@ -120,6 +124,7 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       constants.put("COMMAND_ADD_ALIGN", PrintingCommands.COMMAND_ADD_ALIGN);
       constants.put("COMMAND_ADD_IMAGE_BASE_64", PrintingCommands.COMMAND_ADD_IMAGE_BASE_64);
       constants.put("COMMAND_ADD_IMAGE_ASSET", PrintingCommands.COMMAND_ADD_IMAGE_ASSET);
+      constants.put("COMMAND_ADD_IMAGE", PrintingCommands.COMMAND_ADD_IMAGE);
       constants.put("COMMAND_ADD_BARCODE", PrintingCommands.COMMAND_ADD_BARCODE);
       constants.put("COMMAND_ADD_QRCODE", PrintingCommands.COMMAND_ADD_QRCODE);
       constants.put("COMMAND_ADD_CUT", PrintingCommands.COMMAND_ADD_CUT);
@@ -165,6 +170,20 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       constants.put("EPOS2_SYMBOL_QRCODE_MODEL_1", Printer.SYMBOL_QRCODE_MODEL_1);
       constants.put("EPOS2_SYMBOL_QRCODE_MODEL_2", Printer.SYMBOL_QRCODE_MODEL_2);
       constants.put("EPOS2_SYMBOL_QRCODE_MICRO", Printer.SYMBOL_QRCODE_MICRO);
+      // Print image settings
+      constants.put("EPOS2_COLOR_1", Printer.COLOR_1);
+      constants.put("EPOS2_COLOR_2", Printer.COLOR_2);
+      constants.put("EPOS2_COLOR_3", Printer.COLOR_3);
+      constants.put("EPOS2_COLOR_4", Printer.COLOR_4);
+
+      constants.put("EPOS2_MODE_MONO", Printer.MODE_MONO);
+      constants.put("EPOS2_MODE_GRAY16", Printer.MODE_GRAY16);
+      constants.put("EPOS2_MODE_MONO_HIGH_DENSITY", Printer.MODE_MONO_HIGH_DENSITY);
+
+      constants.put("EPOS2_HALFTONE_DITHER", Printer.HALFTONE_DITHER);
+      constants.put("EPOS2_HALFTONE_ERROR_DIFFUSION", Printer.HALFTONE_ERROR_DIFFUSION);
+      constants.put("EPOS2_HALFTONE_THRESHOLD", Printer.HALFTONE_THRESHOLD);
+
       return constants;
     }
 
@@ -531,11 +550,42 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
   public void addListener(String eventName) {
     // Keep: Required for RN built in Event Emitter Calls.
   }
-  
+
   @ReactMethod
   public void removeListeners(Integer count) {
     // Keep: Required for RN built in Event Emitter Calls.
-  }    
+  }
+
+  private Bitmap getBitmapFromSource(ReadableMap source) throws Exception {
+    String uriString = source.getString("uri");
+
+    if(uriString.startsWith("data")) {
+        final String pureBase64Encoded = uriString.substring(uriString.indexOf(",") + 1);
+        byte[] decodedString = Base64.decode(pureBase64Encoded, Base64.DEFAULT);
+        Bitmap image = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+
+        return image;
+    }
+
+    if(uriString.startsWith("http") || uriString.startsWith("https")) {
+      URL url = new URL(uriString);
+      Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
+      return image;
+    }
+
+    if(uriString.startsWith("file")) {
+      BitmapFactory.Options options = new BitmapFactory.Options();
+      options.inPreferredConfig = Bitmap.Config.ARGB_8888;
+      Bitmap image = BitmapFactory.decodeFile(uriString, options);
+
+      return image;
+    }
+
+    int resourceId = mContext.getResources().getIdentifier(uriString, "drawable", mContext.getPackageName());
+    Bitmap image = BitmapFactory.decodeResource(mContext.getResources(), resourceId);
+
+    return image;
+  }
 
 
   private void handleCommand(int command, ReadableArray params) throws Epos2Exception, IOException {
@@ -555,6 +605,24 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       case PrintingCommands.COMMAND_ADD_ALIGN:
         mPrinter.addTextAlign(params.getInt(0));
         break;
+
+      case PrintingCommands.COMMAND_ADD_IMAGE:
+        ReadableMap source = params.getMap(0);
+
+        int imgWidth = params.getInt(1);
+        int color = params.getInt(2);
+        int mode = params.getInt(3);
+        int halftone = params.getInt(4);
+        double brightness = params.getDouble(5);
+        try {
+          Bitmap imgBitmap = getBitmapFromSource(source);
+          handlePrintImage(imgBitmap, imgWidth, color, mode, halftone, brightness);
+        } catch(Exception e) {
+          Log.e("MYAPP", "exception", e); // TODO: fallback printing
+        }
+
+
+      break;
       case PrintingCommands.COMMAND_ADD_IMAGE_BASE_64:
         String uriString = params.getString(0);
         final String pureBase64Encoded = uriString.substring(uriString.indexOf(",") + 1);
@@ -562,8 +630,9 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
         Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
         int inputWidth = params.getInt(1);
 
-        handlePrintImage(bitmap, inputWidth);
+        handlePrintImage(bitmap, inputWidth, Printer.COLOR_1, Printer.MODE_MONO, Printer.HALFTONE_DITHER, Printer.PARAM_DEFAULT);
         break;
+
       case PrintingCommands.COMMAND_ADD_IMAGE_ASSET:
         String imageName = params.getString(0);
         int width = params.getInt(1);
@@ -573,7 +642,7 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
         Bitmap assetBitmap = BitmapFactory.decodeStream(inputStream);
         inputStream.close();
 
-        handlePrintImage(assetBitmap, width);
+        handlePrintImage(assetBitmap, width, Printer.COLOR_1, Printer.MODE_MONO, Printer.HALFTONE_DITHER, Printer.PARAM_DEFAULT);
         break;
       case PrintingCommands.COMMAND_ADD_CUT:
         mPrinter.addCut(Printer.CUT_FEED);
@@ -597,7 +666,7 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
     }
   }
 
-  private void handlePrintImage(Bitmap bitmap, int width) throws Epos2Exception {
+  private void handlePrintImage(Bitmap bitmap, int width, int color, int mode, int halftone, double brightness) throws Epos2Exception {
     float aspectRatio = bitmap.getWidth() / (float) bitmap.getHeight();
     int newHeight = Math.round(width / aspectRatio);
     bitmap = Bitmap.createScaledBitmap(bitmap, width, newHeight, false);
@@ -608,10 +677,10 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       0,
       width,
       newHeight,
-      Printer.COLOR_1,
-      Printer.MODE_MONO,
-      Printer.HALFTONE_DITHER,
-      Printer.PARAM_DEFAULT,
+      color,
+      mode,
+      halftone,
+      brightness,
       Printer.COMPRESS_AUTO
     );
   }
