@@ -145,6 +145,30 @@ export type QRCodeType =
   | 'EPOS2_SYMBOL_QRCODE_MODEL_2'
   | 'EPOS2_SYMBOL_QRCODE_MICRO';
 
+export type EposColor =
+  | 'EPOS2_COLOR_1'
+  | 'EPOS2_COLOR_2'
+  | 'EPOS2_COLOR_3'
+  | 'EPOS2_COLOR_4';
+
+export type EposMode =
+  | 'EPOS2_MODE_MONO'
+  | 'EPOS2_MODE_GRAY16'
+  | 'EPOS2_MODE_MONO_HIGH_DENSITY';
+
+export type EposHalftone =
+  | 'EPOS2_HALFTONE_DITHER'
+  | 'EPOS2_HALFTONE_ERROR_DIFFUSION'
+  | 'EPOS2_HALFTONE_THRESHOLD';
+
+export interface ImagePrintParams {
+  width: number;
+  color?: EposColor;
+  mode?: EposMode;
+  halftone?: EposHalftone;
+  brightness?: number;
+}
+
 export interface QRCodeParams {
   value: string;
   width: number;

@@ -6,9 +6,14 @@ import type {
   BarcodeHRI,
   QRCodeLevel,
   QRCodeType,
+  EposColor,
+  EposMode,
+  EposHalftone,
 } from './types';
 
 const { EscPosPrinter } = NativeModules;
+export const nativeConstants = EscPosPrinter.getConstants();
+
 const {
   EPOS2_TM_M10,
   EPOS2_TM_M30,
@@ -41,7 +46,6 @@ const {
   COMMAND_ADD_TEXT_SMOOTH,
   COMMAND_ADD_ALIGN,
   COMMAND_ADD_IMAGE,
-  COMMAND_ADD_REMOTE_IMAGE,
   COMMAND_ADD_IMAGE_BASE_64,
   COMMAND_ADD_IMAGE_ASSET,
   COMMAND_ADD_BARCODE,
@@ -89,7 +93,17 @@ const {
   EPOS2_LEVEL_M,
   EPOS2_LEVEL_Q,
   EPOS2_LEVEL_H,
-} = EscPosPrinter.getConstants();
+  EPOS2_COLOR_1,
+  EPOS2_COLOR_2,
+  EPOS2_COLOR_3,
+  EPOS2_COLOR_4,
+  EPOS2_MODE_MONO,
+  EPOS2_MODE_GRAY16,
+  EPOS2_MODE_MONO_HIGH_DENSITY,
+  EPOS2_HALFTONE_DITHER,
+  EPOS2_HALFTONE_ERROR_DIFFUSION,
+  EPOS2_HALFTONE_THRESHOLD,
+} = nativeConstants;
 
 export const PRINTING_COMMANDS = {
   COMMAND_ADD_TEXT,
@@ -99,7 +113,6 @@ export const PRINTING_COMMANDS = {
   COMMAND_ADD_TEXT_SMOOTH,
   COMMAND_ADD_ALIGN,
   COMMAND_ADD_IMAGE,
-  COMMAND_ADD_REMOTE_IMAGE,
   COMMAND_ADD_IMAGE_BASE_64,
   COMMAND_ADD_IMAGE_ASSET,
   COMMAND_ADD_BARCODE,
@@ -297,4 +310,23 @@ export const QRCODE_LEVEL: { [key in QRCodeLevel]: number } = {
   EPOS2_LEVEL_M,
   EPOS2_LEVEL_Q,
   EPOS2_LEVEL_H,
+};
+
+export const EPOS_COLOR: { [key in EposColor]: number } = {
+  EPOS2_COLOR_1,
+  EPOS2_COLOR_2,
+  EPOS2_COLOR_3,
+  EPOS2_COLOR_4,
+};
+
+export const EPOS_MODE: { [key in EposMode]: number } = {
+  EPOS2_MODE_MONO,
+  EPOS2_MODE_GRAY16,
+  EPOS2_MODE_MONO_HIGH_DENSITY,
+};
+
+export const EPOS_HALFTONE: { [key in EposHalftone]: number } = {
+  EPOS2_HALFTONE_DITHER,
+  EPOS2_HALFTONE_ERROR_DIFFUSION,
+  EPOS2_HALFTONE_THRESHOLD,
 };

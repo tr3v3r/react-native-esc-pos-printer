@@ -62,7 +62,6 @@ RCT_EXPORT_MODULE()
       @"COMMAND_ADD_ALIGN": @(COMMAND_ADD_ALIGN),
       @"COMMAND_ADD_IMAGE_BASE_64": @(COMMAND_ADD_IMAGE_BASE_64),
       @"COMMAND_ADD_IMAGE": @(COMMAND_ADD_IMAGE),
-      @"COMMAND_ADD_REMOTE_IMAGE": @(COMMAND_ADD_REMOTE_IMAGE),
       @"COMMAND_ADD_IMAGE_ASSET": @(COMMAND_ADD_IMAGE_ASSET),
       @"COMMAND_ADD_BARCODE": @(COMMAND_ADD_BARCODE),
       @"COMMAND_ADD_QRCODE": @(COMMAND_ADD_QRCODE),
@@ -108,6 +107,20 @@ RCT_EXPORT_MODULE()
       @"EPOS2_LEVEL_H": @(EPOS2_LEVEL_H),
       @"EPOS2_SYMBOL_QRCODE_MODEL_1": @(EPOS2_SYMBOL_QRCODE_MODEL_1),
       @"EPOS2_SYMBOL_QRCODE_MODEL_2": @(EPOS2_SYMBOL_QRCODE_MODEL_2),
+
+       // Print image settings
+      @"EPOS2_COLOR_1": @(EPOS2_COLOR_1),
+      @"EPOS2_COLOR_2": @(EPOS2_COLOR_2),
+      @"EPOS2_COLOR_3": @(EPOS2_COLOR_3),
+      @"EPOS2_COLOR_4": @(EPOS2_COLOR_4),
+
+      @"EPOS2_MODE_MONO": @(EPOS2_MODE_MONO),
+      @"EPOS2_MODE_GRAY16": @(EPOS2_MODE_GRAY16),
+      @"EPOS2_MODE_MONO_HIGH_DENSITY": @(EPOS2_MODE_MONO_HIGH_DENSITY),
+
+      @"EPOS2_HALFTONE_DITHER": @(EPOS2_HALFTONE_DITHER),
+      @"EPOS2_HALFTONE_ERROR_DIFFUSION": @(EPOS2_HALFTONE_ERROR_DIFFUSION),
+      @"EPOS2_HALFTONE_THRESHOLD": @(EPOS2_HALFTONE_THRESHOLD),
    };
 }
 
@@ -122,7 +135,6 @@ enum PrintingCommands : int {
     COMMAND_ADD_CUT,
     COMMAND_ADD_DATA,
     COMMAND_ADD_IMAGE,
-    COMMAND_ADD_REMOTE_IMAGE,
     COMMAND_ADD_TEXT_SMOOTH,
     COMMAND_ADD_BARCODE,
     COMMAND_ADD_QRCODE
@@ -496,7 +508,13 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
     return newImage;
 }
 
-- (int)printImage:(UIImage *)imageData width:(NSInteger)width
+- (int)printImage:(UIImage *)imageData
+                  width:(NSInteger)width
+                  color:(int)color
+                  mode:(int)mode
+                  halftone:(int)halftone
+                  brightness:(CGFloat)brightness
+
 {
     int result = EPOS2_SUCCESS;
 
@@ -509,10 +527,10 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
     result = [self->printer addImage:scaled x:0 y:0
       width: size.width
       height: size.height
-      color:EPOS2_COLOR_1
-      mode:EPOS2_MODE_MONO
-      halftone:EPOS2_HALFTONE_DITHER
-      brightness:EPOS2_PARAM_DEFAULT
+      color: color
+      mode: mode
+      halftone: halftone
+      brightness: brightness
       compress:EPOS2_COMPRESS_AUTO];
 
     return result;
@@ -599,16 +617,14 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
             } else {
               imageData = [RCTConvert UIImage:imageObj];
             }
-            result = [self printImage:imageData width: [params[1] intValue]];
-          break;
-        }
-        case COMMAND_ADD_REMOTE_IMAGE : {
-            NSString *urlString = params[0];
-            NSURL *url = [NSURL URLWithString: urlString];
-            NSData *data = [NSData dataWithContentsOfURL:url];
-            UIImage* imageData = [[UIImage alloc] initWithData:data];
 
-            result = [self printImage:imageData width: [params[1] intValue]];
+            result = [self printImage:imageData
+                           width: [params[1] intValue]
+                           color: [params[2] intValue]
+                           mode: [params[3] intValue]
+                           halftone: [params[4] intValue]
+                           brightness: [params[5] floatValue]
+                      ];
           break;
         }
         case COMMAND_ADD_CUT :
