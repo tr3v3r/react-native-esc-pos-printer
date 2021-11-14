@@ -187,6 +187,14 @@ Adds a cut to the paper
 printing.initialize().cut();
 ```
 
+### addPulse
+
+Adds a drawer kick to open the cash drawer
+
+```javascript
+printing.initialize().addPulse();
+```
+
 ### send
 
 Is required at the end of a printer chain to send the commands to the printer
