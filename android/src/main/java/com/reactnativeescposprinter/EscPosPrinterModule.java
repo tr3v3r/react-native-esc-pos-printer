@@ -172,7 +172,6 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       constants.put("EPOS2_SYMBOL_QRCODE_MODEL_1", Printer.SYMBOL_QRCODE_MODEL_1);
       constants.put("EPOS2_SYMBOL_QRCODE_MODEL_2", Printer.SYMBOL_QRCODE_MODEL_2);
       constants.put("EPOS2_SYMBOL_QRCODE_MICRO", Printer.SYMBOL_QRCODE_MICRO);
-      constants.put("EPOS2_PARAM_DEFAULT", Printer.PARAM_DEFAULT);
       // Print image settings
       constants.put("EPOS2_COLOR_1", Printer.COLOR_1);
       constants.put("EPOS2_COLOR_2", Printer.COLOR_2);
