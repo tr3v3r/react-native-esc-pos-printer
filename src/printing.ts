@@ -479,6 +479,18 @@ class Printing {
     return this;
   }
 
+  /**
+   * Add pulse
+   *
+   * @return {object} Return the object, for easy chaining commands
+   *
+   */
+   addPulse() {
+    this._queue([PRINTING_COMMANDS.COMMAND_ADD_PULSE, []]);
+
+    return this;
+  }
+
   send() {
     return this._send(this._buffer);
   }
