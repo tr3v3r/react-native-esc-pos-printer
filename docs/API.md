@@ -6,8 +6,7 @@
 4. [getPrinterCharsPerLine](#getprintercharsperlineseriesname)
 5. [startMonitorPrinter](#startmonitorprinterinterval-number)
 6. [stopMonitorPrinter](#stopmonitorprinter)
-1. [printing](./PRINTING.md)
-
+7. [printing](./PRINTING.md)
 
 ### init({ target, seriesName, language? })
 
@@ -19,7 +18,7 @@ Initializes printer using it's target and series name.
 | ------------ | :------: | :------: | :---------------------------------------------------------------------------------------------------------------------------------------------: |
 | `target`     | `string` |  `Yes`   | The connection target of a device which can be specified by connectAPI: ("TCP:192.168.192.168" "BT:00:22:15:7D:70:9C" "USB:000000000000000000") |
 | `seriesName` | `string` |  `Yes`   |                                                       Specifies the target printer model.                                                       |
-| `language`   | `string` |   `No`   |                                    Specifies the language : EPOS2_LANG_EN, EPOS2_LANG_JA, EPOS2_LANG_ZH_CN...                                   |
+| `language`   | `string` |   `No`   |                                   Specifies the language : EPOS2_LANG_EN, EPOS2_LANG_JA, EPOS2_LANG_ZH_CN...                                    |
 
 ```javascript
 import EscPosPrinter from 'react-native-esc-pos-printer';
@@ -42,9 +41,11 @@ Returns list of printers.
 
 #### params
 
-| Name              |   Type    | Required |                        Description                        |
-| ----------------- | :-------: | :------: | :-------------------------------------------------------: |
-| `usbSerialNumber` | `boolean` |   `No`   | To extract the serial number of the usb device on Android |
+| Name                     |   Type    | Required | Default |                         Description                          |
+| ------------------------ | :-------: | :------: | :-----: | :----------------------------------------------------------: |
+| `usbSerialNumber`        | `boolean` |   `No`   | `false` |  To extract the serial number of the usb device on Android   |
+| `scanningTimeoutIOS`     | `boolean` |   `No`   | `5000`  |   Timeout in milliseconds for scanning the printers on iOS   |
+| `scanningTimeoutAndroid` | `boolean` |   `No`   | `5000`  | Timeout in milliseconds for scanning the printers on Android |
 
 #### return type
 
