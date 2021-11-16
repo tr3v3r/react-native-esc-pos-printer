@@ -64,6 +64,9 @@ export interface IPrinterInitParams {
 }
 
 export interface IDiscoverParams {
+  /**
+   * Whether to extract the serial number of the usb device on Android
+   */
   usbSerialNumber?: boolean;
   /**
    * Timeout in milliseconds for scanning the printers on iOS (default 5000 - 5 seconds)
