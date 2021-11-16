@@ -67,14 +67,8 @@ const _default = {
             removeListener();
           }
         );
-        let promise;
-        if (Platform.OS === 'ios') {
-          promise = EscPosPrinterDiscovery.discover();
-        } else {
-          promise = EscPosPrinterDiscovery.discover(params);
-        }
 
-        promise
+        EscPosPrinterDiscovery.discover(params)
           .then(() => {
             removeListener();
             res([]);

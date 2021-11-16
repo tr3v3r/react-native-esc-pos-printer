@@ -177,20 +177,28 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
     }
   }
 
-  private void performDiscovery(MyCallbackInterface callback) {
+  private void performDiscovery(MyCallbackInterface callback, ReadableMap paramsMap) {
     final Handler handler = new Handler();
 
+    // Default to 5000 if the value is not passed.
+    int scanningTimeout = 5000 
+
+    if (paramsMap != null) {
+      if (paramsMap.hasKey("scanningTimeoutAndroid")) {
+        scanningTimeout = paramsMap.getInt("scanningTimeoutAndroid");
+      }
+    }
     final Runnable r = new Runnable() {
       public void run() {
         stopDiscovery();
         if (mPrinterList.size() > 0) {
-          sendDiscoveredDataToJS(); // will be invoked after 5 sec with acc. results
+          sendDiscoveredDataToJS(); // will be invoked after {scanningTimeout / 1000} sec with acc. results
         }
         callback.onDone("Search completed");
       }
     };
 
-    handler.postDelayed(r, 5000);
+    handler.postDelayed(r, scanningTimeout);
   }
 
   private String getUSBAddress(String target) {
@@ -265,6 +273,6 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
       public void onDone(String result) {
         promise.resolve(result);
       }
-    });
+    }, paramsMap);
   }
 }
