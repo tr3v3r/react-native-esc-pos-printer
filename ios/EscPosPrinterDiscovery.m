@@ -17,6 +17,7 @@ RCT_EXPORT_MODULE()
 }
 
 RCT_REMAP_METHOD(discover,
+                 params:(NSDictionary *)params
                  withResolver:(RCTPromiseResolveBlock)resolve
                  withRejecter:(RCTPromiseRejectBlock)reject)
 {
@@ -27,7 +28,7 @@ RCT_REMAP_METHOD(discover,
     [self performDiscovery:^(NSString *result) {
         resolve(result);
 
-    }];
+    } params:params];
 }
 
 - (void) startDiscovery: (void(^)(NSString *))onError
@@ -55,9 +56,12 @@ RCT_REMAP_METHOD(discover,
     }
 }
 
-- (void) performDiscovery: (void(^)(NSString *))onFinish
+- (void) performDiscovery: (void(^)(NSString *))onFinish params:(NSDictionary *)params
 {
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 5 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    // Default to 5000 if the value is not passed.
+    int scanningTimeout = (int)[params[@"scanningTimeoutIOS"] integerValue] ?: 5000;
+
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, scanningTimeout * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
         [self stopDiscovery];
         onFinish(@"Search completed");
     });
