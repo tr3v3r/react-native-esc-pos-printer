@@ -61,7 +61,7 @@ RCT_REMAP_METHOD(discover,
     // Default to 5000 if the value is not passed.
     int scanningTimeout = (int)[params[@"scanningTimeoutIOS"] integerValue] ?: 5000;
 
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (scanningTimeout / 1000) * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, scanningTimeout * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
         [self stopDiscovery];
         onFinish(@"Search completed");
     });
