@@ -551,7 +551,8 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
             result = [self->printer addFeedLine:[params[0] intValue]];
           break;
         case COMMAND_ADD_PULSE  :
-            result = [self->printer addPulse:EPOS2_PARAM_DEFAULT time:EPOS2_PARAM_DEFAULT];
+            pinNumber = params[0];
+            result = [self->printer addPulse:pinNumber time:EPOS2_PARAM_DEFAULT];
           break;
         case COMMAND_ADD_TEXT_STYLE :
             result = [self->printer addTextStyle:EPOS2_FALSE ul:[params[0] intValue] em:[params[1] intValue] color:EPOS2_COLOR_1];
