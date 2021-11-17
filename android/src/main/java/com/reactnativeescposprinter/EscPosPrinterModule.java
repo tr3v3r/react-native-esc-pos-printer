@@ -596,7 +596,8 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
         mPrinter.addText(params.getString(0));
         break;
       case PrintingCommands.COMMAND_ADD_PULSE:
-        mPrinter.addPulse(Printer.PARAM_DEFAULT, Printer.PARAM_DEFAULT);
+        String pinNumber = params.getString(0);
+        mPrinter.addPulse(pinNumber, Printer.PARAM_DEFAULT);
         break;
       case PrintingCommands.COMMAND_ADD_NEW_LINE:
         mPrinter.addFeedLine(params.getInt(0));

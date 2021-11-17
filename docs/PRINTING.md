@@ -191,8 +191,11 @@ printing.initialize().cut();
 
 Adds a drawer kick to open the cash drawer
 
+- Specifies the drawer kick connector as first parameter - optional string parameter, defaults to DRAWER_2PIN. Valid values are: `EPOS2_DRAWER_2PIN` | `EPOS2_DRAWER_5PIN`
+
 ```javascript
-printing.initialize().addPulse();
+printing.initialize().addPulse();   // uses default pin (pin 2)
+printing.initialize().addPulse('EPOS2_DRAWER_2PIN');
 ```
 
 ### send
