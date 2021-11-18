@@ -49,6 +49,7 @@ async function testPrint() {
           width: 5,
         })
         .cut()
+        .addPulse()
         .send()
 
         console.log('Success:', status)

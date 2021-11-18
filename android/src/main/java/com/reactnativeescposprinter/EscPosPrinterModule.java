@@ -57,6 +57,7 @@ class PrintingCommands {
   public static final int COMMAND_ADD_BARCODE = 10;
   public static final int COMMAND_ADD_QRCODE = 11;
   public static final int COMMAND_ADD_IMAGE = 12;
+  public static final int COMMAND_ADD_PULSE = 13;
 }
 
 @ReactModule(name = EscPosPrinterModule.NAME)
@@ -129,6 +130,7 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       constants.put("COMMAND_ADD_QRCODE", PrintingCommands.COMMAND_ADD_QRCODE);
       constants.put("COMMAND_ADD_CUT", PrintingCommands.COMMAND_ADD_CUT);
       constants.put("COMMAND_ADD_DATA", PrintingCommands.COMMAND_ADD_DATA);
+      constants.put("COMMAND_ADD_PULSE", PrintingCommands.COMMAND_ADD_PULSE);
       constants.put("EPOS2_ALIGN_LEFT", Printer.ALIGN_LEFT);
       constants.put("EPOS2_ALIGN_RIGHT", Printer.ALIGN_RIGHT);
       constants.put("EPOS2_ALIGN_CENTER", Printer.ALIGN_CENTER);
@@ -592,6 +594,10 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
     switch (command) {
       case PrintingCommands.COMMAND_ADD_TEXT:
         mPrinter.addText(params.getString(0));
+        break;
+      case PrintingCommands.COMMAND_ADD_PULSE:
+        String pinNumber = params.getString(0);
+        mPrinter.addPulse(pinNumber, Printer.PARAM_DEFAULT);
         break;
       case PrintingCommands.COMMAND_ADD_NEW_LINE:
         mPrinter.addFeedLine(params.getInt(0));

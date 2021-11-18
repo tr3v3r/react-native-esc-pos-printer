@@ -67,6 +67,7 @@ RCT_EXPORT_MODULE()
       @"COMMAND_ADD_QRCODE": @(COMMAND_ADD_QRCODE),
       @"COMMAND_ADD_CUT": @(COMMAND_ADD_CUT),
       @"COMMAND_ADD_DATA": @(COMMAND_ADD_DATA),
+      @"COMMAND_ADD_PULSE": @(COMMAND_ADD_PULSE),
       @"EPOS2_ALIGN_LEFT": @(EPOS2_ALIGN_LEFT),
       @"EPOS2_ALIGN_RIGHT": @(EPOS2_ALIGN_RIGHT),
       @"EPOS2_ALIGN_CENTER": @(EPOS2_ALIGN_CENTER),
@@ -137,7 +138,8 @@ enum PrintingCommands : int {
     COMMAND_ADD_IMAGE,
     COMMAND_ADD_TEXT_SMOOTH,
     COMMAND_ADD_BARCODE,
-    COMMAND_ADD_QRCODE
+    COMMAND_ADD_QRCODE,
+    COMMAND_ADD_PULSE
 };
 
 + (BOOL)requiresMainQueueSetup
@@ -547,6 +549,10 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
           break;
         case COMMAND_ADD_NEW_LINE :
             result = [self->printer addFeedLine:[params[0] intValue]];
+          break;
+        case COMMAND_ADD_PULSE  :
+            pinNumber = params[0];
+            result = [self->printer addPulse:pinNumber time:EPOS2_PARAM_DEFAULT];
           break;
         case COMMAND_ADD_TEXT_STYLE :
             result = [self->printer addTextStyle:EPOS2_FALSE ul:[params[0] intValue] em:[params[1] intValue] color:EPOS2_COLOR_1];

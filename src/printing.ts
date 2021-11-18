@@ -479,6 +479,19 @@ class Printing {
     return this;
   }
 
+  /**
+   * Add pulse
+   *
+   * @param {string} pinNumber
+   * @return {object} Return the object, for easy chaining commands
+   *
+   */
+   addPulse(pinNumber?: string) {
+    this._queue([PRINTING_COMMANDS.COMMAND_ADD_PULSE, [pinNumber || 'EPOS2_PARAM_DEFAULT']]);
+
+    return this;
+  }
+
   send() {
     return this._send(this._buffer);
   }
