@@ -181,7 +181,7 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
     final Handler handler = new Handler();
 
     // Default to 5000 if the value is not passed.
-    int scanningTimeout = 5000 
+    int scanningTimeout = 5000;
 
     if (paramsMap != null) {
       if (paramsMap.hasKey("scanningTimeoutAndroid")) {

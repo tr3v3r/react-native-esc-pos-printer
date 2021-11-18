@@ -186,6 +186,10 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       constants.put("EPOS2_HALFTONE_ERROR_DIFFUSION", Printer.HALFTONE_ERROR_DIFFUSION);
       constants.put("EPOS2_HALFTONE_THRESHOLD", Printer.HALFTONE_THRESHOLD);
 
+      // Add pulse settings
+      constants.put("EPOS2_DRAWER_2PIN", Printer.DRAWER_2PIN);
+      constants.put("EPOS2_DRAWER_5PIN", Printer.DRAWER_5PIN);
+
       return constants;
     }
 
@@ -596,8 +600,7 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
         mPrinter.addText(params.getString(0));
         break;
       case PrintingCommands.COMMAND_ADD_PULSE:
-        String pinNumber = params.getString(0);
-        mPrinter.addPulse(pinNumber, Printer.PARAM_DEFAULT);
+        mPrinter.addPulse(params.getInt(0), Printer.PARAM_DEFAULT);
         break;
       case PrintingCommands.COMMAND_ADD_NEW_LINE:
         mPrinter.addFeedLine(params.getInt(0));

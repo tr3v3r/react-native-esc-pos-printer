@@ -9,6 +9,7 @@ import type {
   EposColor,
   EposMode,
   EposHalftone,
+  DrawerKickConnector,
 } from './types';
 
 const { EscPosPrinter } = NativeModules;
@@ -104,6 +105,8 @@ const {
   EPOS2_HALFTONE_DITHER,
   EPOS2_HALFTONE_ERROR_DIFFUSION,
   EPOS2_HALFTONE_THRESHOLD,
+  EPOS2_DRAWER_2PIN,
+  EPOS2_DRAWER_5PIN,
 } = nativeConstants;
 
 export const PRINTING_COMMANDS = {
@@ -331,4 +334,11 @@ export const EPOS_HALFTONE: { [key in EposHalftone]: number } = {
   EPOS2_HALFTONE_DITHER,
   EPOS2_HALFTONE_ERROR_DIFFUSION,
   EPOS2_HALFTONE_THRESHOLD,
+};
+
+export const EPOS_DRAWER_KICK_CONNECTOR: {
+  [key in DrawerKickConnector]: number;
+} = {
+  EPOS2_DRAWER_2PIN,
+  EPOS2_DRAWER_5PIN,
 };

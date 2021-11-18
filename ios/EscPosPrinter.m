@@ -122,6 +122,10 @@ RCT_EXPORT_MODULE()
       @"EPOS2_HALFTONE_DITHER": @(EPOS2_HALFTONE_DITHER),
       @"EPOS2_HALFTONE_ERROR_DIFFUSION": @(EPOS2_HALFTONE_ERROR_DIFFUSION),
       @"EPOS2_HALFTONE_THRESHOLD": @(EPOS2_HALFTONE_THRESHOLD),
+
+      // Add pulse settings
+      @"EPOS2_DRAWER_2PIN": @(EPOS2_DRAWER_2PIN),
+      @"EPOS2_DRAWER_5PIN": @(EPOS2_DRAWER_5PIN),
    };
 }
 
@@ -550,9 +554,8 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
         case COMMAND_ADD_NEW_LINE :
             result = [self->printer addFeedLine:[params[0] intValue]];
           break;
-        case COMMAND_ADD_PULSE  :
-            pinNumber = params[0];
-            result = [self->printer addPulse:pinNumber time:EPOS2_PARAM_DEFAULT];
+        case COMMAND_ADD_PULSE :
+            result = [self->printer addPulse:[params[0] intValue] time:EPOS2_PARAM_DEFAULT];
           break;
         case COMMAND_ADD_TEXT_STYLE :
             result = [self->printer addTextStyle:EPOS2_FALSE ul:[params[0] intValue] em:[params[1] intValue] color:EPOS2_COLOR_1];

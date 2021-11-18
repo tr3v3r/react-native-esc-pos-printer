@@ -172,6 +172,8 @@ export type EposHalftone =
   | 'EPOS2_HALFTONE_ERROR_DIFFUSION'
   | 'EPOS2_HALFTONE_THRESHOLD';
 
+export type DrawerKickConnector = 'EPOS2_DRAWER_2PIN' | 'EPOS2_DRAWER_5PIN';
+
 export interface ImagePrintParams {
   width: number;
   color?: EposColor;

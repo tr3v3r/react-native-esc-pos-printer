@@ -22,6 +22,7 @@ import type {
   BarcodeParams,
   QRCodeParams,
   ImagePrintParams,
+  DrawerKickConnector,
 } from './types';
 import {
   BufferHelper,
@@ -486,8 +487,12 @@ class Printing {
    * @return {object} Return the object, for easy chaining commands
    *
    */
-   addPulse(pinNumber?: string) {
-    this._queue([PRINTING_COMMANDS.COMMAND_ADD_PULSE, [pinNumber || 'EPOS2_PARAM_DEFAULT']]);
+  addPulse(drawerKickConnector: DrawerKickConnector = 'EPOS2_DRAWER_2PIN') {
+    assertNativeCommands([drawerKickConnector], 'addPulse');
+    this._queue([
+      PRINTING_COMMANDS.COMMAND_ADD_PULSE,
+      [getNativeCommand(drawerKickConnector)],
+    ]);
 
     return this;
   }
