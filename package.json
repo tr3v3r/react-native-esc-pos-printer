@@ -29,7 +29,8 @@
     "release": "release-it",
     "example": "yarn --cwd example",
     "pods": "cd example && pod-install --quiet",
-    "bootstrap": "yarn example && yarn && yarn pods"
+    "bootstrap": "yarn example && yarn && yarn pods",
+    "postinstall": "node ./scripts/movelib.js"
   },
   "keywords": [
     "react-native",
@@ -48,6 +49,8 @@
   },
   "dependencies": {
     "buffer": "6.0.3",
+    "mv": "^2.1.1",
+    "react-native-esc-pos-printer-ios-sdk": "^1.0.1",
     "word-wrap": "^1.2.3"
   },
   "devDependencies": {
