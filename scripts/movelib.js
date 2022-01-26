@@ -10,14 +10,14 @@ if (!fs.existsSync(dir)) {
 
 const libCurrentPath = path.join(
   __dirname,
-  '../node_modules/react-native-esc-pos-printer-ios-sdk',
+  '../../react-native-esc-pos-printer-ios-sdk',
   'libepos2.a'
 );
 const libDestPath = path.join(__dirname, '../ios/PrinterSDK', 'libepos2.a');
 
 const headerCurrentPath = path.join(
   __dirname,
-  '../node_modules/react-native-esc-pos-printer-ios-sdk',
+  '../../react-native-esc-pos-printer-ios-sdk',
   'ePOS2.h'
 );
 const headerDestPath = path.join(__dirname, '../ios/PrinterSDK', 'ePOS2.h');
