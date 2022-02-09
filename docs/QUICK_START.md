@@ -6,7 +6,7 @@ import EscPosPrinter, { getPrinterSeriesByName } from 'react-native-esc-pos-prin
 
 async function testPrint() {
   try {
-      const printers = await EscPosPrinter.discovery()
+      const printers = await EscPosPrinter.discover()
 
       const printer = printers[0]
 
