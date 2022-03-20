@@ -312,10 +312,9 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       mPrinter.clearCommandBuffer();
     }
 
-    private void printData() throws Epos2Exception {
+    private void printData(int timeout) throws Epos2Exception {
       this.connectPrinter();
-      mPrinter.sendData(Printer.PARAM_DEFAULT);
-
+      mPrinter.sendData(timeout > 5000 ? timeout : Printer.PARAM_DEFAULT);
   }
 
   @Override
@@ -498,11 +497,11 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
   }
 
   @ReactMethod
-  public void printBuffer(ReadableArray printBuffer, Promise promise) {
+  public void printBuffer(ReadableArray printBuffer, int timeout, Promise promise) {
     tasksQueue.submit(new Runnable() {
       @Override
       public void run() {
-        printFromBuffer(printBuffer, new MyCallbackInterface() {
+        printFromBuffer(printBuffer, timeout, new MyCallbackInterface() {
           @Override
           public void onSuccess(String result) {
             promise.resolve(result);
@@ -517,7 +516,7 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
     });
   }
 
-  public void printFromBuffer(ReadableArray printBuffer, MyCallbackInterface callback) {
+  public void printFromBuffer(ReadableArray printBuffer, int timeout, MyCallbackInterface callback) {
     if (mPrinter == null) {
       String errorString = EscPosPrinterErrorManager.getEposExceptionText(Epos2Exception.ERR_PARAM);
       callback.onError(errorString);
@@ -542,7 +541,7 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       return;
     }
     try {
-      this.printData();
+      this.printData(timeout);
       String successString = EscPosPrinterErrorManager.getCodeText(Epos2CallbackCode.CODE_SUCCESS);
       callback.onSuccess(successString);
     } catch (Epos2Exception e) {

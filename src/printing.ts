@@ -82,7 +82,7 @@ class Printing {
    * @return {object}          Encoded string as a ArrayBuffer
    *
    */
-  _send(value: any): Promise<IMonitorStatus> {
+  _send(value: any, timeout: number): Promise<IMonitorStatus> {
     let successListener: EmitterSubscription | null;
     let errorListener: EmitterSubscription | null;
 
@@ -111,7 +111,7 @@ class Printing {
         }
       );
 
-      EscPosPrinter.printBuffer(value).catch((e: Error) => {
+      EscPosPrinter.printBuffer(value, timeout).catch((e: Error) => {
         removeListeners();
         rej(e);
       });
@@ -390,12 +390,12 @@ class Printing {
    * @returns
    */
   barcode({
-    value,
-    type = 'EPOS2_BARCODE_CODE93',
-    hri = 'EPOS2_HRI_BELOW',
-    width = 2,
-    height = 50,
-  }: BarcodeParams) {
+            value,
+            type = 'EPOS2_BARCODE_CODE93',
+            hri = 'EPOS2_HRI_BELOW',
+            width = 2,
+            height = 50,
+          }: BarcodeParams) {
     if (!(typeof BARCODE_TYPE[type] === 'number')) {
       throw new Error('Unknown barcode type');
     }
@@ -427,11 +427,11 @@ class Printing {
    * @returns
    */
   qrcode({
-    value,
-    width,
-    type = 'EPOS2_SYMBOL_QRCODE_MODEL_2',
-    level = 'EPOS2_LEVEL_M',
-  }: QRCodeParams) {
+           value,
+           width,
+           type = 'EPOS2_SYMBOL_QRCODE_MODEL_2',
+           level = 'EPOS2_LEVEL_M',
+         }: QRCodeParams) {
     if (!(typeof QRCODE_TYPE[type] === 'number')) {
       if (Platform.OS === 'ios' && type === 'EPOS2_SYMBOL_QRCODE_MICRO') {
         throw new Error('QRCODE_MICRO is not supported on iOS');
@@ -497,8 +497,8 @@ class Printing {
     return this;
   }
 
-  send() {
-    return this._send(this._buffer);
+  send(timeout?: number) {
+    return this._send(this._buffer, timeout ?? -1);
   }
 }
 
