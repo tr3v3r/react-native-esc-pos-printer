@@ -50,6 +50,21 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
   private final ReactApplicationContext reactContext;
   private boolean mExtractUsbSerialNumber = false;
 
+  private boolean mFindFirst = false;
+  private MyCallbackInterface mDiscoveryCallback = null;
+  private Handler mHandler;
+  private Runnable mDiscoveryTimeoutRunnable = new Runnable() {
+    public void run() {
+      stopDiscovery();
+      if (mPrinterList.size() > 0) {
+        sendDiscoveredDataToJS(); // will be invoked after {scanningTimeout / 1000} sec with acc. results
+      }
+      if(mDiscoveryCallback != null) {
+        mDiscoveryCallback.onDone("Search completed");
+      }
+    }
+  };
+
   public static final String NAME = "EscPosPrinterDiscovery";
 
   interface MyCallbackInterface {
@@ -178,7 +193,7 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
   }
 
   private void performDiscovery(MyCallbackInterface callback, ReadableMap paramsMap) {
-    final Handler handler = new Handler();
+    mHandler = new Handler();
 
     // Default to 5000 if the value is not passed.
     int scanningTimeout = 5000;
@@ -188,17 +203,9 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
         scanningTimeout = paramsMap.getInt("scanningTimeoutAndroid");
       }
     }
-    final Runnable r = new Runnable() {
-      public void run() {
-        stopDiscovery();
-        if (mPrinterList.size() > 0) {
-          sendDiscoveredDataToJS(); // will be invoked after {scanningTimeout / 1000} sec with acc. results
-        }
-        callback.onDone("Search completed");
-      }
-    };
 
-    handler.postDelayed(r, scanningTimeout);
+    mDiscoveryCallback = callback;
+    mHandler.postDelayed(mDiscoveryTimeoutRunnable, scanningTimeout);
   }
 
   private String getUSBAddress(String target) {
@@ -227,6 +234,11 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
         @Override
         public synchronized void run() {
           mPrinterList.add(deviceInfo);
+
+          if(mFindFirst) {
+            mHandler.removeCallbacks(mDiscoveryTimeoutRunnable);
+            mDiscoveryTimeoutRunnable.run();
+          }
         }
       });
     }
@@ -261,6 +273,14 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
 
   @ReactMethod
   private void discover(final ReadableMap paramsMap, Promise promise) {
+    mFindFirst = false;
+
+    if (paramsMap != null) {
+      if (paramsMap.hasKey("findFirstAndroid")) {
+        mFindFirst = paramsMap.getBoolean("findFirstAndroid");
+      }
+    }
+
     this.startDiscovery(new MyCallbackInterface() {
       @Override
       public void onDone(String result) {

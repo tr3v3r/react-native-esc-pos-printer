@@ -76,6 +76,10 @@ export interface IDiscoverParams {
    * Timeout in milliseconds for scanning the printers on Android (default 5000 - 5 seconds)
    */
   scanningTimeoutAndroid?: number;
+  /**
+   * Whether to finish the discovery when the first printer is found on Android
+   */
+  findFirstAndroid?: boolean;
 }
 
 export interface IMonitorStatus {
