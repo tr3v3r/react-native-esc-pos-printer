@@ -116,20 +116,20 @@ Prints image from local/remote source.
 ```javascript
 
 printing.initialize()
-    .image(require('./store.png'), {
-        width: 75,
-        halftone: 'EPOS2_HALFTONE_THRESHOLD',
-      })
-    .image({ uri: base64Image }, { width: 75 })
-    .image(
-      {
-        uri:
-          'https://raw.githubusercontent.com/tr3v3r/react-native-esc-pos-printer/main/ios/store.png',
-      },
-      { width: 75 }
-    )
-    .cut()
-    .send();
+  .image(require('./store.png'), {
+    width: 75,
+    halftone: 'EPOS2_HALFTONE_THRESHOLD',
+  })
+  .image({ uri: base64Image }, { width: 75 })
+  .image(
+    {
+      uri:
+        'https://raw.githubusercontent.com/tr3v3r/react-native-esc-pos-printer/main/ios/store.png',
+    },
+    { width: 75 }
+  )
+  .cut()
+  .send();
 ```
 
 ### barcode
@@ -201,6 +201,8 @@ printing.initialize().addPulse('EPOS2_DRAWER_2PIN');
 ### send
 
 Is required at the end of a printer chain to send the commands to the printer
+
+- timeout? : the print operation timeout in ms (5000 - 300000). Optional number parameter, defaults to 5000.
 
 ```javascript
 printing.initialize().text("hello, is it me you're looking for").send();
