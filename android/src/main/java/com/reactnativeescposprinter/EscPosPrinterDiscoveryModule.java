@@ -49,6 +49,8 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
   private UsbManager mUsbManager = null;
   private final ReactApplicationContext reactContext;
   private boolean mExtractUsbSerialNumber = false;
+  private int mScanningTimeout = 5000; // Default to 5000 if the value is not passed.
+
 
   private boolean mFindFirst = false;
   private MyCallbackInterface mDiscoveryCallback = null;
@@ -188,18 +190,8 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
 
   private void performDiscovery(MyCallbackInterface callback, ReadableMap paramsMap) {
     mHandler = new Handler();
-
-    // Default to 5000 if the value is not passed.
-    int scanningTimeout = 5000;
-
-    if (paramsMap != null) {
-      if (paramsMap.hasKey("scanningTimeoutAndroid")) {
-        scanningTimeout = paramsMap.getInt("scanningTimeoutAndroid");
-      }
-    }
-
     mDiscoveryCallback = callback;
-    mHandler.postDelayed(mDiscoveryTimeoutRunnable, scanningTimeout);
+    mHandler.postDelayed(mDiscoveryTimeoutRunnable, mScanningTimeout);
   }
 
   private String getUSBAddress(String target) {
@@ -296,6 +288,10 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
 
       if (paramsMap.hasKey("usbSerialNumber")) {
         mExtractUsbSerialNumber = paramsMap.getBoolean("usbSerialNumber");
+      }
+
+      if (paramsMap.hasKey("scanningTimeoutAndroid")) {
+        mScanningTimeout = paramsMap.getInt("scanningTimeoutAndroid");
       }
     }
 
