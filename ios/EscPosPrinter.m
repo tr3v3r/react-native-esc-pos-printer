@@ -220,11 +220,12 @@ RCT_EXPORT_METHOD(stopMonitorPrinter:(RCTPromiseResolveBlock)resolve
 
 
 RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
+                  params:(NSDictionary *)params
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 {
     [tasksQueue addOperationWithBlock: ^{
-        [self printFromBuffer:printBuffer onSuccess:^(NSString *result) {
+        [self printFromBuffer:printBuffer params:params onSuccess:^(NSString *result) {
                 resolve(result);
             } onError:^(NSString *error) {
                 reject(@"event_failure",error, nil);
@@ -270,7 +271,7 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
 
 // Methods
 
-- (int)printData
+- (int)printData:(NSDictionary *)params
 {
 
     int result = [self connectPrinter];
@@ -280,9 +281,9 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
         return result;
     }
 
+    int timeout = (int)[params[@"timeout"] integerValue] ?: EPOS2_PARAM_DEFAULT;
 
-
-    result = [printer sendData:EPOS2_PARAM_DEFAULT];
+    result = [printer sendData:timeout];
     if (result != EPOS2_SUCCESS) {
         [printer clearCommandBuffer];
         [printer disconnect];
@@ -659,7 +660,7 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
     return result;
 }
 
-- (void)printFromBuffer: (NSArray*)buffer onSuccess: (void(^)(NSString *))onSuccess onError: (void(^)(NSString *))onError
+- (void)printFromBuffer:(NSArray*)buffer params:(NSDictionary *)params onSuccess: (void(^)(NSString *))onSuccess onError: (void(^)(NSString *))onError
 {
     int result = EPOS2_SUCCESS;
 
@@ -681,7 +682,7 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
         }
     }
 
-    result = [self printData];
+    result = [self printData:params];
     if (result != EPOS2_SUCCESS) {
         NSString *errorString = [ErrorManager getEposErrorText: result];
         onError(errorString);

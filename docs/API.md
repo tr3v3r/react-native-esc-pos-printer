@@ -41,11 +41,12 @@ Returns list of printers.
 
 #### params
 
-| Name                     |   Type    | Required | Default |                         Description                          |
-| ------------------------ | :-------: | :------: | :-----: | :----------------------------------------------------------: |
-| `usbSerialNumber`        | `boolean` |   `No`   | `false` |  To extract the serial number of the usb device on Android   |
-| `scanningTimeoutIOS`     | `boolean` |   `No`   | `5000`  |   Timeout in milliseconds for scanning the printers on iOS   |
-| `scanningTimeoutAndroid` | `boolean` |   `No`   | `5000`  | Timeout in milliseconds for scanning the printers on Android |
+| Name                     |   Type    | Required | Default |                                Description                                 |
+|--------------------------| :-------: | :------: |:-------:|:--------------------------------------------------------------------------:|
+| `usbSerialNumber`        | `boolean` |   `No`   | `false` |         To extract the serial number of the usb device on Android          |
+| `scanningTimeoutIOS`     | `boolean` |   `No`   | `5000`  |          Timeout in milliseconds for scanning the printers on iOS          |
+| `scanningTimeoutAndroid` | `boolean` |   `No`   | `5000`  |        Timeout in milliseconds for scanning the printers on Android        |
+| `findFirstAndroid`       | `boolean` |   `No`   | `false` | Whether to finish the discovery when the first printer is found on Android |
 
 #### return type
 

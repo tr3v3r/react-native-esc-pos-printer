@@ -49,6 +49,23 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
   private UsbManager mUsbManager = null;
   private final ReactApplicationContext reactContext;
   private boolean mExtractUsbSerialNumber = false;
+  private int mScanningTimeout = 5000; // Default to 5000 if the value is not passed.
+
+
+  private boolean mFindFirst = false;
+  private MyCallbackInterface mDiscoveryCallback = null;
+  private Handler mHandler;
+  private Runnable mDiscoveryTimeoutRunnable = new Runnable() {
+    public void run() {
+      stopDiscovery();
+      if (mPrinterList.size() > 0) {
+        sendDiscoveredDataToJS(); // will be invoked after {scanningTimeout / 1000} sec with acc. results
+      }
+      if(mDiscoveryCallback != null) {
+        mDiscoveryCallback.onDone("Search completed");
+      }
+    }
+  };
 
   public static final String NAME = "EscPosPrinterDiscovery";
 
@@ -153,14 +170,8 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
     }
   }
 
-  private void startDiscovery(MyCallbackInterface callback, ReadableMap paramsMap) {
+  private void startDiscovery(MyCallbackInterface callback) {
     this.stopDiscovery();
-
-    if (paramsMap != null) {
-      if (paramsMap.hasKey("usbSerialNumber")) {
-        mExtractUsbSerialNumber = paramsMap.getBoolean("usbSerialNumber");
-      }
-    }
 
     FilterOption mFilterOption = new FilterOption();
 
@@ -178,27 +189,9 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
   }
 
   private void performDiscovery(MyCallbackInterface callback, ReadableMap paramsMap) {
-    final Handler handler = new Handler();
-
-    // Default to 5000 if the value is not passed.
-    int scanningTimeout = 5000;
-
-    if (paramsMap != null) {
-      if (paramsMap.hasKey("scanningTimeoutAndroid")) {
-        scanningTimeout = paramsMap.getInt("scanningTimeoutAndroid");
-      }
-    }
-    final Runnable r = new Runnable() {
-      public void run() {
-        stopDiscovery();
-        if (mPrinterList.size() > 0) {
-          sendDiscoveredDataToJS(); // will be invoked after {scanningTimeout / 1000} sec with acc. results
-        }
-        callback.onDone("Search completed");
-      }
-    };
-
-    handler.postDelayed(r, scanningTimeout);
+    mHandler = new Handler();
+    mDiscoveryCallback = callback;
+    mHandler.postDelayed(mDiscoveryTimeoutRunnable, mScanningTimeout);
   }
 
   private String getUSBAddress(String target) {
@@ -227,6 +220,11 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
         @Override
         public synchronized void run() {
           mPrinterList.add(deviceInfo);
+
+          if(mFindFirst) {
+            mHandler.removeCallbacks(mDiscoveryTimeoutRunnable);
+            mDiscoveryTimeoutRunnable.run();
+          }
         }
       });
     }
@@ -261,12 +259,15 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
 
   @ReactMethod
   private void discover(final ReadableMap paramsMap, Promise promise) {
+
+    defineSettingsFromParamsMap(paramsMap);
+
     this.startDiscovery(new MyCallbackInterface() {
       @Override
       public void onDone(String result) {
         promise.reject(result);
       }
-    }, paramsMap);
+    });
 
     this.performDiscovery(new MyCallbackInterface() {
       @Override
@@ -274,5 +275,26 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
         promise.resolve(result);
       }
     }, paramsMap);
+  }
+
+  private void defineSettingsFromParamsMap(ReadableMap paramsMap) {
+    mExtractUsbSerialNumber = false;
+    mFindFirst = false;
+
+    if (paramsMap != null) {
+      if (paramsMap.hasKey("findFirstAndroid")) {
+        mFindFirst = paramsMap.getBoolean("findFirstAndroid");
+      }
+
+      if (paramsMap.hasKey("usbSerialNumber")) {
+        mExtractUsbSerialNumber = paramsMap.getBoolean("usbSerialNumber");
+      }
+
+      if (paramsMap.hasKey("scanningTimeoutAndroid")) {
+        mScanningTimeout = paramsMap.getInt("scanningTimeoutAndroid");
+      }
+    }
+
+
   }
 }

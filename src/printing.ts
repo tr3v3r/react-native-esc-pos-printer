@@ -15,6 +15,8 @@ import {
   BARCODE_HRI,
   QRCODE_LEVEL,
   QRCODE_TYPE,
+  PRINT_TIMEOUT_MIN,
+  PRINT_TIMEOUT_MAX,
 } from './constants';
 import type {
   IMonitorStatus,
@@ -23,6 +25,7 @@ import type {
   QRCodeParams,
   ImagePrintParams,
   DrawerKickConnector,
+  IPrintParams,
 } from './types';
 import {
   BufferHelper,
@@ -79,10 +82,11 @@ class Printing {
    * Send the current array of commands to the printer
    *
    * @param  {string}   value  String to encode
+   * @param  {IPrintParams} params Print params (e.g. timeout)
    * @return {object}          Encoded string as a ArrayBuffer
    *
    */
-  _send(value: any): Promise<IMonitorStatus> {
+  _send(value: any, params?: IPrintParams): Promise<IMonitorStatus> {
     let successListener: EmitterSubscription | null;
     let errorListener: EmitterSubscription | null;
 
@@ -111,7 +115,7 @@ class Printing {
         }
       );
 
-      EscPosPrinter.printBuffer(value).catch((e: Error) => {
+      EscPosPrinter.printBuffer(value, params).catch((e: Error) => {
         removeListeners();
         rej(e);
       });
@@ -497,8 +501,21 @@ class Printing {
     return this;
   }
 
-  send() {
-    return this._send(this._buffer);
+  send(params?: IPrintParams) {
+    const timeout = params?.timeout;
+    if (timeout) {
+      if (
+        !Number.isInteger(timeout) ||
+        timeout < PRINT_TIMEOUT_MIN ||
+        timeout > PRINT_TIMEOUT_MAX
+      ) {
+        throw new Error(
+          `Timeout should be an integer from ${PRINT_TIMEOUT_MIN} to ${PRINT_TIMEOUT_MAX}`
+        );
+      }
+    }
+
+    return this._send(this._buffer, params);
   }
 }
 
