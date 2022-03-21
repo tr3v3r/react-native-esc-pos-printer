@@ -15,6 +15,8 @@ import {
   BARCODE_HRI,
   QRCODE_LEVEL,
   QRCODE_TYPE,
+  PRINT_TIMEOUT_MIN,
+  PRINT_TIMEOUT_MAX,
 } from './constants';
 import type {
   IMonitorStatus,
@@ -31,9 +33,6 @@ import {
   assertNativeCommands,
   getNativeCommand,
 } from './utils';
-
-const PRINT_TIMEOUT_MIN = 5000;
-const PRINT_TIMEOUT_MAX = 600000;
 
 const { EscPosPrinter } = NativeModules;
 const printEventEmmiter = new NativeEventEmitter(EscPosPrinter);
