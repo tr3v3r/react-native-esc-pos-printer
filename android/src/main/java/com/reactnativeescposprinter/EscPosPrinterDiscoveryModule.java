@@ -168,14 +168,8 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
     }
   }
 
-  private void startDiscovery(MyCallbackInterface callback, ReadableMap paramsMap) {
+  private void startDiscovery(MyCallbackInterface callback) {
     this.stopDiscovery();
-
-    if (paramsMap != null) {
-      if (paramsMap.hasKey("usbSerialNumber")) {
-        mExtractUsbSerialNumber = paramsMap.getBoolean("usbSerialNumber");
-      }
-    }
 
     FilterOption mFilterOption = new FilterOption();
 
@@ -273,20 +267,15 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
 
   @ReactMethod
   private void discover(final ReadableMap paramsMap, Promise promise) {
-    mFindFirst = false;
 
-    if (paramsMap != null) {
-      if (paramsMap.hasKey("findFirstAndroid")) {
-        mFindFirst = paramsMap.getBoolean("findFirstAndroid");
-      }
-    }
+    defineSettingsFromParamsMap(paramsMap);
 
     this.startDiscovery(new MyCallbackInterface() {
       @Override
       public void onDone(String result) {
         promise.reject(result);
       }
-    }, paramsMap);
+    });
 
     this.performDiscovery(new MyCallbackInterface() {
       @Override
@@ -294,5 +283,22 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
         promise.resolve(result);
       }
     }, paramsMap);
+  }
+
+  private void defineSettingsFromParamsMap(ReadableMap paramsMap) {
+    mExtractUsbSerialNumber = false;
+    mFindFirst = false;
+
+    if (paramsMap != null) {
+      if (paramsMap.hasKey("findFirstAndroid")) {
+        mFindFirst = paramsMap.getBoolean("findFirstAndroid");
+      }
+
+      if (paramsMap.hasKey("usbSerialNumber")) {
+        mExtractUsbSerialNumber = paramsMap.getBoolean("usbSerialNumber");
+      }
+    }
+
+
   }
 }
