@@ -312,11 +312,17 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       mPrinter.clearCommandBuffer();
     }
 
-    private void printData() throws Epos2Exception {
-      this.connectPrinter();
-      mPrinter.sendData(Printer.PARAM_DEFAULT);
+    private void printData(final ReadableMap paramsMap) throws Epos2Exception {
+      int timeout = Printer.PARAM_DEFAULT;
+      if(paramsMap != null) {
+        if(paramsMap.hasKey("timeout")) {
+          timeout = paramsMap.getInt("timeout");
+        }
+      }
 
-  }
+      this.connectPrinter();
+      mPrinter.sendData(timeout);
+    }
 
   @Override
   public void onPtrReceive(final Printer printerObj, final int code, final PrinterStatusInfo status, final String printJobId) {
@@ -498,11 +504,11 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
   }
 
   @ReactMethod
-  public void printBuffer(ReadableArray printBuffer, Promise promise) {
+  public void printBuffer(ReadableArray printBuffer, final ReadableMap paramsMap, Promise promise) {
     tasksQueue.submit(new Runnable() {
       @Override
       public void run() {
-        printFromBuffer(printBuffer, new MyCallbackInterface() {
+        printFromBuffer(printBuffer, paramsMap, new MyCallbackInterface() {
           @Override
           public void onSuccess(String result) {
             promise.resolve(result);
@@ -517,7 +523,7 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
     });
   }
 
-  public void printFromBuffer(ReadableArray printBuffer, MyCallbackInterface callback) {
+  public void printFromBuffer(ReadableArray printBuffer, final ReadableMap paramsMap, MyCallbackInterface callback) {
     if (mPrinter == null) {
       String errorString = EscPosPrinterErrorManager.getEposExceptionText(Epos2Exception.ERR_PARAM);
       callback.onError(errorString);
@@ -542,7 +548,7 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       return;
     }
     try {
-      this.printData();
+      this.printData(paramsMap);
       String successString = EscPosPrinterErrorManager.getCodeText(Epos2CallbackCode.CODE_SUCCESS);
       callback.onSuccess(successString);
     } catch (Epos2Exception e) {
