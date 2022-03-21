@@ -82,6 +82,13 @@ export interface IDiscoverParams {
   findFirstAndroid?: boolean;
 }
 
+export interface IPrintParams {
+  /**
+   * Print operation timeout in ms (5000 - 300000). Defaults to 5000 in android and 10000 in iOS.
+   */
+  timeout?: number;
+}
+
 export interface IMonitorStatus {
   connection: 'DISCONNECT' | 'DISCONNECT' | 'UNKNOWN';
   online: 'OFFLINE' | 'OFFLINE' | 'UNKNOWN';

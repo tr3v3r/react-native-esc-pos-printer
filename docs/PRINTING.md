@@ -198,11 +198,16 @@ printing.initialize().addPulse();   // uses default pin (pin 2)
 printing.initialize().addPulse('EPOS2_DRAWER_2PIN');
 ```
 
-### send
+### send(params?)
 
 Is required at the end of a printer chain to send the commands to the printer
 
-- timeout? : the print operation timeout in ms (5000 - 300000). Optional number parameter, defaults to 5000.
+#### params
+
+| Name      |   Type   | Required |             Default              |                  Description                   |
+|-----------|:--------:|:--------:|:--------------------------------:|:----------------------------------------------:|
+| `timeout` | `number` |   `No`   | 5000 in android<br/>10000 in iOS | Print operation timeout in ms (5000 - 300000). |
+
 
 ```javascript
 printing.initialize().text("hello, is it me you're looking for").send();
