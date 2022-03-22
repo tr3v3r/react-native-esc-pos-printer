@@ -51,8 +51,8 @@
   },
   "dependencies": {
     "buffer": "6.0.3",
-    "mv": "^2.1.1",
-    "react-native-esc-pos-printer-ios-sdk": "^1.0.1",
+    "fs-extra": "^10.0.1",
+    "react-native-esc-pos-printer-sdk": "^1.0.0",
     "word-wrap": "^1.2.3"
   },
   "devDependencies": {
