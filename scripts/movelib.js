@@ -1,39 +1,43 @@
-const mv = require('mv');
+const fs = require('fs-extra');
 const path = require('path');
-var fs = require('fs');
-
-var dir = path.join(__dirname, '../ios/PrinterSDK');
-
-if (!fs.existsSync(dir)) {
-  fs.mkdirSync(dir);
-}
 
 const libCurrentPath = path.join(
   __dirname,
-  '../../react-native-esc-pos-printer-ios-sdk',
-  'libepos2.a'
+  '../node_modules/react-native-esc-pos-printer-sdk/ios'
 );
-const libDestPath = path.join(__dirname, '../ios/PrinterSDK', 'libepos2.a');
 
-const headerCurrentPath = path.join(
-  __dirname,
-  '../../react-native-esc-pos-printer-ios-sdk',
-  'ePOS2.h'
-);
-const headerDestPath = path.join(__dirname, '../ios/PrinterSDK', 'ePOS2.h');
+const libDestPath = path.join(__dirname, '../ios/PrinterSDK');
 
-mv(libCurrentPath, libDestPath, function (err) {
-  if (err) {
-    throw err;
-  } else {
-    console.log('Lib Successfully moved!');
-  }
+// copy iOS sdk
+fs.copy(libCurrentPath, libDestPath, (err) => {
+  if (err) return console.error(err);
+  console.log('iOS SDK copied!');
 });
 
-mv(headerCurrentPath, headerDestPath, function (err) {
-  if (err) {
-    throw err;
-  } else {
-    console.log('Header Successfully moved!');
-  }
+const libAndroidCurrentPath = path.join(
+  __dirname,
+  '../node_modules/react-native-esc-pos-printer-sdk/android/libs'
+);
+
+const libAndroidDestPath = path.join(__dirname, '../android/libs');
+
+const jnilibAndroidCurrentPath = path.join(
+  __dirname,
+  '../node_modules/react-native-esc-pos-printer-sdk/android/jniLibs'
+);
+
+const jnilibAndroidDestPath = path.join(
+  __dirname,
+  '../android/src/main/jniLibs'
+);
+
+// copy Android sdk
+fs.copy(libAndroidCurrentPath, libAndroidDestPath, (err) => {
+  if (err) return console.error(err);
+  console.log('Android lib copied!');
+});
+
+fs.copy(jnilibAndroidCurrentPath, jnilibAndroidDestPath, (err) => {
+  if (err) return console.error(err);
+  console.log('Android jniLibs copied!');
 });
