@@ -1,10 +1,14 @@
 const fs = require('fs-extra');
 const path = require('path');
+const fsNative = require('fs');
 
-const libCurrentPath = path.join(
-  __dirname,
-  '../node_modules/react-native-esc-pos-printer-sdk/ios'
-);
+let dir = '../../react-native-esc-pos-printer-sdk';
+
+if (!fsNative.existsSync(path.join(__dirname, dir))) {
+  dir = '../node_modules/eact-native-esc-pos-printer-sdk';
+}
+
+const libCurrentPath = path.join(__dirname, dir, 'ios');
 
 const libDestPath = path.join(__dirname, '../ios/PrinterSDK');
 
@@ -14,17 +18,11 @@ fs.copy(libCurrentPath, libDestPath, (err) => {
   console.log('iOS SDK copied!');
 });
 
-const libAndroidCurrentPath = path.join(
-  __dirname,
-  '../node_modules/react-native-esc-pos-printer-sdk/android/libs'
-);
+const libAndroidCurrentPath = path.join(__dirname, dir, 'android/libs');
 
 const libAndroidDestPath = path.join(__dirname, '../android/libs');
 
-const jnilibAndroidCurrentPath = path.join(
-  __dirname,
-  '../node_modules/react-native-esc-pos-printer-sdk/android/jniLibs'
-);
+const jnilibAndroidCurrentPath = path.join(__dirname, dir, 'android/jniLibs');
 
 const jnilibAndroidDestPath = path.join(
   __dirname,

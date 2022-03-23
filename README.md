@@ -1,6 +1,6 @@
 # EPSON ePOS SDK for React Native
 
-_An unofficial React Native library for printing on an EPSON TM printer with the [Epson ePOS SDK for iOS](https://download.epson-biz.com/modules/pos/index.php?page=single_soft&cid=6677&scat=58&pcat=52) and [Epson ePOS SDK for Android](https://download.epson-biz.com/modules/pos/index.php?page=single_soft&cid=6678&scat=61&pcat=3)_
+_An unofficial React Native library for printing on an EPSON TM printer with the <strong>Epson ePOS SDK for iOS</strong> and <strong>Epson ePOS SDK for Android</strong>_
 
 <img src="./assets/receipt.jpg"
      alt="Receipt`"
@@ -11,6 +11,8 @@ _An unofficial React Native library for printing on an EPSON TM printer with the
 1. [Installation](./docs/INSTALLATION.md)
 2. [Quick Print Example](./docs/QUICK_START.md)
 3. [API](./docs/API.md)
+4. [SDK information (v2.20.0)](./docs/SDK.md)
+5. [List of supported printers](./docs/and2200.pdf)
 
 
 ## Limitations
