@@ -3,7 +3,7 @@
 Android: <strong>2.20.0</strong>
 iOS: <strong>2.20.0</strong>
 
-Because of GitHub Large Files limitation the SDK for Android and iOS moved to [separate repository](https://www.npmjs.com/package/react-native-esc-pos-printer-sdk)
+Because of GitHub Large Files limitation the SDK for Android and iOS moved to [separate npm package](https://www.npmjs.com/package/react-native-esc-pos-printer-sdk)
 
 ### Contribution guide
 
