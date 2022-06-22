@@ -5,7 +5,7 @@ const fsNative = require('fs');
 let dir = '../../react-native-esc-pos-printer-sdk';
 
 if (!fsNative.existsSync(path.join(__dirname, dir))) {
-  dir = '../node_modules/eact-native-esc-pos-printer-sdk';
+  dir = '../node_modules/react-native-esc-pos-printer-sdk';
 }
 
 const libCurrentPath = path.join(__dirname, dir, 'ios');
