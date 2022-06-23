@@ -13,6 +13,10 @@
 		62DF9FD525CDBEDE0048F83E /* PrinterInfo.m in Sources */ = {isa = PBXBuildFile; fileRef = 62DF9FD425CDBEDE0048F83E /* PrinterInfo.m */; };
 		62DF9FDB25CDBEEB0048F83E /* ShowMsg.m in Sources */ = {isa = PBXBuildFile; fileRef = 62DF9FD925CDBEEB0048F83E /* ShowMsg.m */; };
 		62E6DE2525CC688800B4CFF3 /* libepos2.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 62E6DE2425CC688800B4CFF3 /* libepos2.a */; };
+		874BE11E28635EFB00EC5122 /* ThePrinterManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 874BE11D28635EFB00EC5122 /* ThePrinterManager.m */; };
+		874BE12128635F3900EC5122 /* ThePrinter.m in Sources */ = {isa = PBXBuildFile; fileRef = 874BE12028635F3900EC5122 /* ThePrinter.m */; };
+		874BE12428635FEA00EC5122 /* ThePrinterWrapper.m in Sources */ = {isa = PBXBuildFile; fileRef = 874BE12328635FEA00EC5122 /* ThePrinterWrapper.m */; };
+		874BE12728636F6E00EC5122 /* EposStringHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 874BE12628636F6E00EC5122 /* EposStringHelper.m */; };
 		F4FF95D7245B92E800C19C63 /* EscPosPrinter.swift in Sources */ = {isa = PBXBuildFile; fileRef = F4FF95D6245B92E800C19C63 /* EscPosPrinter.swift */; };
 /* End PBXBuildFile section */
 
@@ -43,6 +47,15 @@
 		62DF9FDE25CDC7BB0048F83E /* EscPosPrinter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EscPosPrinter.h; sourceTree = "<group>"; };
 		62E6DE2325CC687A00B4CFF3 /* ePOS2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ePOS2.h; sourceTree = "<group>"; };
 		62E6DE2425CC688800B4CFF3 /* libepos2.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libepos2.a; sourceTree = "<group>"; };
+		874BE11B28635EBB00EC5122 /* NSLogHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NSLogHelper.h; sourceTree = "<group>"; };
+		874BE11C28635EE100EC5122 /* ThePrinterManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThePrinterManager.h; sourceTree = "<group>"; };
+		874BE11D28635EFB00EC5122 /* ThePrinterManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThePrinterManager.m; sourceTree = "<group>"; };
+		874BE11F28635F1C00EC5122 /* ThePrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThePrinter.h; sourceTree = "<group>"; };
+		874BE12028635F3900EC5122 /* ThePrinter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThePrinter.m; sourceTree = "<group>"; };
+		874BE12228635FD800EC5122 /* ThePrinterWrapper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ThePrinterWrapper.h; sourceTree = "<group>"; };
+		874BE12328635FEA00EC5122 /* ThePrinterWrapper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThePrinterWrapper.m; sourceTree = "<group>"; };
+		874BE12528636F5C00EC5122 /* EposStringHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EposStringHelper.h; sourceTree = "<group>"; };
+		874BE12628636F6E00EC5122 /* EposStringHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EposStringHelper.m; sourceTree = "<group>"; };
 		B3E7B5891CC2AC0600A0062D /* EscPosPrinter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EscPosPrinter.m; sourceTree = "<group>"; };
 		F4FF95D5245B92E700C19C63 /* EscPosPrinter-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EscPosPrinter-Bridging-Header.h"; sourceTree = "<group>"; };
 		F4FF95D6245B92E800C19C63 /* EscPosPrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EscPosPrinter.swift; sourceTree = "<group>"; };
@@ -73,6 +86,15 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				874BE12528636F5C00EC5122 /* EposStringHelper.h */,
+				874BE12628636F6E00EC5122 /* EposStringHelper.m */,
+				874BE11C28635EE100EC5122 /* ThePrinterManager.h */,
+				874BE11D28635EFB00EC5122 /* ThePrinterManager.m */,
+				874BE12228635FD800EC5122 /* ThePrinterWrapper.h */,
+				874BE12328635FEA00EC5122 /* ThePrinterWrapper.m */,
+				874BE11F28635F1C00EC5122 /* ThePrinter.h */,
+				874BE12028635F3900EC5122 /* ThePrinter.m */,
+				874BE11B28635EBB00EC5122 /* NSLogHelper.h */,
 				6218CEA325D6963300B59129 /* EscPosPrinterDiscovery.h */,
 				6218CEA425D6963300B59129 /* EscPosPrinterDiscovery.m */,
 				6218BEC425D1A31000D6767F /* ErrorManager.h */,
@@ -166,10 +188,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				874BE12128635F3900EC5122 /* ThePrinter.m in Sources */,
 				62DF9FD525CDBEDE0048F83E /* PrinterInfo.m in Sources */,
 				6218BEC225D1A2F800D6767F /* ErrorManager.m in Sources */,
+				874BE12728636F6E00EC5122 /* EposStringHelper.m in Sources */,
 				F4FF95D7245B92E800C19C63 /* EscPosPrinter.swift in Sources */,
 				62DF9FDB25CDBEEB0048F83E /* ShowMsg.m in Sources */,
+				874BE11E28635EFB00EC5122 /* ThePrinterManager.m in Sources */,
+				874BE12428635FEA00EC5122 /* ThePrinterWrapper.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

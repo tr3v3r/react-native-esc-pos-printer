@@ -62,6 +62,28 @@ RCT_REMAP_METHOD(discover,
     int scanningTimeout = (int)[params[@"scanningTimeoutIOS"] integerValue] ?: 5000;
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, scanningTimeout * NSEC_PER_MSEC), dispatch_get_main_queue(), ^{
+        NSMutableArray *stringArray = [[NSMutableArray alloc] init];
+        for (int i = 0; i < [_printerList count]; i++)
+        {
+            Epos2DeviceInfo *info = _printerList[i];
+            NSString *target = [info getTarget];
+            if (![target hasPrefix:@"TCPS:"]) {
+                NSString *name = [info getDeviceName];
+                NSString *ip = [info getIpAddress];
+                NSString *mac = [info getMacAddress];
+                NSString *bt = [info getBdAddress];
+                NSString *usb = [self getUSBAddress: target];
+                [stringArray addObject:@{
+                    @"name": name,
+                    @"ip": ip,
+                    @"mac": mac,
+                    @"target": target,
+                    @"bt": bt,
+                    @"usb": usb
+                }];
+            }
+        }
+        [self sendEventWithName:@"onDiscoveryDone" body:stringArray];
         [self stopDiscovery];
         onFinish(@"Search completed");
     });
@@ -83,32 +105,6 @@ RCT_REMAP_METHOD(discover,
 - (void) onDiscovery:(Epos2DeviceInfo *)deviceInfo
 {
     [_printerList addObject:deviceInfo];
-
-    NSMutableArray *stringArray = [[NSMutableArray alloc] init];
-
-    for (int i = 0; i < [_printerList count]; i++)
-    {
-        Epos2DeviceInfo *info = _printerList[i];
-        NSString *name = [info getDeviceName];
-        NSString *ip = [info getIpAddress];
-        NSString *mac = [info getMacAddress];
-        NSString *target = [info getTarget];
-        NSString *bt = [info getBdAddress];
-        NSString *usb = [self getUSBAddress: target];
-
-        [stringArray addObject:@{
-            @"name": name,
-            @"ip": ip,
-            @"mac": mac,
-            @"target": target,
-            @"bt": bt,
-            @"usb": usb
-        }];
-    }
-
-
-    [self sendEventWithName:@"onDiscoveryDone" body:stringArray];
-
     NSLog(@"Discovery done!");
 }
 
