@@ -269,7 +269,7 @@ PODS:
     - React-jsi (= 0.65.1)
     - React-perflogger (= 0.65.1)
   - React-jsinspector (0.65.1)
-  - react-native-esc-pos-printer (1.10.0):
+  - react-native-esc-pos-printer (1.11.0):
     - React-Core
   - React-perflogger (0.65.1)
   - React-RCTActionSheet (0.65.1):
@@ -501,7 +501,7 @@ SPEC CHECKSUMS:
   React-jsi: 12913c841713a15f64eabf5c9ad98592c0ec5940
   React-jsiexecutor: 43f2542aed3c26e42175b339f8d37fe3dd683765
   React-jsinspector: 41e58e5b8e3e0bf061fdf725b03f2144014a8fb0
-  react-native-esc-pos-printer: 6127b5dc3c973b35354b5966711b95240f5e867d
+  react-native-esc-pos-printer: a889a56c85af0a40975fcf5c45a83b6795bf9d60
   React-perflogger: fd28ee1f2b5b150b00043f0301d96bd417fdc339
   React-RCTActionSheet: 7f3fa0855c346aa5d7c60f9ced16e067db6d29fa
   React-RCTAnimation: 2119a18ee26159004b001bc56404ca5dbaae6077
@@ -519,4 +519,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 7be4a2b964144a2b69a4dc1d612008c27828d0a1
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.11.3
