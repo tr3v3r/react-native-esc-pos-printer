@@ -1,4 +1,4 @@
-import { PRINTER_LANGUAGE } from 'src/constants';
+import { PRINTER_LANGUAGE } from '../constants';
 import type { PrinterLanguage } from '../types';
 
 /**
