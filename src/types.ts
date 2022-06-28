@@ -87,6 +87,11 @@ export interface IPrintParams {
    * Print operation timeout in ms (5000 - 300000). Defaults to 5000 in android and 10000 in iOS.
    */
   timeout?: number;
+  /**
+   * The target of the printer, this field is required if you are using instantiate function to initialise the printer,
+   * mapped to the printer target, otherwise only one instance of the printer will be initialised and all print jobs, will be sent there.
+   */
+  target?: string;
 }
 
 export interface IMonitorStatus {

@@ -34,7 +34,7 @@ import {
   getNativeCommand,
 } from './utils';
 
-const { EscPosPrinter } = NativeModules;
+const { EscPosPrinter, ThePrinterWrapper } = NativeModules;
 const printEventEmmiter = new NativeEventEmitter(EscPosPrinter);
 
 type TCommandValue = [string, any[]];
@@ -115,10 +115,19 @@ class Printing {
         }
       );
 
-      EscPosPrinter.printBuffer(value, params).catch((e: Error) => {
-        removeListeners();
-        rej(e);
-      });
+      if (params?.target) {
+        ThePrinterWrapper.printBuffer(value, params.target, params).catch(
+          (e: Error) => {
+            removeListeners();
+            rej(e);
+          }
+        );
+      } else {
+        EscPosPrinter.printBuffer(value, params).catch((e: Error) => {
+          removeListeners();
+          rej(e);
+        });
+      }
     });
   }
 
@@ -140,7 +149,6 @@ class Printing {
    */
   initialize() {
     this._reset();
-
     return this;
   }
 
