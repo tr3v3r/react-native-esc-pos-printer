@@ -133,15 +133,16 @@ RCT_EXPORT_METHOD(connect:(NSString *)target
     @synchronized (self) {
         thePrinter = [objManager_ getObject:objid];
         if (thePrinter == nil) {
-            NSLog(@"Error  Fail to get object.");
-            // onError(EPOS2_ERR_MEMORY)
-            onError(@"Failed");
+            NSLog(@"Error fail to get object, The printer is not initialised");
+            onError(@"The printer is not initialised");
+        } else {
+            [thePrinter setBusy:PRINTER_CONNECTING];
+             NSLog(@"connecting to printer %@", objid);
+            const connectResult = [thePrinter connect:EPOS2_PARAM_DEFAULT startMonitor:true];
+            onSuccess([NSString stringWithFormat:@"%d", connectResult]);
         }
-        [thePrinter setBusy:PRINTER_CONNECTING];
     }
-    NSLog(@"connecting to printer %@", objid);
-    const connectResult = [thePrinter connect:EPOS2_PARAM_DEFAULT startMonitor:true];
-    onSuccess([NSString stringWithFormat:@"%d", connectResult]);
+   
     
 }
 

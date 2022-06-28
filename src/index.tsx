@@ -58,6 +58,10 @@ const _default = {
     return ThePrinterWrapper.init(target, series, lang);
   },
 
+  connect(target: string): Promise<number> {
+    return ThePrinterWrapper.connect(target);
+  },
+
   async discover(params?: IDiscoverParams): Promise<IPrinter[]> {
     if (
       Platform.OS === 'ios' ||
