@@ -110,7 +110,11 @@ RCT_EXPORT_METHOD(init:(NSString *)target
     @synchronized (self) {
         ThePrinter* thePrinter = [[ThePrinter alloc] initWith:printerTarget series:series lang:lang delegate:self];
         NSString *objID = [objManager_ add:thePrinter];
-        onSuccess(objID);
+        [self connectPrinter:objID onSuccess:^(NSString *result) {
+            onSuccess(result);
+        } onError:^(NSString *error) {
+            onError(error);
+        }];
     }
 }
 
