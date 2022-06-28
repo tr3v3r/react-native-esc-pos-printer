@@ -46,10 +46,11 @@ static ThePrinterManager *sharedData_ = nil;
             NSLog(@"Here is the key: %@", aKey);
         }
         if ([_objectDict.allKeys containsObject:printerTarget] == NO) {
+            NSLog(@"Setting the instance for the printer");
             [_objectDict addEntriesFromDictionary:@{printerTarget: thePrinterObj}];
         } else {
             NSLog(@"The key already exists");
-            // TODO object exists
+            [_objectDict setObject:thePrinterObj forKey:@"printerTarget"];
         }
         return printerTarget;
     }
