@@ -50,7 +50,6 @@ static ThePrinterManager *sharedData_ = nil;
             [_objectDict addEntriesFromDictionary:@{printerTarget: thePrinterObj}];
         } else {
             NSLog(@"The key already exists");
-            [_objectDict setObject:thePrinterObj forKey:@"printerTarget"];
         }
         return printerTarget;
     }
