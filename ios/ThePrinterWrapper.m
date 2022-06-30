@@ -108,9 +108,16 @@ RCT_EXPORT_METHOD(init:(NSString *)target
                                         onError: (void(^)(NSString *))onError
 {
     @synchronized (self) {
-        ThePrinter* thePrinter = [[ThePrinter alloc] initWith:printerTarget series:series lang:lang delegate:self];
-        NSString *objID = [objManager_ add:thePrinter];
-        [self connectPrinter:objID onSuccess:^(NSString *result) {
+        ThePrinter* thePrinter = [objManager_ getObject:printerTarget];
+        
+        if (thePrinter == nil) {
+            ThePrinter* newPrinter = [[ThePrinter alloc] initWith:printerTarget series:series lang:lang delegate:self];
+            [objManager_ add:newPrinter];
+        } else {
+            NSLog(@"This printer is already initialized");
+        }
+                
+        [self connectPrinter:printerTarget onSuccess:^(NSString *result) {
             onSuccess(result);
         } onError:^(NSString *error) {
             onError(error);
@@ -143,7 +150,12 @@ RCT_EXPORT_METHOD(connect:(NSString *)target
             [thePrinter setBusy:PRINTER_CONNECTING];
              NSLog(@"connecting to printer %@", objid);
             const connectResult = [thePrinter connect:EPOS2_PARAM_DEFAULT startMonitor:true];
-            onSuccess([NSString stringWithFormat:@"%d", connectResult]);
+            if (connectResult == EPOS2_SUCCESS) {
+                onSuccess([NSString stringWithFormat:@"%d", connectResult]);
+            } else {
+                onError([NSString stringWithFormat:@"%d", connectResult]);
+            }
+            
         }
     }
    
