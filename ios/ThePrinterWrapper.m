@@ -162,7 +162,7 @@ RCT_EXPORT_METHOD(connect:(NSString *)target
     
 }
 
-RCT_EXPORT_METHOD(disconnect:(NSString *)target
+RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
                 withResolver:(RCTPromiseResolveBlock)resolve
                 withRejecter:(RCTPromiseRejectBlock)reject)
 {
