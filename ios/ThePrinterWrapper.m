@@ -162,6 +162,13 @@ RCT_EXPORT_METHOD(connect:(NSString *)target
     
 }
 
+RCT_EXPORT_METHOD(disconnect:(NSString *)target
+                withResolver:(RCTPromiseResolveBlock)resolve
+                withRejecter:(RCTPromiseRejectBlock)reject)
+{
+    [self disconnectPrinter:target];
+    [self deallocPrinter:target];
+}
 // please call from native react
 // please make sure that you call after you have finished connecting/printing
 -(int) disconnectPrinter:(nonnull NSString*)objid
@@ -949,86 +956,30 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
     if (result != EPOS2_SUCCESS) {
         NSString *errorString = [ErrorManager getEposErrorText: result];
         onError(errorString);
+        [self setPrinterStatus:target printerStatus:PRINTER_IDLE];
         return;
     }
 
     [[thePrinter getEpos2Printer] clearCommandBuffer];
     NSString *successString = [ErrorManager getEposErrorText: EPOS2_SUCCESS];
     onSuccess(successString);
+    [self setPrinterStatus:target printerStatus:PRINTER_IDLE];
 }
 
-// - (BOOL)createReceiptData:(NSString*)objid
-// {
-//     int result = EPOS2_SUCCESS;
-    
-//     if (thePrinterWrapper_ == nil) {
-//         return EPOS2_ERR_MEMORY;
-//     }
-    
-//     CellManager* sharedManager = [CellManager sharedHelper];
-    
-//     if ([sharedManager checkCellForID:objid] == false) {
-//         return EPOS2_ERR_MEMORY;
-//     }
-    
-//     // begin Transaction
-//     int beginTransaction = [thePrinterWrapper_ beginTransaction:objid];
-//     if (beginTransaction != EPOS2_SUCCESS) {
-//         // could cause issues if you are connected to the same printer but on a different interface ie tcp/bluetooth
-//     }
-//     [sharedManager updatePrintCmdResult:objid printResult:beginTransaction cmd:@"beginTransaction"];
-    
-//     const int barcodeWidth = 2;
-//     const int barcodeHeight = 100;
-    
-//     NSMutableString *textData = [[NSMutableString alloc] init];
-//     UIImage *logoData = [UIImage imageNamed:@"store.png"];
-    
-//     if (textData == nil || logoData == nil) {
-//         return EPOS2_ERR_MEMORY;
-//     }
-    
-//     result = [thePrinterWrapper_ addTextAlign:objid align:EPOS2_ALIGN_CENTER];
-//     if (result != EPOS2_SUCCESS) {
-//         [thePrinterWrapper_ clearCommandBuffer:objid];
-//         [ShowMsg showErrorEpos:result method:@"addTextAlign"];
-//         return result;
-//     }
-    
-//     // add printer information
-//     result = [thePrinterWrapper_ addFeedLine:objid lines:1];
-//     if (result != EPOS2_SUCCESS) {
-//         [thePrinterWrapper_ clearCommandBuffer:objid];
-//         [ShowMsg showErrorEpos:result method:@"addFeedLine"];
-//         return result;
-//     }
-    
-//     Epos2DeviceInfo* info = [sharedManager getDeviceInfo:objid];
-//     int numberOfCopies = [sharedManager getNumberOfCopies:objid];
-//     int copyNo = [sharedManager getCurrentCopyNumber:objid];
 
-//     [textData appendFormat:@"Printer ID %@\n", objid];
-//     [textData appendFormat:@"Printer Name %@\n", info.deviceName];
-//     [textData appendFormat:@"Printer Target %@\n", info.target];
-//     [textData appendFormat:@"Copy %i out of  %i\n", copyNo, numberOfCopies];
-//     [textData appendString:@"------------------------------\n"];
-//     result = [thePrinterWrapper_ addText:objid text:textData];
-//     if (result != EPOS2_SUCCESS) {
-//         [thePrinterWrapper_ clearCommandBuffer:objid];
-//         [ShowMsg showErrorEpos:result method:@"addText"];
-//         return result;
-//     }
-//     [textData setString:@""];
+-(void) setPrinterStatus:(nonnull NSString*)objid printerStatus:(int)printerStatus
+{
     
-//     result = [thePrinterWrapper_ addCut:objid feed:EPOS2_CUT_FEED];
-//     if (result != EPOS2_SUCCESS) {
-//         [thePrinterWrapper_ clearCommandBuffer:objid];
-//         [ShowMsg showErrorEpos:result method:@"addCut"];
-//         return result;
-//     }
-    
-//     return result;
-// }
+    @synchronized (self) {
+
+        ThePrinter* thePrinter = [objManager_ getObject:objid];
+        if (thePrinter == nil) {
+            NSLog(@"Error  Fail to get object.");
+        }
+        NSLog(@"Setting printer status %d", printerStatus);
+        [thePrinter setBusy:printerStatus];
+    }
+}
 
 - (int)printData:(NSDictionary *)params target:(NSString*)target
 {
@@ -1037,6 +988,7 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
     if (self == nil) {
         return EPOS2_ERR_MEMORY;
     }
+
     int timeout = (int)[params[@"timeout"] integerValue] ?: EPOS2_PARAM_DEFAULT;
     // send data to printer
     result = [self sendData:target timeout:timeout];

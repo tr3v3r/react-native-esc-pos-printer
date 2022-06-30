@@ -62,6 +62,11 @@ const _default = {
     return ThePrinterWrapper.connect(target);
   },
 
+
+  disconnect(target: string): Promise<number> {
+    return ThePrinterWrapper.disconnect(target);
+  },
+
   async discover(params?: IDiscoverParams): Promise<IPrinter[]> {
     if (
       Platform.OS === 'ios' ||
