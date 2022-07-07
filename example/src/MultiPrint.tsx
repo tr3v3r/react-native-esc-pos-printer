@@ -83,6 +83,11 @@ const MultiPrint = ({ closeModal }: Props) => {
     Promise.all(printRequests);
   };
 
+  const handleInitializeAll = () => {
+    const initializeRequests = printers.map((printer) => handleInit(printer));
+    Promise.all(initializeRequests);
+  };
+
   return (
     <SafeAreaView style={backgroundStyle}>
       <ScrollView
@@ -98,8 +103,8 @@ const MultiPrint = ({ closeModal }: Props) => {
           <Text style={{ color: '#0A84FF' }}>Close</Text>
         </TouchableOpacity>
         <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <TouchableOpacity onPress={handleDiscover}>
-            <Text>Discover printers</Text>
+          <TouchableOpacity onPress={handleInitializeAll}>
+            <Text>Initialize all</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handlePrintAll}>
             <Text>Print all</Text>
