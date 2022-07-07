@@ -226,7 +226,7 @@ export default function App() {
         />
       </View>
       <Button
-        title="Test multi print"
+        title="Test multi-print"
         onPress={() => {
           setIsModalOpen(true);
         }}
