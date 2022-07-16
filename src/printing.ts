@@ -115,7 +115,8 @@ class Printing {
         }
       );
 
-      if (params?.target) {
+      // The multi-print is only supported on ios
+      if (Platform.OS === 'ios' && params?.target) {
         ThePrinterWrapper.printBuffer(value, params.target, params).catch(
           (e: Error) => {
             removeListeners();
