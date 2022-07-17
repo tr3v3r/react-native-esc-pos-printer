@@ -8,6 +8,7 @@ import {
   getPrinterSeriesByName,
   requestAndroidPermissions,
   enableLocationAccessAndroid10,
+  getPrinterLanguage,
 } from './utils';
 import type {
   PrinerEvents,
@@ -26,7 +27,11 @@ import {
   PRINTER_LANGUAGE,
 } from './constants';
 
-const { EscPosPrinter, EscPosPrinterDiscovery } = NativeModules;
+const {
+  EscPosPrinter,
+  EscPosPrinterDiscovery,
+  ThePrinterWrapper,
+} = NativeModules;
 
 const discoveryEventEmmiter = new NativeEventEmitter(EscPosPrinterDiscovery);
 const printEventEmmiter = new NativeEventEmitter(EscPosPrinter);
@@ -39,15 +44,29 @@ const _default = {
     language = 'EPOS2_LANG_EN',
   }: IPrinterInitParams): Promise<number> {
     const series = PRINTER_SERIES[seriesName];
-    let lang;
-    if (typeof PRINTER_LANGUAGE[language] === 'number') {
-      lang = PRINTER_LANGUAGE[language];
-    } else {
-      console.warn('An invalid parameter of language was passed.');
-      lang = PRINTER_LANGUAGE.EPOS2_LANG_EN;
-    }
+    const lang = getPrinterLanguage(language);
     return EscPosPrinter.init(target, series, lang);
   },
+
+  instantiate({
+    target,
+    seriesName,
+    language = 'EPOS2_LANG_EN',
+  }: IPrinterInitParams): Promise<number> {
+    const series = PRINTER_SERIES[seriesName];
+    const lang = getPrinterLanguage(language);
+    return ThePrinterWrapper.init(target, series, lang);
+  },
+
+  connect(target: string): Promise<number> {
+    return ThePrinterWrapper.connect(target);
+  },
+
+
+  disconnectPrinter(target: string): Promise<number> {
+    return ThePrinterWrapper.disconnectAndDeallocate(target);
+  },
+
   async discover(params?: IDiscoverParams): Promise<IPrinter[]> {
     if (
       Platform.OS === 'ios' ||
