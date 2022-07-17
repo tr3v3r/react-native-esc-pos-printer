@@ -75,6 +75,7 @@ printing.initialize().align('center');
 ### imageAsset
 
 ## (Depracted use .image() method instead).
+
 Prints an image from iOS/Android local assets folder.
 
 - Android: Save your image file under the directory `android/app/src/main/assets`. Note that files in this directory must be lowercase.
@@ -88,6 +89,7 @@ printing.initialize().imageAsset('logo.png', 200);
 ### imageBase64
 
 ## (Depracted use .image() method instead).
+
 Prints an image represented by base64 data (i.e. "data:image/png;base64,...").
 
 - Use base64 string as first argument and image width as a second (width of the image 1 to 65535)
@@ -95,8 +97,7 @@ Prints an image represented by base64 data (i.e. "data:image/png;base64,...").
 - See example of usage in `example` folder
 
 ```javascript
-export const base64Image =
-  'data:image/png;base64,....'
+export const base64Image = 'data:image/png;base64,....';
 
 printing.initialize().imageBase64(base64Image, 75);
 ```
@@ -114,8 +115,8 @@ Prints image from local/remote source.
   - brigtness? : Specifies the brightness compensation value (from 0.1 to 10).
 
 ```javascript
-
-printing.initialize()
+printing
+  .initialize()
   .image(require('./store.png'), {
     width: 75,
     halftone: 'EPOS2_HALFTONE_THRESHOLD',
@@ -161,7 +162,6 @@ Prints a QR Code.
 - type : Sets the type of the QR Code - optional string parameter, defaults to QRCODE_MODEL_2, and EPOS2_SYMBOL_QRCODE_MICRO is android only.
 - level? : Sets the error correction level - optional string parameter, defaults to LEVEL_M.
 
-
 ```javascript
 printing.initialize().qrcode({
   value: 'Test123',
@@ -172,6 +172,7 @@ printing.initialize().qrcode({
 ```
 
 ### data
+
 Adds the given binary data (Uint8Array) to the print queue
 See example folder for more details.
 
@@ -194,7 +195,7 @@ Adds a drawer kick to open the cash drawer
 - Specifies the drawer kick connector as first parameter - optional string parameter, defaults to DRAWER_2PIN. Valid values are: `EPOS2_DRAWER_2PIN` | `EPOS2_DRAWER_5PIN`
 
 ```javascript
-printing.initialize().addPulse();   // uses default pin (pin 2)
+printing.initialize().addPulse(); // uses default pin (pin 2)
 printing.initialize().addPulse('EPOS2_DRAWER_2PIN');
 ```
 
@@ -204,10 +205,10 @@ Is required at the end of a printer chain to send the commands to the printer
 
 #### params
 
-| Name      |   Type   | Required |             Default              |                  Description                   |
-|-----------|:--------:|:--------:|:--------------------------------:|:----------------------------------------------:|
-| `timeout` | `number` |   `No`   | 5000 in android<br/>10000 in iOS | Print operation timeout in ms (5000 - 300000). |
-
+| OS            | Name      |   Type   | Required |             Default              |                                                                                      Description                                                                                       |
+| ------------- | --------- | :------: | :------: | :------------------------------: | :------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------: |
+| `iOS/Android` | `timeout` | `number` |   `No`   | 5000 in Android<br/>10000 in iOS |                                                                     Print operation timeout in ms (5000 - 300000).                                                                     |
+| `iOS`         | `target`  | `string` |   `No`   |            undefined             | Printer target to which the print job should be routed, will work only if the printer was initialized using [instantiate](#instantiate-target-seriesname-language----ios-only) method. |
 
 ```javascript
 printing.initialize().text("hello, is it me you're looking for").send();
