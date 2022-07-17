@@ -62,7 +62,6 @@ const _default = {
     return ThePrinterWrapper.connect(target);
   },
 
-
   disconnectPrinter(target: string): Promise<number> {
     return ThePrinterWrapper.disconnectAndDeallocate(target);
   },

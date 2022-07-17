@@ -53,13 +53,13 @@ const MultiPrint = ({ closeModal }: Props) => {
     }
   };
 
-  const handleConnect = (printer: IPrinter) => {
-    EscPosPrinter.connect(printer.target);
-  };
+  // const handleConnect = (printer: IPrinter) => {
+  //   EscPosPrinter.connect(printer.target);
+  // };
 
-  const handleDisconnect = (printer: IPrinter) => {
-    EscPosPrinter.disconnectPrinter(printer.target);
-  };
+  // const handleDisconnect = (printer: IPrinter) => {
+  //   EscPosPrinter.disconnectPrinter(printer.target);
+  // };
 
   const handlePrint = async (printer: IPrinter) => {
     const printing = new EscPosPrinter.printing();
