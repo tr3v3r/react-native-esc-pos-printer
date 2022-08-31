@@ -93,6 +93,7 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
     @Override
     public Map<String, Object> getConstants() {
       final Map<String, Object> constants = new HashMap<>();
+      // Printer series
       constants.put("EPOS2_TM_M10", Printer.TM_M10);
       constants.put("EPOS2_TM_M30", Printer.TM_M30);
       constants.put("EPOS2_TM_P20", Printer.TM_P20);
@@ -117,6 +118,12 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       constants.put("EPOS2_TM_M30II", Printer.TM_M30II);
       constants.put("EPOS2_TS_100", Printer.TS_100);
       constants.put("EPOS2_TM_M50", Printer.TM_M50);
+      constants.put("EPOS2_TM_T88VII", Printer.TM_T88VII);
+      constants.put("EPOS2_TM_L90LFC", Printer.TM_L90LFC);
+      constants.put("EPOS2_EU_M30", Printer.EU_M30);
+      constants.put("EPOS2_TM_L100", Printer.TM_L100);
+
+      // Print commands
       constants.put("COMMAND_ADD_TEXT", PrintingCommands.COMMAND_ADD_TEXT);
       constants.put("COMMAND_ADD_NEW_LINE", PrintingCommands.COMMAND_ADD_NEW_LINE);
       constants.put("COMMAND_ADD_TEXT_STYLE", PrintingCommands.COMMAND_ADD_TEXT_STYLE);
@@ -131,11 +138,14 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       constants.put("COMMAND_ADD_CUT", PrintingCommands.COMMAND_ADD_CUT);
       constants.put("COMMAND_ADD_DATA", PrintingCommands.COMMAND_ADD_DATA);
       constants.put("COMMAND_ADD_PULSE", PrintingCommands.COMMAND_ADD_PULSE);
+
       constants.put("EPOS2_ALIGN_LEFT", Printer.ALIGN_LEFT);
       constants.put("EPOS2_ALIGN_RIGHT", Printer.ALIGN_RIGHT);
       constants.put("EPOS2_ALIGN_CENTER", Printer.ALIGN_CENTER);
       constants.put("EPOS2_TRUE", Printer.TRUE);
       constants.put("EPOS2_FALSE", Printer.FALSE);
+
+      // Print languages
       constants.put("EPOS2_LANG_EN", Printer.LANG_EN);
       constants.put("EPOS2_LANG_JA", Printer.LANG_JA);
       constants.put("EPOS2_LANG_ZH_CN", Printer.LANG_ZH_CN);
@@ -144,6 +154,8 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       constants.put("EPOS2_LANG_TH", Printer.LANG_TH);
       constants.put("EPOS2_LANG_VI", Printer.LANG_VI);
       constants.put("EPOS2_LANG_MULTI", Printer.PARAM_DEFAULT);
+
+      // Print Barcodes
       constants.put("EPOS2_BARCODE_UPC_A", Printer.BARCODE_UPC_A);
       constants.put("EPOS2_BARCODE_UPC_E", Printer.BARCODE_UPC_E);
       constants.put("EPOS2_BARCODE_EAN13", Printer.BARCODE_EAN13);
@@ -172,6 +184,7 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       constants.put("EPOS2_SYMBOL_QRCODE_MODEL_1", Printer.SYMBOL_QRCODE_MODEL_1);
       constants.put("EPOS2_SYMBOL_QRCODE_MODEL_2", Printer.SYMBOL_QRCODE_MODEL_2);
       constants.put("EPOS2_SYMBOL_QRCODE_MICRO", Printer.SYMBOL_QRCODE_MICRO);
+
       // Print image settings
       constants.put("EPOS2_COLOR_1", Printer.COLOR_1);
       constants.put("EPOS2_COLOR_2", Printer.COLOR_2);
@@ -242,7 +255,7 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
     private void initializeObject(int series, int language,MyCallbackInterface callback) {
        try {
         mPrinter = new Printer(series, Printer.MODEL_ANK, mContext);
-        mPrinter.addTextLang(language);
+        mPrinter.addTextLang(language);
        }
         catch (Epos2Exception e) {
           int status = EscPosPrinterErrorManager.getErrorStatus(e);
