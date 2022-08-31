@@ -691,7 +691,7 @@ public class ThePrinterWrapper extends ReactContextBaseJavaModule implements Pri
         return context_;
     }
 
-    private void handleCommand(int command, ReadableArray params, String target) throws Epos2Exception, IOException {
+    private void handleCommand(int command, ReadableArray params, String target) throws Exception {
         Printer printer = thePrinterManager_.getObject(target).getEpos2Printer();
         switch (command) {
             case PrintingCommands.COMMAND_ADD_TEXT:
