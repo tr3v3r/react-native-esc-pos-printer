@@ -18,6 +18,7 @@ public class EscPosPrinterPackage implements ReactPackage {
         List<NativeModule> modules = new ArrayList<>();
         modules.add(new EscPosPrinterModule(reactContext));
         modules.add(new EscPosPrinterDiscoveryModule(reactContext));
+        modules.add(new ThePrinterWrapper(reactContext));
         return modules;
     }
 
