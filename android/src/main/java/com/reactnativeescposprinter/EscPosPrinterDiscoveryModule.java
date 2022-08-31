@@ -176,6 +176,13 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
     FilterOption mFilterOption = new FilterOption();
 
     mFilterOption.setDeviceType(Discovery.TYPE_PRINTER);
+    mFilterOption.setEpsonFilter(Discovery.FILTER_NAME);
+    mFilterOption.setDeviceModel(Discovery.MODEL_ALL);
+
+    // Display USB printer names
+    mFilterOption.setUsbDeviceName(Discovery.TRUE);
+    // List already paired bluetooth printers
+    mFilterOption.setBondedDevices(Discovery.TRUE);
 
     mPrinterList.clear();
 
