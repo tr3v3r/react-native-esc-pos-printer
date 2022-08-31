@@ -120,7 +120,6 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       constants.put("EPOS2_TM_M50", Printer.TM_M50);
       constants.put("EPOS2_TM_T88VII", Printer.TM_T88VII);
       constants.put("EPOS2_TM_L90LFC", Printer.TM_L90LFC);
-      constants.put("EPOS2_EU_M30", Printer.EU_M30);
       constants.put("EPOS2_TM_L100", Printer.TM_L100);
 
       // Print commands
