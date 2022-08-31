@@ -166,8 +166,17 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
                 withResolver:(RCTPromiseResolveBlock)resolve
                 withRejecter:(RCTPromiseRejectBlock)reject)
 {
-    [self disconnectPrinter:target];
-    [self deallocPrinter:target];
+    const disconnectResult = [self disconnectPrinter:target];
+    if (disconnectResult == EPOS2_SUCCESS) {
+        const diallocResult = [self deallocPrinter:target];
+        if (diallocResult == EPOS2_SUCCESS) {
+            resolve([NSString stringWithFormat:@"%d", diallocResult]);
+        } else {
+            reject(@"event_failure", [NSString stringWithFormat:@"%d", diallocResult], nil);    
+        }
+    } else {
+        reject(@"event_failure", [NSString stringWithFormat:@"%d", disconnectResult], nil);
+    }
 }
 // please call from native react
 // please make sure that you call after you have finished connecting/printing
