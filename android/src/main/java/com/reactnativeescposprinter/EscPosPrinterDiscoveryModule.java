@@ -226,7 +226,11 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
       UiThreadUtil.runOnUiThread(new Runnable() {
         @Override
         public synchronized void run() {
-          mPrinterList.add(deviceInfo);
+          String deviceTarget = deviceInfo.getTarget();
+          // Skip local printers
+          if (!deviceTarget.startsWith("TCPS:") && !(deviceTarget.startsWith("TCP:") && deviceTarget.contains("["))) {
+              mPrinterList.add(deviceInfo);
+          }
 
           if(mFindFirst) {
             mHandler.removeCallbacks(mDiscoveryTimeoutRunnable);
