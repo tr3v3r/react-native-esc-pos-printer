@@ -40,6 +40,9 @@ const {
   EPOS2_TM_M30II,
   EPOS2_TS_100,
   EPOS2_TM_M50,
+  EPOS2_TM_T88VII,
+  EPOS2_TM_L90LFC,
+  EPOS2_TM_L100,
   COMMAND_ADD_TEXT,
   COMMAND_ADD_NEW_LINE,
   COMMAND_ADD_TEXT_STYLE,
@@ -162,6 +165,9 @@ export const PRINTER_SERIES: { [key in PrinterSeriesName]: number } = {
   EPOS2_TM_M30II,
   EPOS2_TS_100,
   EPOS2_TM_M50,
+  EPOS2_TM_T88VII,
+  EPOS2_TM_L90LFC,
+  EPOS2_TM_L100,
 };
 
 export const FONT_A_CHARS_PER_LINE: Partial<
@@ -264,7 +270,7 @@ export const DEFAULT_FONT_A_CHARS_PER_LINE = {
   60: 30,
 };
 
-export const DEFAULT_PAPER_WIDTHT = 60;
+export const DEFAULT_PAPER_WIDTH = 60;
 
 export const PRINTER_LANGUAGE: { [key in PrinterLanguage]: number } = {
   EPOS2_LANG_EN,

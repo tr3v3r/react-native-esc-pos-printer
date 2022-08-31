@@ -726,7 +726,6 @@ public class EposStringHelper {
         if (deviceName.startsWith("TM-H6000")) return Printer.TM_H6000;
         if (deviceName.startsWith("TM-T100")) return Printer.TM_T100;
         if (deviceName.startsWith("TS-100")) return Printer.TS_100;
-        if (deviceName.startsWith("EU_M30")) return Printer.EU_M30;
 
         return Printer.TM_T88;
 
