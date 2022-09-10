@@ -115,14 +115,16 @@ class Printing {
         }
       );
 
-      // The multi-print is only supported on ios
-      if (Platform.OS === 'ios' && params?.target) {
-        ThePrinterWrapper.printBuffer(value, params.target, params).catch(
-          (e: Error) => {
+      if (params?.target) {
+        ThePrinterWrapper.printBuffer(value, params.target, params)
+          .then((data: IMonitorStatus) => {
+            removeListeners();
+            res(data);
+          })
+          .catch((e: Error) => {
             removeListeners();
             rej(e);
-          }
-        );
+          });
       } else {
         EscPosPrinter.printBuffer(value, params).catch((e: Error) => {
           removeListeners();

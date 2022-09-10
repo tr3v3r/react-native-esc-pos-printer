@@ -45,7 +45,10 @@ export type PrinterSeriesName =
   | 'EPOS2_TM_T100'
   | 'EPOS2_TM_M30II'
   | 'EPOS2_TS_100'
-  | 'EPOS2_TM_M50';
+  | 'EPOS2_TM_M50'
+  | 'EPOS2_TM_T88VII'
+  | 'EPOS2_TM_L90LFC'
+  | 'EPOS2_TM_L100';
 
 export type PrinterLanguage =
   | 'EPOS2_LANG_EN'

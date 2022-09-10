@@ -6,8 +6,9 @@
 4. [getPrinterCharsPerLine](#getprintercharsperlineseriesname)
 5. [startMonitorPrinter](#startmonitorprinterinterval-number)
 6. [stopMonitorPrinter](#stopmonitorprinter)
-7. [instantiate](#instantiate-target-seriesname-language----ios-only)
+7. [instantiate](#instantiate-target-seriesname-language)
 8. [printing](./PRINTING.md)
+9. [disconnectPrinter](#disconnectprintertarget-string)
 
 ### init({ target, seriesName, language? })
 
@@ -212,7 +213,7 @@ EscPosPrinter.stopMonitorPrinter()
   .catch((e) => console.log('Stop error:', e.message));
 ```
 
-### instantiate({ target, seriesName, language? }) - iOS only
+### instantiate({ target, seriesName, language? })
 
 Initializes printer using it's target and series name. Using this method you can initialize multiple printers.
 
@@ -234,4 +235,16 @@ EscPosPrinter.instantiate({
 })
   .then(() => console.log('Init success!'))
   .catch((e) => console.log('Init error:', e.message));
+```
+
+### disconnectPrinter(target: string)
+
+Use this method to disconnect and delete the printer object initialized using [instantiate](#instantiate-target-seriesname-language) method. You need to call this function when the printer is no longer needed, but note that after calling this method you would need to re-instantiate the printer again before sending print jobs.
+
+```javascript
+import EscPosPrinter from 'react-native-esc-pos-printer';
+
+EscPosPrinter.disconnectPrinter()
+  .then(() => console.log('Disconnect success'))
+  .catch((e) => console.log('Disconnect error', e.message));
 ```

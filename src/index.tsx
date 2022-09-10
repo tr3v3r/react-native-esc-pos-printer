@@ -23,7 +23,7 @@ import {
   PRINTER_SERIES,
   FONT_A_CHARS_PER_LINE,
   DEFAULT_FONT_A_CHARS_PER_LINE,
-  DEFAULT_PAPER_WIDTHT,
+  DEFAULT_PAPER_WIDTH,
   PRINTER_LANGUAGE,
 } from './constants';
 
@@ -141,7 +141,7 @@ const _default = {
     seriesName: PrinterSeriesName
   ): Promise<{ fontA: number }> {
     const paperWidth: 80 | 60 | 58 =
-      (await this.getPaperWidth()) || DEFAULT_PAPER_WIDTHT;
+      (await this.getPaperWidth()) || DEFAULT_PAPER_WIDTH;
 
     const key = String(paperWidth) as '80' | '60' | '58';
 
