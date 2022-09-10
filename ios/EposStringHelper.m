@@ -759,6 +759,9 @@
     if ([name hasPrefix:@"TM-H6000"]) return EPOS2_TM_H6000;
     if ([name hasPrefix:@"TM-T100"]) return EPOS2_TM_T100;
     if ([name hasPrefix:@"TS-100"]) return EPOS2_TS_100;
+    if ([name hasPrefix:@"TM_T88VII"]) return EPOS2_TM_T88VII;
+    if ([name hasPrefix:@"TM_L90LFC"]) return EPOS2_TM_L90LFC;
+    if ([name hasPrefix:@"TM_L100"]) return EPOS2_TM_L100;
     
     return EPOS2_TM_T88;
 }

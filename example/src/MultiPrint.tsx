@@ -53,12 +53,20 @@ const MultiPrint = ({ closeModal }: Props) => {
     }
   };
 
-  // const handleConnect = (printer: IPrinter) => {
-  //   EscPosPrinter.connect(printer.target);
+  // const handleConnect = async (printer: IPrinter) => {
+  //   try {
+  //     EscPosPrinter.connect(printer.target);
+  //   } catch (error) {
+  //     // Failed to connect the printer
+  //   }
   // };
 
   // const handleDisconnect = (printer: IPrinter) => {
-  //   EscPosPrinter.disconnectPrinter(printer.target);
+  //   try {
+  //     EscPosPrinter.disconnectPrinter(printer.target);
+  //   } catch (error) {
+  //     // Failed to disconnect the printer
+  //   }
   // };
 
   const handlePrint = async (printer: IPrinter) => {
