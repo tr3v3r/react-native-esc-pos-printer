@@ -15,10 +15,9 @@ Pod::Spec.new do |s|
 
 
   s.source_files = "ios/**/*.{h,m,mm,swift}"
-  s.ios.vendored_libraries = "ios/PrinterSDK/libepos2.a"
+  s.vendored_frameworks = "ios/PrinterSDK/libepos2.xcframework"
   s.libraries = "xml2.2"
-  s.framework = "ExternalAccessory"
-  s.xcconfig = { 'HEADER_SEARCH_PATHS' => '"${PROJECT_DIR}/PrinterSDK"/**' }
+  s.frameworks = "ExternalAccessory", "CoreBluetooth"
 
   s.dependency "React-Core"
 end

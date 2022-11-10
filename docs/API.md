@@ -106,41 +106,6 @@ EscPosPrinter.discover({ usbSerialNumber: true })
   .catch((e) => console.log('Print error:', e.message));
 ```
 
-```javascript
-import EscPosPrinter, {
-  getPrinterSeriesByName,
-} from 'react-native-esc-pos-printer';
-import Encoder from 'esc-pos-encoder';
-
-const encoder = new Encoder();
-
-encoder
-  .initialize()
-  .line('The quick brown fox jumps over the lazy dog')
-  .newline()
-  .newline()
-  .newline()
-  .cut('partial');
-
-let initialized = false;
-
-if (!initialized) {
-  const { target, name } = printer;
-
-  await EscPosPrinter.init({
-    target: target,
-    seriesName: getPrinterSeriesByName(name),
-    language: 'EPOS2_LANG_EN',
-  });
-
-  initialized = true;
-}
-
-const status = await EscPosPrinter.printRawData(encoder.encode());
-
-console.log('Print success!', status);
-```
-
 ### pairingBluetoothPrinter() - iOS only
 
 Shows a list of Bluetooth devices available for pairing and pairs a selected device with the terminal.

@@ -1,5 +1,4 @@
 import * as React from 'react';
-import Encoder from 'esc-pos-encoder';
 
 import { StyleSheet, View, Button, SafeAreaView } from 'react-native';
 import EscPosPrinter, {
@@ -117,45 +116,6 @@ export default function App() {
           }}
         />
 
-        <Button
-          title="Print from data"
-          disabled={!printer}
-          color={!printer ? 'gray' : 'blue'}
-          onPress={async () => {
-            const encoder = new Encoder();
-
-            encoder
-              .initialize()
-              .line('The quick brown fox jumps over the lazy dog')
-              .newline()
-              .newline()
-              .newline();
-
-            try {
-              if (printer) {
-                if (!init) {
-                  await EscPosPrinter.init({
-                    target: printer.target,
-                    seriesName: getPrinterSeriesByName(printer.name),
-                    language: 'EPOS2_LANG_EN',
-                  });
-                  setInit(true);
-                }
-
-                const printing = new EscPosPrinter.printing();
-
-                const status = await printing
-                  .data(encoder.encode())
-                  .cut()
-                  .send();
-
-                console.log('print', status);
-              }
-            } catch (error) {
-              console.log('error', error);
-            }
-          }}
-        />
         <Button
           title="Test print chaining"
           disabled={!printer}
