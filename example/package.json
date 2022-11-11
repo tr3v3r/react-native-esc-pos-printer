@@ -1,26 +1,21 @@
 {
-  "name": "react-native-esc-pos-printer-example",
-  "description": "Example app for react-native-esc-pos-printer",
+  "name": "EscPosPrinterExample",
   "version": "0.0.1",
   "private": true,
   "scripts": {
-    "preandroid": "adb reverse tcp:8081 tcp:8081",
     "android": "react-native run-android",
-    "gradle": "cd android/ && ./gradlew",
     "ios": "react-native run-ios",
-    "start": "react-native start"
+    "start": "react-native start",
+    "pods": "pod-install --quiet"
   },
   "dependencies": {
-    "react": "17.0.2",
-    "react-native": "0.65.3"
+    "react": "18.1.0",
+    "react-native": "0.70.5"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@babel/runtime": "^7.12.5",
-    "@types/react": "^18.0.14",
-    "@types/react-native": "^0.68.0",
-    "babel-plugin-module-resolver": "^4.0.0",
-    "metro-react-native-babel-preset": "^0.66.0",
-    "react-native-codegen": "^0.0.7"
+    "metro-react-native-babel-preset": "0.72.3",
+    "babel-plugin-module-resolver": "^4.1.0"
   }
 }
