@@ -207,3 +207,11 @@ export interface QRCodeParams {
   type?: QRCodeType;
   level?: QRCodeLevel;
 }
+
+export interface ISpaceBetweenParams {
+  left: string;
+  right: string;
+  textToWrap?: 'right' | 'left';
+  textToWrapWidth?: number;
+  gapSymbol?: string;
+}

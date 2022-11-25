@@ -53,7 +53,7 @@
     "buffer": "6.0.3",
     "fs-extra": "^10.0.1",
     "react-native-esc-pos-printer-sdk": "^1.1.0",
-    "word-wrap": "^1.2.3"
+    "wordwrapjs": "^5.1.0"
   },
   "devDependencies": {
     "@commitlint/config-conventional": "^11.0.0",
@@ -85,7 +85,8 @@
     "modulePathIgnorePatterns": [
       "<rootDir>/example/node_modules",
       "<rootDir>/lib/"
-    ]
+    ],
+    "transformIgnorePatterns": ["node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"]
   },
   "husky": {
     "hooks": {
