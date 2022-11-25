@@ -6,7 +6,6 @@ import {
   Platform,
 } from 'react-native';
 
-import lineWrap from 'word-wrap';
 import {
   PRINTING_ALIGNMENT,
   PRINTING_COMMANDS,
@@ -26,12 +25,14 @@ import type {
   ImagePrintParams,
   DrawerKickConnector,
   IPrintParams,
+  ISpaceBetweenParams,
 } from './types';
 import {
   BufferHelper,
   assertImageSource,
   assertNativeCommands,
   getNativeCommand,
+  spaceBetween,
 } from './utils';
 
 const { EscPosPrinter, ThePrinterWrapper } = NativeModules;
@@ -50,6 +51,7 @@ class Printing {
     underline: boolean;
     smooth: boolean;
   };
+  private _currentFontWidth: number;
 
   /**
    * Create a new object
@@ -62,6 +64,7 @@ class Printing {
       underline: false,
       smooth: false,
     };
+    this._currentFontWidth = 1;
   }
 
   /**
@@ -159,18 +162,30 @@ class Printing {
    * Print text
    *
    * @param  {string}   value  Text that needs to be printed
-   * @param  {number}   wrap   Wrap text after this many positions
    * @return {object}          Return the object, for easy chaining commands
    *
    */
-  text(value: string, wrap?: lineWrap.IOptions) {
-    if (wrap) {
-      value = lineWrap(value, wrap);
-    }
-
+  text(value: string) {
     this._queue([PRINTING_COMMANDS.COMMAND_ADD_TEXT, [value]]);
 
     return this;
+  }
+
+  /**
+   * Print line with right and left text
+   *
+   * @param  {string}   charsPerLine  Amount of characters in the line for font width 1
+   * @param  {number}   params   ISpaceBetweenParams
+   * @return {object}          Return the object, for easy chaining commands
+   *
+   */
+  textLine(charsPerLine: number, params: ISpaceBetweenParams) {
+    const text = spaceBetween(
+      Math.ceil(charsPerLine / this._currentFontWidth),
+      params
+    );
+    // console.log('text', text, text.length);
+    return this.text(text);
   }
 
   /**
@@ -190,12 +205,11 @@ class Printing {
    * Print text, followed by a newline
    *
    * @param  {string}   value  Text that needs to be printed
-   * @param  {number}   wrap   Wrap text after this many positions
    * @return {object}          Return the object, for easy chaining commands
    *
    */
-  line(value: string, wrap?: lineWrap.IOptions) {
-    this.text(value, wrap);
+  line(value: string) {
+    this.text(value);
     this.newline();
 
     return this;
@@ -297,6 +311,8 @@ class Printing {
     if (typeof width === 'undefined') {
       width = height;
     }
+
+    this._currentFontWidth = width;
 
     this._queue([
       PRINTING_COMMANDS.COMMAND_ADD_TEXT_SIZE,

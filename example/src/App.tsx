@@ -133,6 +133,7 @@ export default function App() {
                 }
 
                 const printing = new EscPosPrinter.printing();
+
                 const status = await printing
                   .initialize()
                   .align('center')
@@ -146,14 +147,45 @@ export default function App() {
                   .bold()
                   .underline()
                   .text('printer?')
+                  .newline()
                   .bold()
                   .underline()
-                  .newline(2)
+                  .align('left')
+                  .text('Left')
+                  .newline()
+                  .align('right')
+                  .text('Right')
+                  .newline()
+                  .size(1, 1)
+                  .textLine(48, {
+                    left: 'Cheesburger',
+                    right: '3 EUR',
+                    gapSymbol: '_',
+                  })
+                  .newline()
+                  .textLine(48, {
+                    left: 'Chickenburger',
+                    right: '1.5 EUR',
+                    gapSymbol: '.',
+                  })
+                  .newline()
+                  .size(2, 2)
+                  .textLine(48, { left: 'Happy Meal', right: '7 EUR' })
+                  .newline()
+                  .align('left')
+                  .text('Left')
+                  .newline()
+
+                  .align('right')
+                  .text('Right')
+                  .newline()
+
                   .align('center')
                   .image(require('./store.png'), {
                     width: 75,
                     halftone: 'EPOS2_HALFTONE_THRESHOLD',
                   })
+
                   .image({ uri: base64Image }, { width: 75 })
                   .image(
                     {
