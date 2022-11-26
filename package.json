@@ -1,6 +1,6 @@
 {
   "name": "react-native-esc-pos-printer",
-  "version": "2.2.1",
+  "version": "2.3.0",
   "description": "test",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -86,7 +86,9 @@
       "<rootDir>/example/node_modules",
       "<rootDir>/lib/"
     ],
-    "transformIgnorePatterns": ["node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"]
+    "transformIgnorePatterns": [
+      "node_modules/(?!@ngrx|(?!deck.gl)|ng-dynamic)"
+    ]
   },
   "husky": {
     "hooks": {
