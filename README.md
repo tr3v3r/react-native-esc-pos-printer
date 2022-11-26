@@ -6,7 +6,6 @@ _An unofficial React Native library for printing on an EPSON TM printer with the
 <p align="center">
   <img src="./assets/printer.png"
      alt="Printer"
-     height="400"
 />
 </p>
 
