@@ -2,11 +2,15 @@
 
 _An unofficial React Native library for printing on an EPSON TM printer with the <strong>Epson ePOS SDK for iOS</strong> and <strong>Epson ePOS SDK for Android</strong>_
 
-<img src="./assets/printer.png"
+
+<p align="center">
+  <img src="./assets/printer.png"
      alt="Printer"
-     height="300"
-     style="margint: auto;"
+     height="400"
 />
+</p>
+
+
 
 
 1. [Installation](./docs/INSTALLATION.md)
