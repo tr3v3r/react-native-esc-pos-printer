@@ -122,7 +122,7 @@ EscPosPrinter.pairingBluetoothPrinter()
 ### getPrinterCharsPerLine(seriesName)
 
 Returns max characters per line for given printer series (Usefull while building receipt layout).
-Supports only `font A` for now.
+Supports only `font A` for now. Not recommended to use right before printing since printer could be busy. For better performance use it right after init or add some delay before calling this printing method.
 
 #### arguments
 

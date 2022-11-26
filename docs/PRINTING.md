@@ -16,6 +16,25 @@ Prints text
 printing.initialize().text('printer?');
 ```
 
+### textLine
+
+Prints text line with left and right parts
+
+- charsPerLine : max characters per line for font size 1.
+- params
+  - left : left part of the text
+  - right : right part of the text
+  - gapSymbol? : symbol used to fill the gap between left and right parts
+  - textToWrap? : "left" or "right" - if the text is too long, it will be wrapped to the next line
+  - textToWrapWidth? : width of the text to wrap from 0 to 1 depending on the charsPerLine. If not specified, it will be calculated automatically basied on the text length.
+
+```javascript
+printing.initialize().textLine(48, {
+  left: 'Cheesburger',
+  right: '3 EUR',
+});
+```
+
 ### new line
 
 Prints n numbers of newlines, defaults to 1 newline
@@ -70,36 +89,6 @@ Sets the text alignment. Valid values are 'left' | 'center' | 'right'.
 
 ```javascript
 printing.initialize().align('center');
-```
-
-### imageAsset
-
-## (Depracted use .image() method instead).
-
-Prints an image from iOS/Android local assets folder.
-
-- Android: Save your image file under the directory `android/app/src/main/assets`. Note that files in this directory must be lowercase.
-- iOS: Open Xcode and add your image file to the project (Right-click the project and select `Add Files to [PROJECTNAME]`)
-- Use file name as first argument and image width as a second (width of the image 1 to 65535)
-
-```javascript
-printing.initialize().imageAsset('logo.png', 200);
-```
-
-### imageBase64
-
-## (Depracted use .image() method instead).
-
-Prints an image represented by base64 data (i.e. "data:image/png;base64,...").
-
-- Use base64 string as first argument and image width as a second (width of the image 1 to 65535)
-- If image is not printing for some reason try to play with width
-- See example of usage in `example` folder
-
-```javascript
-export const base64Image = 'data:image/png;base64,....';
-
-printing.initialize().imageBase64(base64Image, 75);
 ```
 
 ### image
