@@ -9,6 +9,10 @@ _An unofficial React Native library for printing on an EPSON TM printer with the
 />
 </p>
 
+|  [![npm version](https://badge.fury.io/js/react-native-esc-pos-printer.svg)](https://badge.fury.io/js/react-native-esc-pos-printer)  | 
+|---|
+
+
 
 
 
