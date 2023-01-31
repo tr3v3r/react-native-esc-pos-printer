@@ -42,7 +42,13 @@ When acquiring physical location information, specify "ACCESS_FINE_LOCATION."
 <uses-permission android:name="android.permission.BLUETOOTH_SCAN" android:usesPermissionFlags="neverForLocation"/>
 <uses-permission android:name="android.permission.BLUETOOTH_CONNECT"/>
 ```
+> **Warning**
+>For Android 12+ explicit permission request is needed:
 
+```javascript
+await PermissionsAndroid.request('android.permission.BLUETOOTH_CONNECT')
+await PermissionsAndroid.request('android.permission.BLUETOOTH_SCAN')
+```
 ## iOS
 
 ```sh
