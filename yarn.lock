@@ -8605,10 +8605,10 @@ react-native-builder-bob@^0.18.3:
   optionalDependencies:
     jetifier "^2.0.0"
 
-react-native-esc-pos-printer-sdk@^1.1.1:
-  version "1.1.1"
-  resolved "https://registry.yarnpkg.com/react-native-esc-pos-printer-sdk/-/react-native-esc-pos-printer-sdk-1.1.1.tgz#357df292c688bb673598aee03f67ada6e4c31a21"
-  integrity sha512-DbO+ViumX0Wajrodg9V5o7wINSbWOkuMbk0lgFUEu0Oc3Uwa+DiB/jC3PJdF9lR48oEZkly78MDmh8UUCKts4w==
+react-native-esc-pos-printer-sdk@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/react-native-esc-pos-printer-sdk/-/react-native-esc-pos-printer-sdk-1.2.0.tgz#fe8c7cadd6dfd0fa9024febf55ba40c264e83438"
+  integrity sha512-ueiXMbwSUbGQioIuZmPK6O+Xebrrjx6S92gviuhv+s0UrT2bPN9WKHBA2CiuNYRWVDSQBOwhw6kAYMtHV17IKw==
 
 react-native@0.63.4:
   version "0.63.4"

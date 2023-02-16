@@ -9,7 +9,7 @@ _An unofficial React Native library for printing on an EPSON TM printer with the
 />
 </p>
 
-|  [![npm version](https://badge.fury.io/js/react-native-esc-pos-printer.svg)](https://badge.fury.io/js/react-native-esc-pos-printer)  | 
+|  [![npm version](https://badge.fury.io/js/react-native-esc-pos-printer.svg)](https://badge.fury.io/js/react-native-esc-pos-printer)  |
 |---|
 
 
@@ -20,7 +20,7 @@ _An unofficial React Native library for printing on an EPSON TM printer with the
 2. [Quick Print Example](./docs/QUICK_START.md)
 3. [API](./docs/API.md)
 4. [SDK information (v2.22.0)](./docs/SDK.md)
-5. [List of supported printers](./docs/and2220.pdf)
+5. [List of supported printers](./docs/and2230.pdf)
 6. [Expo](./docs/EXPO.md)
 
 
