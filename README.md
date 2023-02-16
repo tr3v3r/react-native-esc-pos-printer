@@ -19,7 +19,7 @@ _An unofficial React Native library for printing on an EPSON TM printer with the
 1. [Installation](./docs/INSTALLATION.md)
 2. [Quick Print Example](./docs/QUICK_START.md)
 3. [API](./docs/API.md)
-4. [SDK information (v2.22.0)](./docs/SDK.md)
+4. [SDK information (v2.23.0)](./docs/SDK.md)
 5. [List of supported printers](./docs/and2230.pdf)
 6. [Expo](./docs/EXPO.md)
 
