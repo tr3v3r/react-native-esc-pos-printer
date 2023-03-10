@@ -98,8 +98,8 @@ export interface IPrintParams {
 }
 
 export interface IMonitorStatus {
-  connection: 'DISCONNECT' | 'DISCONNECT' | 'UNKNOWN';
-  online: 'OFFLINE' | 'OFFLINE' | 'UNKNOWN';
+  connection: 'CONNECT' | 'DISCONNECT' | 'UNKNOWN';
+  online: 'ONLINE' | 'OFFLINE' | 'UNKNOWN';
   coverOpen: 'COVER_OPEN' | 'COVER_CLOSE' | 'UNKNOWN';
   paper: 'PAPER_OK' | 'PAPER_NEAR_END' | 'PAPER_EMPTY' | 'UNKNOWN';
   paperFeed: 'PAPER_FEED' | 'PAPER_STOP' | 'UNKNOWN';
