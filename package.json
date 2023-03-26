@@ -52,7 +52,7 @@
   "dependencies": {
     "buffer": "6.0.3",
     "fs-extra": "^10.0.1",
-    "react-native-esc-pos-printer-sdk": "1.2.0",
+    "react-native-esc-pos-printer-sdk": "1.2.1",
     "wordwrapjs": "^5.1.0"
   },
   "devDependencies": {
