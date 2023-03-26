@@ -4,31 +4,59 @@ import {
   NativeModules,
   NativeEventEmitter,
   EmitterSubscription,
+  Permission,
 } from 'react-native';
 const { EscPosPrinterDiscovery } = NativeModules;
 const discoveryEventEmmiter = new NativeEventEmitter(EscPosPrinterDiscovery);
 
-export async function requestAndroidPermissions() {
-  const permission =
-    Platform.Version >= 28
-      ? PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
-      : PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION;
+export async function requestAndroidPermissions(): Promise<boolean> {
+  if (Platform.Version < 23) return true;
 
-  let granted = await PermissionsAndroid.check(permission);
+  let permissions: Permission[] = [];
 
-  if (!granted) {
-    const status = await PermissionsAndroid.request(permission, {
-      title: 'App Bluetooth Permission',
-      message: 'Searching for printers needs access to your bluetooth',
-      buttonNeutral: 'Ask Me Later',
-      buttonNegative: 'Cancel',
-      buttonPositive: 'OK',
-    });
+  if (Platform.Version >= 31) {
+    const permissionBluetoothScanGranted = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN
+    );
 
-    granted = status === PermissionsAndroid.RESULTS.GRANTED;
+    const permissionBluetoothConnectGranted = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT
+    );
+
+    if (!permissionBluetoothScanGranted) {
+      permissions.push(PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN);
+    }
+
+    if (!permissionBluetoothConnectGranted) {
+      permissions.push(PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT);
+    }
+  } else if (Platform.Version >= 29 && Platform.Version <= 30) {
+    const permissionFineLocationGranted = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
+    );
+
+    if (!permissionFineLocationGranted) {
+      permissions.push(PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION);
+    }
+  } else {
+    const permissionCoarseLocationGranted = await PermissionsAndroid.check(
+      PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION
+    );
+
+    if (!permissionCoarseLocationGranted) {
+      permissions.push(PermissionsAndroid.PERMISSIONS.ACCESS_COARSE_LOCATION);
+    }
   }
-  console.log('requestAndroidPermissions', granted);
-  return granted;
+
+  if (permissions.length > 0) {
+    const status = await PermissionsAndroid.requestMultiple(permissions);
+
+    return Object.keys(status).every(
+      (key) => status[key as Permission] === PermissionsAndroid.RESULTS.GRANTED
+    );
+  }
+
+  return true;
 }
 
 export function enableLocationAccessAndroid10() {
