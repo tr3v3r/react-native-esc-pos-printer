@@ -62,6 +62,7 @@ export const spaceBetween = (
     .wrap(left, {
       width: leftTextWidth,
       break: true,
+      noTrim: true,
     })
     .split('\n');
 
@@ -69,6 +70,7 @@ export const spaceBetween = (
     .wrap(right, {
       width: rightTextWidth,
       break: true,
+      noTrim: true,
     })
     .split('\n');
 
