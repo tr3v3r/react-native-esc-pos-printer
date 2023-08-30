@@ -214,4 +214,5 @@ export interface ISpaceBetweenParams {
   textToWrap?: 'right' | 'left';
   textToWrapWidth?: number;
   gapSymbol?: string;
+  noTrim?: boolean;
 }

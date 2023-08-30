@@ -48,6 +48,7 @@ export const spaceBetween = (
     textToWrap = 'left',
     textToWrapWidth,
     gapSymbol = ' ',
+    noTrim,
   }: ISpaceBetweenParams
 ): string => {
   const { leftTextWidth, rightTextWidth } = getTextsWidths(
@@ -62,6 +63,7 @@ export const spaceBetween = (
     .wrap(left, {
       width: leftTextWidth,
       break: true,
+      noTrim,
     })
     .split('\n');
 
@@ -69,6 +71,7 @@ export const spaceBetween = (
     .wrap(right, {
       width: rightTextWidth,
       break: true,
+      noTrim,
     })
     .split('\n');
 
