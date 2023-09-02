@@ -6,7 +6,8 @@
     "android": "react-native run-android",
     "ios": "react-native run-ios",
     "start": "react-native start",
-    "pods": "pod-install --quiet"
+    "pods": "pod-install --quiet",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "react": "18.1.0",
@@ -15,7 +16,8 @@
   "devDependencies": {
     "@babel/core": "^7.12.9",
     "@babel/runtime": "^7.12.5",
+    "babel-plugin-module-resolver": "^4.1.0",
     "metro-react-native-babel-preset": "0.72.3",
-    "babel-plugin-module-resolver": "^4.1.0"
+    "patch-package": "^8.0.0"
   }
 }
