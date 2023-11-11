@@ -32,10 +32,11 @@ _An unofficial React Native library for printing on an EPSON TM printer with the
 2. If you have an issue with using Flipper on iOS real device, please [try this](./docs/flipperWorkaround.md) workaround.
 
 ## Roadmap
-- Add expo example
-- Add print from react View example
-- Reimplement printing accoring to be close to native SDK
-- Add queue mechanism for quick print
+- [ ] Add expo example
+- [ ] Add print from react View example
+- [x] Reimplement discovering to have implementation close to native SDK
+- [ ] Reimplement printing to have implementation close to native SDK
+- [ ] Add queue mechanism for quick print
 
 ## License
 
