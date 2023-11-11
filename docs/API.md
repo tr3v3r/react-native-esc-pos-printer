@@ -1,7 +1,7 @@
 # API
 
-1. [init](#init-target-seriesname-language-)
-2. [discover](#discoverparams)
+1. [discover](./discovery/discovery.md)
+2. [init](#init-target-seriesname-language-)
 3. [pairingBluetoothPrinter](#pairingbluetoothprinter---ios-only)
 4. [getPrinterCharsPerLine](#getprintercharsperlineseriesname)
 5. [startMonitorPrinter](#startmonitorprinterinterval-number)
@@ -32,78 +32,6 @@ EscPosPrinter.init({
 })
   .then(() => console.log('Init success!'))
   .catch((e) => console.log('Init error:', e.message));
-```
-
-### discover(params?)
-
-`For iOS you must` [pair printer](#pairingbluetoothprinter---ios-only) `with device to search Bluetooth printers`
-
-Starts searching for device.
-Returns list of printers.
-
-#### params
-
-| Name                     |   Type    | Required | Default |                                Description                                 |
-| ------------------------ | :-------: | :------: | :-----: | :------------------------------------------------------------------------: |
-| `usbSerialNumber`        | `boolean` |   `No`   | `false` |         To extract the serial number of the usb device on Android          |
-| `scanningTimeoutIOS`     | `boolean` |   `No`   | `5000`  |          Timeout in milliseconds for scanning the printers on iOS          |
-| `scanningTimeoutAndroid` | `boolean` |   `No`   | `5000`  |        Timeout in milliseconds for scanning the printers on Android        |
-| `findFirstAndroid`       | `boolean` |   `No`   | `false` | Whether to finish the discovery when the first printer is found on Android |
-
-#### return type
-
-```typescript
-interface IPrinter {
-  name: string;
-  ip: string;
-  mac: string;
-  target: string;
-  bt: string;
-  usb: string;
-}
-```
-
-```javascript
-import EscPosPrinter from 'react-native-esc-pos-printer';
-
-EscPosPrinter.discover()
-  .then((printers) => {
-    console.log(printers[0]);
-    /*
-    {
-      name: "TM_M10",
-      ip: "192.168.192.168" or "",
-      mac: "12:34:56:78:56:78" or "",
-      target: "TCP:192.168.192.168" or "BT:00:22:15:7D:70:9C" or "USB:000000000000000000",
-      bt: "12:34:56:78:56:78" or "",
-      usb: "000000000000000000" or "";
-      usbSerialNumber: "123456789012345678" or ""; // available if usbSerialNumber === true
-    }
-  */
-  })
-  .catch((e) => console.log('Print error:', e.message));
-```
-
-```javascript
-import EscPosPrinter from 'react-native-esc-pos-printer';
-
-EscPosPrinter.discover({ usbSerialNumber: true })
-  .then((printers) => {
-    console.log(printers[0]);
-    /*
-    {
-      name: "TM_M10",
-      ip: "192.168.192.168" or "",
-      mac: "12:34:56:78:56:78" or "",
-      target: "TCP:192.168.192.168" or "BT:00:22:15:7D:70:9C" or "USB:000000000000000000",
-      bt: "12:34:56:78:56:78" or "",
-      usb: "000000000000000000" or "",
-      usbSerialNumber: "123456789012345678" or ""
-      };
-    }
-  */
-  })
-  .catch((e) => console.log('Print error:', e.message));
 ```
 
 ### pairingBluetoothPrinter() - iOS only

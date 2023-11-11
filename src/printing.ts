@@ -1,10 +1,11 @@
 import {
   NativeModules,
-  EmitterSubscription,
   NativeEventEmitter,
   Image,
   Platform,
 } from 'react-native';
+
+import type { EmitterSubscription } from 'react-native';
 
 import {
   PRINTING_ALIGNMENT,

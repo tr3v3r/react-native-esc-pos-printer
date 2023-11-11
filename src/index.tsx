@@ -1,9 +1,6 @@
-import {
-  NativeModules,
-  NativeEventEmitter,
-  EmitterSubscription,
-  Platform,
-} from 'react-native';
+import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
+
+import type { EmitterSubscription } from 'react-native';
 import { getPrinterSeriesByName, getPrinterLanguage } from './utils';
 import type {
   PrinerEvents,

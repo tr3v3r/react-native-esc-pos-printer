@@ -170,11 +170,9 @@ export const PRINTER_SERIES: { [key in PrinterSeriesName]: number } = {
   EPOS2_TM_L100,
 };
 
-export const FONT_A_CHARS_PER_LINE: Partial<
-  {
-    [key in PrinterSeriesName]: { 58?: number; 60?: number; 80?: number };
-  }
-> = {
+export const FONT_A_CHARS_PER_LINE: Partial<{
+  [key in PrinterSeriesName]: { 58?: number; 60?: number; 80?: number };
+}> = {
   EPOS2_TM_M10: {
     58: 35,
     60: 35,

@@ -19,19 +19,23 @@ _An unofficial React Native library for printing on an EPSON TM printer with the
 1. [Installation](./docs/INSTALLATION.md)
 2. [Quick Print Example](./docs/QUICK_START.md)
 3. [API](./docs/API.md)
-4. [SDK information (v2.23.0)](./docs/SDK.md)
-5. [List of supported printers](./docs/and2230.pdf)
+4. [SDK information (v2.27.0)](./docs/SDK.md)
+5. [List of supported printers for Android](./docs/and2270.pdf)
+5. [List of supported printers for iOS](./docs/and2270.pdf)
 6. [Expo](./docs/EXPO.md)
 
 
-## Limitations
+## Troubleshooting
 
 1. For now it's not possible to print and discover on Android simulator. But you can always use real device.
 
-## TODO
-- [x] Prining images
-- [ ] Export all build in mehods
-- [ ] Make possible to print on Android simulator
+2. If you have an issue with using Flipper on iOS real device, please [try this](./docs/flipperWorkaround.md) workaround.
+
+## Roadmap
+- Add expo example
+- Add print from react View example
+- Reimplement printing accoring to be close to native SDK
+- Add queue mechanism for quick print
 
 ## License
 

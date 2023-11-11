@@ -115,7 +115,7 @@ export const PrintersDiscovery = new (class PrintersDiscovery {
         callback(
           printer.map((info) => ({
             ...info,
-            deviceType: DiscoveryDeviceTypeMapping[info.deviceType],
+            deviceType: DiscoveryDeviceTypeMapping[info.deviceType]!,
           }))
         );
       }
@@ -128,10 +128,12 @@ export const PrintersDiscovery = new (class PrintersDiscovery {
 
   private triggerError = (methodName: string, error: number | Error) => {
     const result =
-      typeof error === 'number' ? error : DiscoveryErrorResult.ERR_FAILURE;
+      typeof error === 'number'
+        ? (error as DiscoveryErrorResult)
+        : DiscoveryErrorResult.ERR_FAILURE;
 
     const message = `${methodName}: ${DiscoveryErrorMessageMapping[result]}`;
-    const status = DiscoveryErrorStatusMapping[result];
+    const status = DiscoveryErrorStatusMapping[result]!;
 
     const discoveryError = new PrinterDiscoveryError({
       status: status,

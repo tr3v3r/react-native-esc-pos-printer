@@ -5,10 +5,8 @@ const { EscPosPrinterDiscovery } = NativeModules;
 
 export const DEFAULT_DISCOVERY_TIMEOUT = 5000;
 
-const DiscoveryModuleConstants: Record<
-  string,
-  number
-> = EscPosPrinterDiscovery.getConstants();
+const DiscoveryModuleConstants: Record<string, number> =
+  EscPosPrinterDiscovery.getConstants();
 
 export enum DiscoveryDeviceType {
   TYPE_ALL = DiscoveryModuleConstants.TYPE_ALL,

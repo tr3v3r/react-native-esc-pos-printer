@@ -6,10 +6,8 @@ import type { PrinterDiscoveryError } from '../../core/errors';
 export function usePrintersDiscovery() {
   const [printers, setPrinters] = useState<DeficeInfo[]>([]);
   const [isDiscovering, setIsDescovering] = useState<boolean>(false);
-  const [
-    printerError,
-    setPrinterError,
-  ] = useState<PrinterDiscoveryError | null>(null);
+  const [printerError, setPrinterError] =
+    useState<PrinterDiscoveryError | null>(null);
 
   useEffect(() => {
     const removeListener = PrintersDiscovery.onDiscovery(
