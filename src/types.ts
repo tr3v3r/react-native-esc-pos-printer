@@ -66,25 +66,6 @@ export interface IPrinterInitParams {
   language?: PrinterLanguage;
 }
 
-export interface IDiscoverParams {
-  /**
-   * Whether to extract the serial number of the usb device on Android
-   */
-  usbSerialNumber?: boolean;
-  /**
-   * Timeout in milliseconds for scanning the printers on iOS (default 5000 - 5 seconds)
-   */
-  scanningTimeoutIOS?: number;
-  /**
-   * Timeout in milliseconds for scanning the printers on Android (default 5000 - 5 seconds)
-   */
-  scanningTimeoutAndroid?: number;
-  /**
-   * Whether to finish the discovery when the first printer is found on Android
-   */
-  findFirstAndroid?: boolean;
-}
-
 export interface IPrintParams {
   /**
    * Print operation timeout in ms (5000 - 300000). Defaults to 5000 in android and 10000 in iOS.

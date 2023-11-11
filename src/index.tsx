@@ -4,16 +4,10 @@ import {
   EmitterSubscription,
   Platform,
 } from 'react-native';
-import {
-  getPrinterSeriesByName,
-  requestAndroidPermissions,
-  enableLocationAccessAndroid10,
-  getPrinterLanguage,
-} from './utils';
+import { getPrinterSeriesByName, getPrinterLanguage } from './utils';
 import type {
   PrinerEvents,
   EventListenerCallback,
-  IDiscoverParams,
   IPrinter,
   IPrinterInitParams,
   PrinterSeriesName,
@@ -27,13 +21,10 @@ import {
   PRINTER_LANGUAGE,
 } from './constants';
 
-const {
-  EscPosPrinter,
-  EscPosPrinterDiscovery,
-  ThePrinterWrapper,
-} = NativeModules;
+export * from './discovery';
 
-const discoveryEventEmmiter = new NativeEventEmitter(EscPosPrinterDiscovery);
+const { EscPosPrinter, ThePrinterWrapper } = NativeModules;
+
 const printEventEmmiter = new NativeEventEmitter(EscPosPrinter);
 import printing from './printing';
 
@@ -64,41 +55,6 @@ const _default = {
 
   disconnectPrinter(target: string): Promise<number> {
     return ThePrinterWrapper.disconnectAndDeallocate(target);
-  },
-
-  async discover(params?: IDiscoverParams): Promise<IPrinter[]> {
-    if (
-      Platform.OS === 'ios' ||
-      ((await requestAndroidPermissions()) &&
-        (await enableLocationAccessAndroid10()))
-    ) {
-      return new Promise((res, rej) => {
-        let listener: EmitterSubscription | null;
-        function removeListener() {
-          listener?.remove();
-          listener = null;
-        }
-        listener = discoveryEventEmmiter.addListener(
-          'onDiscoveryDone',
-          (printers: IPrinter[]) => {
-            res(printers);
-            removeListener();
-          }
-        );
-
-        EscPosPrinterDiscovery.discover(params)
-          .then(() => {
-            removeListener();
-            res([]);
-          })
-          .catch((e: Error) => {
-            removeListener();
-            rej(e);
-          });
-      });
-    }
-
-    return Promise.reject('No permissions granted');
   },
 
   getPaperWidth(): Promise<80 | 60 | 58> {
