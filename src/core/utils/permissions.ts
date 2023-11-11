@@ -76,7 +76,6 @@ export function enableLocationAccessAndroid10() {
       successListener = discoveryEventEmmiter.addListener(
         'enableLocationSettingSuccess',
         () => {
-          console.log('enableLocationSetting', true);
           removeListeners();
           res(true);
         }
@@ -85,7 +84,6 @@ export function enableLocationAccessAndroid10() {
       errorListener = discoveryEventEmmiter.addListener(
         'enableLocationSettingFailure',
         () => {
-          console.log('enableLocationSetting', false);
           removeListeners();
           rej(false);
         }
@@ -93,7 +91,6 @@ export function enableLocationAccessAndroid10() {
 
       EscPosPrinterDiscovery.enableLocationSetting().then(() => {
         removeListeners();
-        console.log('enableLocationSetting', true);
         res(true);
       });
     });

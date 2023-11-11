@@ -386,7 +386,7 @@ DEPENDENCIES:
   - Flipper-Boost-iOSX (= 1.76.0.1.11)
   - Flipper-DoubleConversion (= 3.2.0.1)
   - Flipper-Fmt (= 7.1.7)
-  - Flipper-Folly (from `./Flipper-Folly.podspec`)
+  - Flipper-Folly (from `../Flipper-Folly.podspec`)
   - Flipper-Glog (= 0.5.0.5)
   - Flipper-PeerTalk (= 0.0.4)
   - Flipper-RSocket (= 1.4.3)
@@ -465,7 +465,7 @@ EXTERNAL SOURCES:
   FBReactNativeSpec:
     :path: "../node_modules/react-native/React/FBReactNativeSpec"
   Flipper-Folly:
-    :podspec: "./Flipper-Folly.podspec"
+    :podspec: "../Flipper-Folly.podspec"
   glog:
     :podspec: "../node_modules/react-native/third-party-podspecs/glog.podspec"
   hermes-engine:
@@ -589,6 +589,6 @@ SPEC CHECKSUMS:
   Yoga: eca980a5771bf114c41a754098cd85e6e0d90ed7
   YogaKit: f782866e155069a2cca2517aafea43200b01fd5a
 
-PODFILE CHECKSUM: 1bd5e63b721675773b8e5f0b54db004e424650bf
+PODFILE CHECKSUM: 6f60f15d47b1306e71301d83be9402611b015da3
 
 COCOAPODS: 1.11.3

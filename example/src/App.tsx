@@ -9,7 +9,9 @@ import { Modal } from 'react-native';
 
 import { base64Image } from './base64Image';
 import MultiPrint from './MultiPrint';
+import { Discovery } from './screens';
 export default function App() {
+  return <Discovery />;
   const [init, setInit] = React.useState(false);
   const [printer, setPrinter] = React.useState<IPrinter | null>(null);
   const [isModalOpen, setIsModalOpen] = React.useState(false);
