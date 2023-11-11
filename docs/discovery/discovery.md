@@ -3,6 +3,8 @@
 Starts searching for the specified device type.
 Each device is reported by the callback as it is detected.
 
+`For iOS you must` [pair printer](../API.md#pairingbluetoothprinter---ios-only) `with device to search Bluetooth printers`
+
 ### 1. Hook based: [usePrintersDiscovery](./usePrintersDiscovery.md)
 
 #### Example

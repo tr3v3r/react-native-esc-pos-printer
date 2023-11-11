@@ -3,18 +3,18 @@ import {
   PermissionsAndroid,
   NativeModules,
   NativeEventEmitter,
-  EmitterSubscription,
-  Permission,
 } from 'react-native';
+
+import type { EmitterSubscription, Permission } from 'react-native';
 const { EscPosPrinterDiscovery } = NativeModules;
 const discoveryEventEmmiter = new NativeEventEmitter(EscPosPrinterDiscovery);
-
+const platformVersion = Platform.Version as number;
 export async function requestAndroidPermissions(): Promise<boolean> {
-  if (Platform.Version < 23) return true;
+  if (platformVersion < 23) return true;
 
   let permissions: Permission[] = [];
 
-  if (Platform.Version >= 31) {
+  if (platformVersion >= 31) {
     const permissionBluetoothScanGranted = await PermissionsAndroid.check(
       PermissionsAndroid.PERMISSIONS.BLUETOOTH_SCAN
     );
@@ -30,7 +30,7 @@ export async function requestAndroidPermissions(): Promise<boolean> {
     if (!permissionBluetoothConnectGranted) {
       permissions.push(PermissionsAndroid.PERMISSIONS.BLUETOOTH_CONNECT);
     }
-  } else if (Platform.Version >= 29 && Platform.Version <= 30) {
+  } else if (platformVersion >= 29 && platformVersion <= 30) {
     const permissionFineLocationGranted = await PermissionsAndroid.check(
       PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION
     );
@@ -50,7 +50,7 @@ export async function requestAndroidPermissions(): Promise<boolean> {
 
   if (permissions.length > 0) {
     const status = await PermissionsAndroid.requestMultiple(permissions);
-
+    console.log(permissions, status);
     return Object.keys(status).every(
       (key) => status[key as Permission] === PermissionsAndroid.RESULTS.GRANTED
     );
@@ -60,7 +60,7 @@ export async function requestAndroidPermissions(): Promise<boolean> {
 }
 
 export function enableLocationAccessAndroid10() {
-  if (Platform.Version >= 28) {
+  if (platformVersion >= 28) {
     let successListener: EmitterSubscription | null;
     let errorListener: EmitterSubscription | null;
 
