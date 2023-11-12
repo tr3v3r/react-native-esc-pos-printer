@@ -1,0 +1,1 @@
+export { PrinterInfo } from './PrinterInfo';
