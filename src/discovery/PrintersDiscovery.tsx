@@ -7,7 +7,7 @@ import {
 } from '../core';
 import type {
   DiscoveryStartParams,
-  DeficeInfo,
+  DeviceInfo,
   DiscoveryStatus,
   RawDeviceInfo,
 } from './types';
@@ -31,19 +31,18 @@ export const PrintersDiscovery = new (class PrintersDiscovery {
   public start = async ({
     timeout = DEFAULT_DISCOVERY_TIMEOUT,
     autoStop = true,
-    filterOption,
+    filterOption = {},
   }: DiscoveryStartParams = {}) => {
     try {
       if (this.status === 'discovering') return;
 
       if (
-        Platform.OS === 'android' ||
-        !(await requestAndroidPermissions()) ||
+        (Platform.OS === 'android' && !(await requestAndroidPermissions())) ||
         !(await enableLocationAccessAndroid10())
       ) {
         this.triggerError(
           'PrintersDiscovery.start',
-          DiscoveryErrorResult.PERMISSION_ERROR
+          new Error(String(DiscoveryErrorResult.PERMISSION_ERROR))
         );
         return;
       }
@@ -57,7 +56,7 @@ export const PrintersDiscovery = new (class PrintersDiscovery {
       }
     } catch (error) {
       this.setStatus('inactive');
-      this.triggerError('PrintersDiscovery.start', error as number | Error);
+      this.triggerError('PrintersDiscovery.start', error as Error);
     }
   };
 
@@ -70,7 +69,7 @@ export const PrintersDiscovery = new (class PrintersDiscovery {
 
       this.setStatus('inactive');
     } catch (error) {
-      this.triggerError('PrintersDiscovery.stop', error as number | Error);
+      this.triggerError('PrintersDiscovery.stop', error as Error);
     }
   };
 
@@ -108,7 +107,7 @@ export const PrintersDiscovery = new (class PrintersDiscovery {
     };
   };
 
-  public onDiscovery = (callback: (printers: DeficeInfo[]) => void) => {
+  public onDiscovery = (callback: (printers: DeviceInfo[]) => void) => {
     const listener = discoveryEventEmmiter.addListener(
       'onDiscovery',
       (printer: RawDeviceInfo[]) => {
@@ -126,18 +125,18 @@ export const PrintersDiscovery = new (class PrintersDiscovery {
     };
   };
 
-  private triggerError = (methodName: string, error: number | Error) => {
-    const result =
-      typeof error === 'number'
-        ? (error as DiscoveryErrorResult)
-        : DiscoveryErrorResult.ERR_FAILURE;
+  private triggerError = (methodName: string, error: Error) => {
+    const result = !isNaN(Number(error.message))
+      ? error.message
+      : DiscoveryErrorResult.ERR_FAILURE;
 
-    const message = `${methodName}: ${DiscoveryErrorMessageMapping[result]}`;
+    const message = DiscoveryErrorMessageMapping[result];
     const status = DiscoveryErrorStatusMapping[result]!;
 
     const discoveryError = new PrinterDiscoveryError({
       status: status,
       message: message,
+      methodName,
     });
     this.errorListeners.forEach((listener) => listener(discoveryError));
   };

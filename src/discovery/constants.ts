@@ -64,10 +64,10 @@ export enum DiscoveryErrorResult {
 export const DiscoveryErrorMessageMapping = {
   [DiscoveryErrorResult.ERR_PARAM]: 'An invalid parameter was passed.',
   [DiscoveryErrorResult.ERR_ILLEGAL]:
-    'Tried to start search when search had been already done.' + Platform.OS ===
-    'android'
+    'Tried to start search when search had been already done.' +
+    (Platform.OS === 'android'
       ? '\nBluetooth is OFF\nThere is no permission for the position information'
-      : '',
+      : ''),
   [DiscoveryErrorResult.ERR_MEMORY]:
     'Memory necessary for processing could not be allo- cated.',
   [DiscoveryErrorResult.ERR_FAILURE]: 'An unknown error occurred.',

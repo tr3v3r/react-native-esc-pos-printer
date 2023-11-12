@@ -1,17 +1,17 @@
 import { useCallback, useEffect, useState } from 'react';
 import { PrintersDiscovery } from '../PrintersDiscovery';
-import type { DeficeInfo, DiscoveryStartParams } from '../types';
+import type { DeviceInfo, DiscoveryStartParams } from '../types';
 import type { PrinterDiscoveryError } from '../../core/errors';
 
 export function usePrintersDiscovery() {
-  const [printers, setPrinters] = useState<DeficeInfo[]>([]);
+  const [printers, setPrinters] = useState<DeviceInfo[]>([]);
   const [isDiscovering, setIsDescovering] = useState<boolean>(false);
   const [printerError, setPrinterError] =
     useState<PrinterDiscoveryError | null>(null);
 
   useEffect(() => {
     const removeListener = PrintersDiscovery.onDiscovery(
-      (deviceInfo: DeficeInfo[]) => {
+      (deviceInfo: DeviceInfo[]) => {
         setPrinters(deviceInfo);
       }
     );

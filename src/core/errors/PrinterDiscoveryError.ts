@@ -3,8 +3,9 @@ export class PrinterDiscoveryError extends Error {
   name: string = 'PrinterDiscoveryError';
   timestamp: number = 0;
   status: string = '';
+  methodName: string = '';
 
-  constructor(params: { status: string; message: string }) {
+  constructor(params: { status: string; message: string; methodName: string }) {
     super(params.message);
     Object.assign(this, params);
   }

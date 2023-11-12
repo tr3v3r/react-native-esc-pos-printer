@@ -194,33 +194,32 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
     FilterOption mFilterOption = new FilterOption();
 
     if(paramsMap.hasKey("portType")) {
-       mFilterOption.setPortType(paramsMap.getInt("portType"));
+      mFilterOption.setPortType(paramsMap.getInt("portType"));
     }
 
     if(paramsMap.hasKey("broadcast")) {
-       mFilterOption.setBroadcast(paramsMap.getString("broadcast"));
+      mFilterOption.setBroadcast(paramsMap.getString("broadcast"));
     }
 
     if(paramsMap.hasKey("deviceModel")) {
-       mFilterOption.setDeviceModel(paramsMap.getInt("deviceModel"));
+      mFilterOption.setDeviceModel(paramsMap.getInt("deviceModel"));
     }
 
     if(paramsMap.hasKey("epsonFilter")) {
-       mFilterOption.setEpsonFilter(paramsMap.getInt("epsonFilter"));
+      mFilterOption.setEpsonFilter(paramsMap.getInt("epsonFilter"));
     }
 
     if(paramsMap.hasKey("deviceType")) {
-       mFilterOption.setDeviceType(paramsMap.getInt("deviceType"));
+      mFilterOption.setDeviceType(paramsMap.getInt("deviceType"));
     }
 
     if(paramsMap.hasKey("bondedDevices")) {
-       mFilterOption.setBondedDevices(paramsMap.getInt("bondedDevices"));
+      mFilterOption.setBondedDevices(paramsMap.getInt("bondedDevices"));
     }
 
     if(paramsMap.hasKey("usbDeviceName")) {
-       mFilterOption.setUsbDeviceName(paramsMap.getInt("usbDeviceName"));
+      mFilterOption.setUsbDeviceName(paramsMap.getInt("usbDeviceName"));
     }
-
     return mFilterOption;
   }
 
