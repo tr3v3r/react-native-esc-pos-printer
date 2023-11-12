@@ -1,23 +1,13 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { styles } from './styles';
+import type { DeviceInfo } from 'react-native-esc-pos-printer';
 
-interface Printer {
-  deviceType: string;
-  target: string;
-  deviceName: string;
-  ipAddress: string;
-  macAddress: string;
-  bdAddress: string;
+interface PrinterInfoProps {
+  printer: DeviceInfo;
 }
 
-interface PrinterInfoProps<T> {
-  printer: T;
-}
-
-export const PrinterInfo = <T extends Printer>({
-  printer,
-}: PrinterInfoProps<T>) => {
+export const PrinterInfo = ({ printer }: PrinterInfoProps) => {
   const renderPrinterInfo = () => {
     return Object.keys(printer).map((key) => {
       return (

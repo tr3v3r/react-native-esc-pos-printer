@@ -118,7 +118,7 @@ export const SimplePrint = memo(() => {
   return (
     <View style={styles.container}>
       <View style={styles.contentCotainer}>
-        <ScreenTitle title={'Discovery'} />
+        <ScreenTitle title={'Simple Print'} />
       </View>
       <View style={styles.contentCotainer}>
         <PrinterInfo printer={printer} />

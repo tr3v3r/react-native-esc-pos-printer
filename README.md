@@ -24,6 +24,11 @@ _An unofficial React Native library for printing on an EPSON TM printer with the
 5. [List of supported printers for iOS](./docs/and2270.pdf)
 6. [Expo](./docs/EXPO.md)
 
+## Sponsoring
+I have only one device (with LAN interface), that means that I can't check any issues connected with multiple printing devices, Bluetooth, USB, etc. So it will be reasonable to buy some additional devices for testing purposes. Please contact me via email if you want to help me with that.
+
+Or you can just send any amount to my [BTC acc](bc1qkarm3y9f5pa5frey2na6e830cqyuzlxtwyme4j).
+
 
 ## Troubleshooting
 

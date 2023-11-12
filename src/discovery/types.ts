@@ -16,7 +16,7 @@ export type RawDeviceInfo = {
   bdAddress: string;
 };
 
-export type DeficeInfo = {
+export type DeviceInfo = {
   deviceType: keyof typeof DiscoveryDeviceType;
   target: string;
   deviceName: string;

@@ -60,7 +60,7 @@ export async function requestAndroidPermissions(): Promise<boolean> {
 }
 
 export function enableLocationAccessAndroid10() {
-  if (platformVersion >= 28) {
+  if (platformVersion > 28) {
     let successListener: EmitterSubscription | null;
     let errorListener: EmitterSubscription | null;
 

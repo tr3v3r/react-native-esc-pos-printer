@@ -108,6 +108,7 @@ RCT_REMAP_METHOD(stopDiscovery,
     NSString *ipAddress = [deviceInfo getIpAddress];
     NSString *macAddress = [deviceInfo getMacAddress];
     NSString *bdAddress = [deviceInfo getBdAddress];
+    int deviceType = [deviceInfo getDeviceType];
 
     [_printerList addObject:@{
         @"target": target,
@@ -115,6 +116,7 @@ RCT_REMAP_METHOD(stopDiscovery,
         @"ipAddress": ipAddress,
         @"macAddress": macAddress,
         @"bdAddress": bdAddress,
+        @"deviceType": @(deviceType)
     }];
 
     [self sendEventWithName:@"onDiscovery" body:_printerList];
