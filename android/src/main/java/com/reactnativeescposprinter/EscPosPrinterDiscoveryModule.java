@@ -13,10 +13,9 @@ import com.facebook.react.bridge.ReactMethod;
 import com.facebook.react.bridge.ActivityEventListener;
 import com.facebook.react.module.annotations.ReactModule;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 import android.content.Context;
-import android.os.Handler;
 
 import com.epson.epos2.discovery.Discovery;
 import com.epson.epos2.discovery.DiscoveryListener;
@@ -38,55 +37,62 @@ import android.content.IntentSender;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 
-import android.hardware.usb.UsbDevice;
-import android.hardware.usb.UsbManager;
-
 @ReactModule(name = EscPosPrinterDiscoveryModule.NAME)
 public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule implements ActivityEventListener {
 
   private Context mContext;
-  private ArrayList<DeviceInfo> mPrinterList = null;
-  private UsbManager mUsbManager = null;
+  private WritableArray mPrinterList = null;
   private final ReactApplicationContext reactContext;
-  private boolean mExtractUsbSerialNumber = false;
-  private int mScanningTimeout = 5000; // Default to 5000 if the value is not passed.
-
-
-  private boolean mFindFirst = false;
-  private MyCallbackInterface mDiscoveryCallback = null;
-  private Handler mHandler;
-  private Runnable mDiscoveryTimeoutRunnable = new Runnable() {
-    public void run() {
-      stopDiscovery();
-      if (mPrinterList.size() > 0) {
-        sendDiscoveredDataToJS(); // will be invoked after {scanningTimeout / 1000} sec with acc. results
-      }
-      if(mDiscoveryCallback != null) {
-        mDiscoveryCallback.onDone("Search completed");
-      }
-    }
-  };
 
   public static final String NAME = "EscPosPrinterDiscovery";
-
-  interface MyCallbackInterface {
-    void onDone(String result);
-  }
 
   public EscPosPrinterDiscoveryModule(ReactApplicationContext reactContext) {
     super(reactContext);
     this.reactContext = reactContext;
     mContext = reactContext;
-    mPrinterList = new ArrayList<DeviceInfo>();
-    mUsbManager = (UsbManager) reactContext.getSystemService(Context.USB_SERVICE);
     reactContext.addActivityEventListener(this);
   }
+
+    @Override
+    public Map<String, Object> getConstants() {
+      final Map<String, Object> constants = new HashMap<>();
+      // filter options
+      constants.put("PORTTYPE_ALL", Discovery.PORTTYPE_ALL);
+      constants.put("PORTTYPE_TCP", Discovery.PORTTYPE_TCP);
+      constants.put("PORTTYPE_BLUETOOTH", Discovery.PORTTYPE_BLUETOOTH);
+      constants.put("PORTTYPE_USB", Discovery.PORTTYPE_USB);
+      constants.put("MODEL_ALL", Discovery.MODEL_ALL);
+      constants.put("TYPE_ALL", Discovery.TYPE_ALL);
+      constants.put("TYPE_PRINTER", Discovery.TYPE_PRINTER);
+      constants.put("TYPE_HYBRID_PRINTER", Discovery.TYPE_HYBRID_PRINTER);
+      constants.put("TYPE_DISPLAY", Discovery.TYPE_DISPLAY);
+      constants.put("TYPE_KEYBOARD", Discovery.TYPE_KEYBOARD);
+      constants.put("TYPE_SCANNER", Discovery.TYPE_SCANNER);
+      constants.put("TYPE_SERIAL", Discovery.TYPE_SERIAL);
+      constants.put("TYPE_POS_KEYBOARD", Discovery.TYPE_POS_KEYBOARD);
+      constants.put("TYPE_MSR", Discovery.TYPE_MSR);
+      constants.put("TYPE_GFE", Discovery.TYPE_GFE);
+      constants.put("TYPE_OTHER_PERIPHERAL", Discovery.TYPE_OTHER_PERIPHERAL);
+      constants.put("FILTER_NAME", Discovery.FILTER_NAME);
+      constants.put("FILTER_NONE", Discovery.FILTER_NONE);
+      constants.put("TRUE", Discovery.TRUE);
+      constants.put("FALSE", Discovery.FALSE);
+      // return values
+      constants.put("ERR_PARAM", Epos2Exception.ERR_PARAM);
+      constants.put("ERR_ILLEGAL", Epos2Exception.ERR_ILLEGAL);
+      constants.put("ERR_MEMORY", Epos2Exception.ERR_MEMORY);
+      constants.put("ERR_FAILURE", Epos2Exception.ERR_FAILURE);
+      constants.put("ERR_PROCESSING", Epos2Exception.ERR_PROCESSING);
+
+      return constants;
+    }
 
   @Override
   @NonNull
   public String getName() {
     return NAME;
   }
+
 
   @Override
   public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
@@ -108,7 +114,7 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
   public void enableLocationSetting(Promise promise) {
     Activity currentActivity = getCurrentActivity();
     if (currentActivity == null) {
-      promise.reject("Activity doesn't exist");
+      promise.reject("Activity doesn't exist", "");
       return;
     }
 
@@ -146,7 +152,7 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
             resolvable.startResolutionForResult(currentActivity, CommonStatusCodes.RESOLUTION_REQUIRED);
 
           } catch (IntentSender.SendIntentException sendEx) {
-            promise.reject("ERROR");
+            promise.reject("ERROR", "");
           }
         }
       }
@@ -157,66 +163,64 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
     reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
   }
 
-  private void stopDiscovery() {
-    while (true) {
-      try {
-        Discovery.stop();
-        break;
-      } catch (Epos2Exception e) {
-        if (e.getErrorStatus() != Epos2Exception.ERR_PROCESSING) {
-          return;
-        }
-      }
-    }
-  }
-
-  private void startDiscovery(MyCallbackInterface callback) {
-    this.stopDiscovery();
-
-    FilterOption mFilterOption = new FilterOption();
-
-    mFilterOption.setDeviceType(Discovery.TYPE_PRINTER);
-    mFilterOption.setEpsonFilter(Discovery.FILTER_NAME);
-    mFilterOption.setDeviceModel(Discovery.MODEL_ALL);
-
-    // Display USB printer names
-    mFilterOption.setUsbDeviceName(Discovery.TRUE);
-    // List already paired bluetooth printers
-    mFilterOption.setBondedDevices(Discovery.TRUE);
-
-    mPrinterList.clear();
+  @ReactMethod
+  private void startDiscovery(final ReadableMap paramsMap, Promise promise) {
+    FilterOption mFilterOption = getFilterOptionsFromParams(paramsMap);
+    mPrinterList = Arguments.createArray();
 
     try {
       Discovery.start(mContext, mFilterOption, mDiscoveryListener);
-    } catch (Exception e) {
+
+      promise.resolve(null);
+
+    } catch (Epos2Exception e) {
       int status = ((Epos2Exception) e).getErrorStatus();
-      callback.onDone("discover error! Status: " + String.valueOf(status));
-      //
+      promise.reject("event_failure", String.valueOf(status));
     }
   }
 
-  private void performDiscovery(MyCallbackInterface callback, ReadableMap paramsMap) {
-    mHandler = new Handler();
-    mDiscoveryCallback = callback;
-    mHandler.postDelayed(mDiscoveryTimeoutRunnable, mScanningTimeout);
-  }
-
-  private String getUSBAddress(String target) {
-    if (target.contains("USB:")) {
-      return target.substring(4, target.length());
-    } else {
-      return "";
-    }
-  }
-
-  private String getUsbSerialNumber(String usbAddress) {
-    if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP) {
-      UsbDevice device = mUsbManager.getDeviceList().get(usbAddress);
-      if (device != null) {
-        return device.getSerialNumber();
+  @ReactMethod
+  private void stopDiscovery(Promise promise) {
+      try {
+        Discovery.stop();
+        promise.resolve(null);
+      } catch (Epos2Exception e) {
+        int status = ((Epos2Exception) e).getErrorStatus();
+        promise.reject("event_failure", String.valueOf(status));
       }
+  }
+
+  private FilterOption getFilterOptionsFromParams(final ReadableMap paramsMap) {
+    FilterOption mFilterOption = new FilterOption();
+
+    if(paramsMap.hasKey("portType")) {
+      mFilterOption.setPortType(paramsMap.getInt("portType"));
     }
-    return "";
+
+    if(paramsMap.hasKey("broadcast")) {
+      mFilterOption.setBroadcast(paramsMap.getString("broadcast"));
+    }
+
+    if(paramsMap.hasKey("deviceModel")) {
+      mFilterOption.setDeviceModel(paramsMap.getInt("deviceModel"));
+    }
+
+    if(paramsMap.hasKey("epsonFilter")) {
+      mFilterOption.setEpsonFilter(paramsMap.getInt("epsonFilter"));
+    }
+
+    if(paramsMap.hasKey("deviceType")) {
+      mFilterOption.setDeviceType(paramsMap.getInt("deviceType"));
+    }
+
+    if(paramsMap.hasKey("bondedDevices")) {
+      mFilterOption.setBondedDevices(paramsMap.getInt("bondedDevices"));
+    }
+
+    if(paramsMap.hasKey("usbDeviceName")) {
+      mFilterOption.setUsbDeviceName(paramsMap.getInt("usbDeviceName"));
+    }
+    return mFilterOption;
   }
 
   private DiscoveryListener mDiscoveryListener = new DiscoveryListener() {
@@ -226,86 +230,20 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
       UiThreadUtil.runOnUiThread(new Runnable() {
         @Override
         public synchronized void run() {
-          String deviceTarget = deviceInfo.getTarget();
-          // Skip local printers
-          if (!deviceTarget.startsWith("TCPS:") && !(deviceTarget.startsWith("TCP:") && deviceTarget.contains("["))) {
-              mPrinterList.add(deviceInfo);
-          }
+          WritableMap printerData = Arguments.createMap();
 
-          if(mFindFirst) {
-            mHandler.removeCallbacks(mDiscoveryTimeoutRunnable);
-            mDiscoveryTimeoutRunnable.run();
-          }
+
+          printerData.putString("target", deviceInfo.getTarget());
+          printerData.putString("deviceName", deviceInfo.getDeviceName());
+          printerData.putString("ipAddress", deviceInfo.getIpAddress());
+          printerData.putString("macAddress", deviceInfo.getMacAddress());
+          printerData.putString("bdAddress", deviceInfo.getBdAddress());
+
+          mPrinterList.pushMap(printerData);
+
+          sendEvent(reactContext, "onDiscovery", mPrinterList);
         }
       });
     }
   };
-
-  public void sendDiscoveredDataToJS() {
-    WritableArray stringArray = Arguments.createArray();
-
-    for (int counter = 0; counter < mPrinterList.size(); counter++) {
-
-      final DeviceInfo info = mPrinterList.get(counter);
-      WritableMap printerData = Arguments.createMap();
-
-      String usbAddress = getUSBAddress(info.getTarget());
-
-      if (mExtractUsbSerialNumber && usbAddress != "") {
-        String usbSerialNumber = getUsbSerialNumber(usbAddress);
-        printerData.putString("usbSerialNumber", usbSerialNumber);
-      }
-
-      printerData.putString("name", info.getDeviceName());
-      printerData.putString("ip", info.getIpAddress());
-      printerData.putString("mac", info.getMacAddress());
-      printerData.putString("target", info.getTarget());
-      printerData.putString("bt", info.getBdAddress());
-      printerData.putString("usb", usbAddress);
-      stringArray.pushMap(printerData);
-    }
-
-    sendEvent(reactContext, "onDiscoveryDone", stringArray);
-  }
-
-  @ReactMethod
-  private void discover(final ReadableMap paramsMap, Promise promise) {
-
-    defineSettingsFromParamsMap(paramsMap);
-
-    this.startDiscovery(new MyCallbackInterface() {
-      @Override
-      public void onDone(String result) {
-        promise.reject(result);
-      }
-    });
-
-    this.performDiscovery(new MyCallbackInterface() {
-      @Override
-      public void onDone(String result) {
-        promise.resolve(result);
-      }
-    }, paramsMap);
-  }
-
-  private void defineSettingsFromParamsMap(ReadableMap paramsMap) {
-    mExtractUsbSerialNumber = false;
-    mFindFirst = false;
-
-    if (paramsMap != null) {
-      if (paramsMap.hasKey("findFirstAndroid")) {
-        mFindFirst = paramsMap.getBoolean("findFirstAndroid");
-      }
-
-      if (paramsMap.hasKey("usbSerialNumber")) {
-        mExtractUsbSerialNumber = paramsMap.getBoolean("usbSerialNumber");
-      }
-
-      if (paramsMap.hasKey("scanningTimeoutAndroid")) {
-        mScanningTimeout = paramsMap.getInt("scanningTimeoutAndroid");
-      }
-    }
-
-
-  }
 }
