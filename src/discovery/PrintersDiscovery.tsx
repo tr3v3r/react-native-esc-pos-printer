@@ -22,7 +22,7 @@ import {
 const { EscPosPrinterDiscovery } = NativeModules;
 const discoveryEventEmmiter = new NativeEventEmitter(EscPosPrinterDiscovery);
 
-export const PrintersDiscovery = new (class PrintersDiscovery {
+class PrintersDiscoveryClass {
   timeout: ReturnType<typeof setTimeout> | null = null;
   status: DiscoveryStatus = 'inactive';
   statusListeners: ((status: DiscoveryStatus) => void)[] = [];
@@ -149,4 +149,10 @@ export const PrintersDiscovery = new (class PrintersDiscovery {
     this.status = status;
     this.triggerStatusChange(status);
   };
-})();
+}
+
+function initPrintersClass() {
+  return new PrintersDiscoveryClass();
+}
+
+export const PrintersDiscovery = initPrintersClass();
