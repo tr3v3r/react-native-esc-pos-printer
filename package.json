@@ -8,6 +8,7 @@
   "react-native": "src/index",
   "source": "src/index",
   "files": [
+    "scripts",
     "src",
     "lib",
     "android",
@@ -23,7 +24,8 @@
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__",
-    "!**/.*"
+    "!**/.*",
+    "!scripts/pod-install"
   ],
   "scripts": {
     "example": "yarn workspace react-native-esc-pos-printer-example",
