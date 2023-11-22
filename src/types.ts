@@ -76,6 +76,8 @@ export interface IPrintParams {
    * mapped to the printer target, otherwise only one instance of the printer will be initialised and all print jobs, will be sent there.
    */
   target?: string;
+
+  printerId: string;
 }
 
 export interface IMonitorStatus {

@@ -599,10 +599,9 @@
             @"printJobId": printJobId
           };
         
-        NSString *_objID = [NSString stringWithFormat:@"%li", [self hash]];
                 
         if (_Delegate != nil && [self.Delegate respondsToSelector:@selector(onPtrReceive:data:)]) {
-            [self.Delegate onPtrReceive:_objID data:returnData];
+            [self.Delegate onPtrReceive:printerTarget_ data:returnData];
         } else {
             connectingState_ = PRINTER_IDLE;
         }

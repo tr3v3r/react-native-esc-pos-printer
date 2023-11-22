@@ -10,7 +10,7 @@ import { base64Image } from '../base64Image';
 
 type SimplePrintRouteProp = RouteProp<RootStackParamList, 'SimplePrint'>;
 
-async function print() {
+async function print(printerId: string) {
   const printing = new EscPosPrinter.printing();
 
   await printing
@@ -20,7 +20,6 @@ async function print() {
     .line('DUDE!')
     .smooth(true)
     .line('DUDE!')
-    .smooth(false)
     .size(1, 1)
     .text('is that a ')
     .bold()
@@ -85,7 +84,7 @@ async function print() {
       width: 5,
     })
     .cut()
-    .send();
+    .send({ printerId: printerId });
 }
 
 export const SimplePrint = memo(() => {
@@ -107,7 +106,7 @@ export const SimplePrint = memo(() => {
     }
     try {
       setPrinting(true);
-      await print();
+      await print(printer.target);
     } catch (e) {
       console.log('Print error', e);
     } finally {
