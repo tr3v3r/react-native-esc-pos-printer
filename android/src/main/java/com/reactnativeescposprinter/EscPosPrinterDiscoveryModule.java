@@ -37,6 +37,10 @@ import android.content.IntentSender;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.common.api.CommonStatusCodes;
 
+import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.common.ConnectionResult;
+
+
 @ReactModule(name = EscPosPrinterDiscoveryModule.NAME)
 public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule implements ActivityEventListener {
 
@@ -110,8 +114,20 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
 
   }
 
+
+  public boolean isGoogleServiceAvailable() {
+    return GoogleApiAvailability.getInstance().isGooglePlayServicesAvailable(reactContext) == ConnectionResult.SUCCESS;
+  }
+
   @ReactMethod
   public void enableLocationSetting(Promise promise) {
+    boolean isGoogleServiceAvailable = isGoogleServiceAvailable();
+
+    if (!isGoogleServiceAvailable) {
+      promise.resolve("SUCCESS");
+      return;
+    }
+
     Activity currentActivity = getCurrentActivity();
     if (currentActivity == null) {
       promise.reject("Activity doesn't exist", "");
