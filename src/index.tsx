@@ -118,6 +118,10 @@ const _default = {
     EscPosPrinter.disconnect();
   },
 
+  getPrinterStatus() {
+    return EscPosPrinter.getPrinterStatus();
+  },
+
   startMonitorPrinter(interval: number = 5) {
     return EscPosPrinter.startMonitorPrinter(Math.max(5, Math.floor(interval)));
   },

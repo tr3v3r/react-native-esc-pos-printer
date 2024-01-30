@@ -440,44 +440,44 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
       public void run() {
 
         if(mIsMonitoring) {
-         tasksQueue.submit(new Callable<String>() {
-          @Override
-          public String call() {
-            PrinterStatusInfo statusInfo = null;
-             try {
-               connectPrinter();
-               statusInfo = mPrinter.getStatus();
-               WritableMap msg = EscPosPrinterErrorManager.makeStatusMassage(statusInfo);
-
-               reactContext
-               .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-               .emit("onMonitorStatusUpdate", msg);
-               disconnectPrinter();
-               return null;
-             } catch(Epos2Exception e) {
-               int errorStatus = ((Epos2Exception) e).getErrorStatus();
-
-              if (errorStatus != Epos2Exception.ERR_PROCESSING && errorStatus != Epos2Exception.ERR_ILLEGAL) {
-
-                WritableMap msg = EscPosPrinterErrorManager.getOfflineStatusMessage();
-
+          tasksQueue.submit(new Callable<String>() {
+            @Override
+            public String call() {
+              try {
+                WritableMap msg = getMPrinterStatus();
                 reactContext
-                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit("onMonitorStatusUpdate", msg);
-               }
-               return null;
-             } finally {
-               handler.postDelayed(monitor, inteval);
-             }
-
-          }
-      });
-    }
+                  .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+                  .emit("onMonitorStatusUpdate", msg);
+              } catch (Epos2Exception e) {} finally {
+                handler.postDelayed(monitor, inteval);
+              }
+              return null;
+            }
+          });
+        }
       }
     };
 
-
     monitor.run();
+  }
+
+  public WritableMap getMPrinterStatus() throws Epos2Exception {
+      try {
+        connectPrinter();
+        PrinterStatusInfo statusInfo = mPrinter.getStatus();
+        WritableMap msg = EscPosPrinterErrorManager.makeStatusMassage(statusInfo);
+        disconnectPrinter();
+        return msg;
+      } catch (Epos2Exception e) {
+        int errorStatus = ((Epos2Exception) e).getErrorStatus();
+
+        if (errorStatus != Epos2Exception.ERR_PROCESSING && errorStatus != Epos2Exception.ERR_ILLEGAL) {
+
+          WritableMap msg = EscPosPrinterErrorManager.getOfflineStatusMessage();
+          return msg;
+        }
+        throw e;
+      }
   }
 
   @ReactMethod
@@ -513,6 +513,21 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
     monitor = null;
     String successString = EscPosPrinterErrorManager.getCodeText(Epos2CallbackCode.CODE_SUCCESS);
     promise.resolve(successString);
+  }
+
+  @ReactMethod
+  public void getPrinterStatus(Promise promise) {
+    tasksQueue.submit(new Runnable() {
+      @Override
+      public void run() {
+        try {
+          WritableMap msg = getMPrinterStatus();
+          promise.resolve(msg);
+        } catch (Epos2Exception e) {
+          promise.reject("Failed to get status");
+        }
+      }
+    });
   }
 
   @ReactMethod
