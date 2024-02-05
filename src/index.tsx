@@ -9,6 +9,7 @@ import type {
   IPrinterInitParams,
   PrinterSeriesName,
   IMonitorStatus,
+  IPrinterStatus,
 } from './types';
 import {
   PRINTER_SERIES,
@@ -118,6 +119,10 @@ const _default = {
     EscPosPrinter.disconnect();
   },
 
+  getPrinterStatus(): Promise<IPrinterStatus> {
+    return EscPosPrinter.getPrinterStatus();
+  },
+
   startMonitorPrinter(interval: number = 5) {
     return EscPosPrinter.startMonitorPrinter(Math.max(5, Math.floor(interval)));
   },
@@ -145,6 +150,7 @@ export type {
   EventListenerCallback,
   IPrinter,
   PrinterSeriesName,
+  IPrinterStatus,
 };
 
 export default _default;

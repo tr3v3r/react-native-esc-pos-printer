@@ -197,3 +197,5 @@ export interface ISpaceBetweenParams {
   gapSymbol?: string;
   noTrim?: boolean;
 }
+
+export type IPrinterStatus = IMonitorStatus;

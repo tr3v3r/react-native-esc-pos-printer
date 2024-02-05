@@ -199,6 +199,17 @@ RCT_EXPORT_METHOD(disconnect)
     [self disconnectPrinter];
 }
 
+RCT_EXPORT_METHOD(getPrinterStatus: (RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+{
+
+    [self getMPrinterStatus:^(NSDictionary *result) {
+            resolve(result);
+        } onError:^(NSString *error) {
+            reject(@"event_failure",error, nil);
+    }];
+}
+
 RCT_EXPORT_METHOD(startMonitorPrinter:(int) interval
                   withResolver: (RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
@@ -421,45 +432,49 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
     // nothing to do
 }
 
-- (void)performMonitoring: (NSTimer*)timer {
-    int interval = [timer.userInfo intValue];
-
+- (void)getMPrinterStatus:(void(^)(NSDictionary *))onSuccess
+                  onError: (void(^)(NSString *))onError
+{
     __block Epos2PrinterStatusInfo *info;
     __block int result = EPOS2_SUCCESS;
 
-    if(self->isMonitoring_) {
-        [self->tasksQueue addOperationWithBlock: ^{
-            result = [self connectPrinter];
+    [self->tasksQueue addOperationWithBlock: ^{
+        result = [self connectPrinter];
 
-            if (result != EPOS2_SUCCESS) {
-                if(result != EPOS2_ERR_ILLEGAL && result != EPOS2_ERR_PROCESSING) {
-                    NSDictionary *msg = [ErrorManager getOfflineStatusMessage];
-                    @try {
-                      [self sendEventWithName:@"onMonitorStatusUpdate" body: msg];
-                    } @catch(NSException *e) {
-                    }
-
-                }
+        if (result != EPOS2_SUCCESS) {
+            if(result != EPOS2_ERR_ILLEGAL && result != EPOS2_ERR_PROCESSING) {
+                NSDictionary *msg = [ErrorManager getOfflineStatusMessage];
+                onSuccess(msg);
             } else {
-                info = [self->printer getStatus];
-
-                [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                    NSDictionary *msg = [ErrorManager makeStatusMessage: info];
-                    if(msg != nil){
-                      @try {
-                        [self sendEventWithName:@"onMonitorStatusUpdate" body: msg];
-                      } @catch(NSException *e) {
-                      }
-                    }
-                }];
-                [self disconnectPrinter];
+                onError(@"Get status failed");
             }
+        } else {
+            info = [self->printer getStatus];
 
-               [[NSOperationQueue mainQueue] addOperationWithBlock:^{
-                 [NSTimer scheduledTimerWithTimeInterval: (int)interval target:self selector: @selector(performMonitoring:) userInfo: @(interval) repeats:NO];
-               }];
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+                NSDictionary *msg = [ErrorManager makeStatusMessage: info];
+                if(msg != nil) {
+                    onSuccess(msg);
+                } else {
+                    onError(@"Get status failed");
+                }
+            }];
+            [self disconnectPrinter];
+        }
+    }];
+}
 
-        }];
+- (void)performMonitoring: (NSTimer*)timer {
+    int interval = [timer.userInfo intValue];
+
+    if(self->isMonitoring_) {
+        [self getMPrinterStatus:^(NSDictionary *msg) {
+            [self sendEventWithName:@"onMonitorStatusUpdate" body: msg];
+
+            [[NSOperationQueue mainQueue] addOperationWithBlock:^{
+              [NSTimer scheduledTimerWithTimeInterval: (int)interval target:self selector: @selector(performMonitoring:) userInfo: @(interval) repeats:NO];
+            }];
+        } onError:^(NSString *error) {}];
     }
 }
 
