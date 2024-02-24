@@ -10,6 +10,10 @@
 @implementation EscPosPrinterDiscovery
 
 RCT_EXPORT_MODULE()
++ (BOOL)requiresMainQueueSetup
+{
+    return YES; // Set to YES if the module requires setup on the main thread.
+}
 
 - (NSDictionary *)constantsToExport
 {
