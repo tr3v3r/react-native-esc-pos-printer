@@ -139,10 +139,10 @@ public class ThePrinterWrapper extends ReactContextBaseJavaModule implements Pri
               callback.onError(errorString);
             }
 
-            if (thePrinter.isPrinterBusy()) {
-              String errorString = EscPosPrinterErrorManager.getEposExceptionText(Epos2Exception.ERR_IN_USE);
-              callback.onError(errorString);
-            }
+            // if (thePrinter.isPrinterBusy()) {
+            //   String errorString = EscPosPrinterErrorManager.getEposExceptionText(Epos2Exception.ERR_IN_USE);
+            //   callback.onError(errorString);
+            // }
 
             thePrinter.setBusy(ThePrinterState.PRINTER_REMOVING);
 
@@ -234,10 +234,10 @@ public class ThePrinterWrapper extends ReactContextBaseJavaModule implements Pri
               callback.onError(errorString);
             }
 
-            if (thePrinter.isPrinterBusy()) {
-              String errorString = EscPosPrinterErrorManager.getEposExceptionText(Epos2Exception.ERR_IN_USE);
-              callback.onError(errorString);
-            }
+            // if (thePrinter.isPrinterBusy()) {
+            //   String errorString = EscPosPrinterErrorManager.getEposExceptionText(Epos2Exception.ERR_IN_USE);
+            //   callback.onError(errorString);
+            // }
             thePrinter.setBusy(ThePrinterState.PRINTER_DISCONNECTING);
           }
 

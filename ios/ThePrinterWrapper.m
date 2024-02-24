@@ -191,9 +191,9 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
             NSLog(@"Error  Fail to get object.");
             return EPOS2_ERR_MEMORY;
         }
-        if ([thePrinter isPrinterBusy]) {
-            return EPOS2_ERR_DEVICE_BUSY;
-        }
+        // if ([thePrinter isPrinterBusy]) {
+        //     return EPOS2_ERR_DEVICE_BUSY;
+        // }
         
         [thePrinter setBusy:PRINTER_DISCONNECTING];
 
@@ -217,9 +217,9 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
             return EPOS2_ERR_MEMORY;
         }
         
-        if ([thePrinter isPrinterBusy]) {
-            return EPOS2_ERR_DEVICE_BUSY;
-        }
+        // if ([thePrinter isPrinterBusy]) {
+        //     return EPOS2_ERR_DEVICE_BUSY;
+        // }
         
         [thePrinter setBusy:PRINTER_REMOVING];
         [thePrinter removeDelegates];
