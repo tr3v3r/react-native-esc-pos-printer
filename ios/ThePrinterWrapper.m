@@ -28,10 +28,10 @@ RCT_EXPORT_MODULE()
 {
     self = [super init];
     if (self) {
-        
+
         objManager_ = [ThePrinterManager sharedManager];
         [objManager_ removeAll];
-        
+
         // setup memory notification
         memoryNotification_ = [[NSNotificationCenter defaultCenter] addObserverForName:
           UIApplicationDidReceiveMemoryWarningNotification
@@ -39,7 +39,7 @@ RCT_EXPORT_MODULE()
           usingBlock:^(NSNotification *notif) {
             [self didReceiveMemoryWarningNotification:notif];
         }];
-        
+
         // setup background notification
         backgroundNotification_ = [[NSNotificationCenter defaultCenter] addObserverForName:
                                    UIApplicationDidEnterBackgroundNotification
@@ -47,8 +47,8 @@ RCT_EXPORT_MODULE()
           usingBlock:^(NSNotification *notif) {
             [self didEnterBackgroundNotification:notif];
         }];
-        
-        
+
+
     }
     return self;
 }
@@ -101,22 +101,22 @@ RCT_EXPORT_METHOD(init:(NSString *)target
 }
 
 // please call from native react
--(void) initializeObject:(NSString* _Nonnull)printerTarget 
-                                        series:(int)series 
-                                        lang:(int)lang 
+-(void) initializeObject:(NSString* _Nonnull)printerTarget
+                                        series:(int)series
+                                        lang:(int)lang
                                         onSuccess: (void(^)(NSString *))onSuccess
                                         onError: (void(^)(NSString *))onError
 {
     @synchronized (self) {
         ThePrinter* thePrinter = [objManager_ getObject:printerTarget];
-        
+
         if (thePrinter == nil) {
             ThePrinter* newPrinter = [[ThePrinter alloc] initWith:printerTarget series:series lang:lang delegate:self];
             [objManager_ add:newPrinter];
         } else {
             NSLog(@"This printer is already initialized");
         }
-                
+
         [self connectPrinter:printerTarget onSuccess:^(NSString *result) {
             onSuccess(result);
         } onError:^(NSString *error) {
@@ -149,30 +149,30 @@ RCT_EXPORT_METHOD(connect:(NSString *)target
         } else {
             [thePrinter setBusy:PRINTER_CONNECTING];
              NSLog(@"connecting to printer %@", objid);
-            const connectResult = [thePrinter connect:EPOS2_PARAM_DEFAULT startMonitor:true];
+            int connectResult = [thePrinter connect:EPOS2_PARAM_DEFAULT startMonitor:true];
             if (connectResult == EPOS2_SUCCESS) {
                 onSuccess([NSString stringWithFormat:@"%d", connectResult]);
             } else {
                 onError([NSString stringWithFormat:@"%d", connectResult]);
             }
-            
+
         }
     }
-   
-    
+
+
 }
 
 RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
                 withResolver:(RCTPromiseResolveBlock)resolve
                 withRejecter:(RCTPromiseRejectBlock)reject)
 {
-    const disconnectResult = [self disconnectPrinter:target];
+    int disconnectResult = [self disconnectPrinter:target];
     if (disconnectResult == EPOS2_SUCCESS) {
-        const diallocResult = [self deallocPrinter:target];
+        int diallocResult = [self deallocPrinter:target];
         if (diallocResult == EPOS2_SUCCESS) {
             resolve([NSString stringWithFormat:@"%d", diallocResult]);
         } else {
-            reject(@"event_failure", [NSString stringWithFormat:@"%d", diallocResult], nil);    
+            reject(@"event_failure", [NSString stringWithFormat:@"%d", diallocResult], nil);
         }
     } else {
         reject(@"event_failure", [NSString stringWithFormat:@"%d", disconnectResult], nil);
@@ -183,9 +183,9 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
 -(int) disconnectPrinter:(nonnull NSString*)objid
 {
     ThePrinter* thePrinter = nil;
-    
+
     @synchronized (self) {
-        
+
         thePrinter = [objManager_ getObject:objid];
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
@@ -194,11 +194,11 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
         if ([thePrinter isPrinterBusy]) {
             return EPOS2_ERR_DEVICE_BUSY;
         }
-        
+
         [thePrinter setBusy:PRINTER_DISCONNECTING];
 
     }
-    
+
     return [thePrinter disconnect];
 }
 
@@ -208,19 +208,19 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
 {
 
     ThePrinter* thePrinter = nil;
-    
+
     @synchronized (self) {
-        
+
         thePrinter = [objManager_ getObject:objid];
-        
+
         if (thePrinter == nil) {
             return EPOS2_ERR_MEMORY;
         }
-        
+
         if ([thePrinter isPrinterBusy]) {
             return EPOS2_ERR_DEVICE_BUSY;
         }
-        
+
         [thePrinter setBusy:PRINTER_REMOVING];
         [thePrinter removeDelegates];
         thePrinter.Delegate = nil;
@@ -233,23 +233,23 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
     [NSThread sleepForTimeInterval:1.0]; // give time for any callbacks to finish
     NSLog(@"release thePrinter deallocPrinter %@", objid);
     thePrinter = nil;
-    
+
     return EPOS2_SUCCESS;
-    
+
 }
 
 -(bool) isPrinterBusy:(nonnull NSString*)objid
 {
     @synchronized (self) {
-        
+
         NSLog(@"getPrinterTarget %@", objid);
-        
+
         ThePrinter* thePrinter = [objManager_ getObject:objid];
-        
+
         if (thePrinter == nil) {
             return false;
         }
-        
+
         return [thePrinter isPrinterBusy];
     }
 }
@@ -257,24 +257,24 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
 -(NSString*  _Nonnull) getPrinterTarget:(nonnull NSString*)objid
 {
     ThePrinter* thePrinter = [objManager_ getObject:objid];
-    
+
     if (thePrinter == nil) {
         return @"";
     }
-    
+
     return [thePrinter getPrinterTarget];
 }
 
 -(void) shutdown:(nonnull NSString*)objid {
-    
+
     @synchronized (self) {
         ThePrinter* thePrinter = [objManager_ getObject:objid];
-        
+
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
             return;
         }
-        
+
         return [thePrinter shutdown:true];
     }
 }
@@ -283,11 +283,11 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
 {
     @synchronized (self) {
         ThePrinter* thePrinter = [objManager_ getObject:objectid];
-        
+
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
         }
-        
+
         [thePrinter setBusy:state];
     }
 }
@@ -302,7 +302,7 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
 {
     @synchronized (self) {
         ThePrinter* thePrinter = [objManager_ getObject:objectid];
-        
+
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
             return EPOS2_ERR_MEMORY;
@@ -315,7 +315,7 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
 {
     @synchronized (self) {
         ThePrinter* thePrinter = [objManager_ getObject:objectid];
-        
+
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
             return EPOS2_ERR_MEMORY;
@@ -325,170 +325,171 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
 }
 
 -(int) clearCommandBuffer:(nonnull NSString*)objid {
-    
+
     @synchronized (self) {
         ThePrinter* thePrinter = [objManager_ getObject:objid];
-        
+
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
             return EPOS2_ERR_MEMORY;
         }
-        
+
         return [[thePrinter getEpos2Printer] clearCommandBuffer];
     }
 
-    
+
 }
 
 -(int) getPrinterSettings:(nonnull NSString*)objid timeout:(long)timeout type:(int)type
 {
-    @synchronized (self) {
-        
-        ThePrinter* thePrinter = [objManager_ getObject:objid];
-        
-        if (thePrinter == nil) {
-            NSLog(@"Error  Fail to get object.");
-            return EPOS2_ERR_MEMORY;
-        }
-        
-        return [thePrinter getPrinterSettings:timeout type:type];
-    }
+//    @synchronized (self) {
+//
+//        ThePrinter* thePrinter = [objManager_ getObject:objid];
+//
+//        if (thePrinter == nil) {
+//            NSLog(@"Error  Fail to get object.");
+//            return EPOS2_ERR_MEMORY;
+//        }
+//
+//        return [thePrinter getPrinterSettings:timeout type:type];
+//    }
+    return  0;
 }
 
 -(Epos2PrinterStatusInfo* _Nullable) getStatus:(nonnull NSString*)objid
 {
     ThePrinter* thePrinter = nil;
-    
+
     @synchronized (self) {
         thePrinter = [objManager_ getObject:objid];
-        
+
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
             return [[Epos2PrinterStatusInfo alloc] init];
         }
     }
-    
+
     return [[thePrinter getEpos2Printer] getStatus];
 }
 
 -(int) addText:(nonnull NSString*)objid text:(NSString* _Nonnull)text {
-    
+
     @synchronized (self) {
-        
+
         ThePrinter* thePrinter = [objManager_ getObject:objid];
-        
+
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
             return EPOS2_ERR_MEMORY;
         }
-        
+
         return [[thePrinter getEpos2Printer] addText:text];
     }
-    
+
 }
 
 -(int) addFeedLine:(nonnull NSString*)objid lines:(long)lines {
-    
+
     @synchronized (self) {
-        
+
         ThePrinter* thePrinter = [objManager_ getObject:objid];
-        
+
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
             return EPOS2_ERR_MEMORY;
         }
-        
+
         return [[thePrinter getEpos2Printer] addFeedLine:lines];
     }
-    
+
 }
 
 -(int) addPulse:(nonnull NSString*)objid pulse:(int)pulse time:(int)time {
 
     @synchronized (self) {
         ThePrinter* thePrinter = [objManager_ getObject:objid];
-        
+
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
             return EPOS2_ERR_MEMORY;
         }
-        
+
         return [[thePrinter getEpos2Printer] addPulse:pulse time:time];
     }
 }
 
 -(int) addTextStyle:(nonnull NSString*)objid style:(int)style ul:(int)ul em:(int)em color:(int)color {
     ThePrinter* thePrinter = [objManager_ getObject:objid];
-    
+
     @synchronized (self) {
-        
+
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
             return EPOS2_ERR_MEMORY;
         }
-        
+
         return [[thePrinter getEpos2Printer] addTextStyle:style ul:ul em:em color:color];
     }
 }
 
 -(int) addTextSize:(nonnull NSString*)objid width:(long)width height:(long)height {
-    
+
     @synchronized (self) {
         ThePrinter* thePrinter = [objManager_ getObject:objid];
-        
+
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
             return EPOS2_ERR_MEMORY;
         }
-        
+
         return [[thePrinter getEpos2Printer] addTextSize:width height:height];
     }
-    
+
 }
 
 -(int) addTextAlign:(nonnull NSString*)objid align:(int)align {
-    
+
     @synchronized (self) {
 
         ThePrinter* thePrinter = [objManager_ getObject:objid];
-        
+
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
             return EPOS2_ERR_MEMORY;
         }
-        
+
         return [[thePrinter getEpos2Printer] addTextAlign:align];
     }
-    
+
 }
 
 -(int) addImage:(nonnull NSString*)objid image:(UIImage* _Nonnull)image x:(long)x y:(long)y width:(long)width height:(long)height color:(int)color mode:(int)mode halftone:(int)halftone brightness:(double)brightness compress:(int)compress {
-    
+
     @synchronized (self) {
-        
+
         ThePrinter* thePrinter = [objManager_ getObject:objid];
-        
+
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
             return EPOS2_ERR_MEMORY;
         }
-        
+
         return [[thePrinter getEpos2Printer] addImage:image x:x y:y width:width height:height color:color mode:mode halftone:halftone brightness:brightness compress:compress];
     }
-    
+
 }
 
 -(int) addCommand:(nonnull NSString*)objid data:(NSData* _Nonnull)data
 {
     @synchronized (self) {
-        
+
         ThePrinter* thePrinter = [objManager_ getObject:objid];
-        
+
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
             return EPOS2_ERR_MEMORY;
         }
-        
+
         return [[thePrinter getEpos2Printer] addCommand:data];
     }
 }
@@ -497,12 +498,12 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
 {
     @synchronized (self) {
         ThePrinter* thePrinter = [objManager_ getObject:objid];
-        
+
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
             return EPOS2_ERR_MEMORY;
         }
-        
+
         return [[thePrinter getEpos2Printer] addCut:feed];
     }
 }
@@ -511,12 +512,12 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
 {
     @synchronized (self) {
         ThePrinter* thePrinter = [objManager_ getObject:objid];
-        
+
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
             return EPOS2_ERR_MEMORY;
         }
-        
+
         return [[thePrinter getEpos2Printer] addTextSmooth:smooth];
     }
 }
@@ -524,21 +525,21 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
 -(int) addBarcode:(nonnull NSString*)objid code:(NSString* _Nonnull)code type:(int)type hri:(int)hri font:(int)font width:(long)width height:(long)height
 {
     @synchronized (self) {
-        
+
         ThePrinter* thePrinter = [objManager_ getObject:objid];
-        
+
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
             return EPOS2_ERR_MEMORY;
         }
-        
+
         return [[thePrinter getEpos2Printer] addBarcode:code type:type hri:hri font:font width:width height:height];
     }
 }
 
 -(int) addSymbol:(nonnull NSString*)objid symbol:(NSString* _Nonnull)symbol type:(int)type level:(int)level width:(long)width height:(long)height size:(long)size
 {
-    
+
     @synchronized (self) {
 
         ThePrinter* thePrinter = [objManager_ getObject:objid];
@@ -546,25 +547,25 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
             NSLog(@"Error  Fail to get object.");
             return EPOS2_ERR_MEMORY;
         }
-        
+
         return [[thePrinter getEpos2Printer] addSymbol:symbol type:type level:level width:width height:width size:size];
     }
 }
 
 -(int) sendData:(nonnull NSString*)objid timeout:(long)timeout
 {
-    
+
     @synchronized (self) {
 
         ThePrinter* thePrinter = [objManager_ getObject:objid];
-        
+
         if (thePrinter == nil) {
             NSLog(@"Error  Fail to get object.");
             return EPOS2_ERR_MEMORY;
         }
         [thePrinter setBusy:PRINTER_PRINTING];
-        
-        return [thePrinter sendData:timeout];
+        return EPOS2_ERR_MEMORY;
+//        return [thePrinter sendData:timeout];
     }
 }
 
@@ -581,7 +582,7 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
 -(void)handleError:(NSString*)error method:(NSString*)method objid:(NSString*)objid
 {
     @synchronized (self) {
-                
+
         if ([method hasPrefix:@"onPrinterFailedCreateObject"]) {
             NSLog(@"onPrinterFailedCreateObject");
             if (_Delegate != nil && [self.Delegate respondsToSelector:@selector(onMemoryError:error:)]) {
@@ -606,7 +607,7 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
  */
 -(void) handleStatusMonitorResult:(NSString* _Nonnull)objectid method:(NSString* _Nonnull)method hasError:(bool)hasError error:(NSString* _Nullable)error
 {
-    
+
     if ([method hasPrefix:@"onPrinterStartStatusMonitorResult"]) { // Status Monitor Start success/failer
         if (_Delegate != nil && [self.Delegate respondsToSelector:@selector(onPrinterStartStatusMonitorResult:hasError:error:)]) {
             dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ // create new thread inform the UI
@@ -615,7 +616,7 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
         }
         return;
     }
-    
+
     if ([method hasPrefix:@"onPrinterStopStatusMonitorResult"]) { // Status Monitor Stop success/failer
         if (_Delegate != nil && [self.Delegate respondsToSelector:@selector(onPrinterStopStatusMonitorResult:hasError:error:)]) {
             dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{ // create new thread inform UI
@@ -624,7 +625,7 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
         }
         return;
     }
-    
+
 }
 
 #pragma mark - PrinterDelegate callbacks
@@ -680,7 +681,7 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
         if (_Delegate != nil && [self.Delegate respondsToSelector:@selector(onPrinterStatusChange:status:)]) {
             [self.Delegate onPrinterStatusChange:objectid status:status];
         }
-        
+
     });
 
 }
@@ -744,7 +745,7 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
 -(void) didEnterBackgroundNotification:(NSNotification*)notification
 {
     @synchronized (self) {
-        
+
         NSLog(@">>>>>>>>>>>>>>  Background notification: %@  <<<<<<<<<<<", notification);
         if (_Delegate != nil && [self.Delegate respondsToSelector:@selector(onDidEnterBackgroundNotification:)]) {
             dispatch_async( dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -752,7 +753,7 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
             });
         }
     }
-    
+
 }
 
 
@@ -978,7 +979,7 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
 
 -(void) setPrinterStatus:(nonnull NSString*)objid printerStatus:(int)printerStatus
 {
-    
+
     @synchronized (self) {
 
         ThePrinter* thePrinter = [objManager_ getObject:objid];
@@ -993,7 +994,7 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
 - (int)printData:(NSDictionary *)params target:(NSString*)target
 {
     int result = EPOS2_SUCCESS;
-    
+
     if (self == nil) {
         return EPOS2_ERR_MEMORY;
     }
@@ -1002,14 +1003,14 @@ RCT_EXPORT_METHOD(printBuffer: (NSArray *)printBuffer
     // send data to printer
     result = [self sendData:target timeout:timeout];
     if (result != EPOS2_SUCCESS) {
-        [self clearCommandBuffer:target];        
+        [self clearCommandBuffer:target];
         int endTransaction = [self endTransaction:target];
         if (endTransaction != EPOS2_SUCCESS) {
             // could cause issue when printing and connected to same printer via different interfaces
         }
         return result;
     }
-    
+
     int endTransaction = [self endTransaction:target];
     if (endTransaction != EPOS2_SUCCESS) {
         // could cause issue when printing and connected to same printer via different interfaces

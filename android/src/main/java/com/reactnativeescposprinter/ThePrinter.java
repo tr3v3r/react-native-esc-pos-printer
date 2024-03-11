@@ -6,13 +6,24 @@ import com.epson.epos2.printer.PrinterSettingListener;
 import com.epson.epos2.printer.PrinterStatusInfo;
 import com.epson.epos2.printer.ReceiveListener;
 import com.epson.epos2.printer.StatusChangeListener;
+import com.epson.epos2.Epos2CallbackCode;
 
 import com.reactnativeescposprinter.ThePrinterState;
 import com.reactnativeescposprinter.PrinterDelegate;
 import com.reactnativeescposprinter.EposStringHelper;
+import com.reactnativeescposprinter.PrinterCallback;
+import com.reactnativeescposprinter.EscPosPrinterErrorManager;
+import com.reactnativeescposprinter.ImageManager;
 
-import org.json.JSONException;
-import org.json.JSONObject;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Arguments;
+
+import android.content.Context;
+import android.graphics.Bitmap;
+import android.util.Log;
+import android.util.Base64;
+
 
 public class ThePrinter implements StatusChangeListener, PrinterSettingListener, ReceiveListener {
 
@@ -30,6 +41,8 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
     private ThePrinterState connectingState_ = ThePrinterState.PRINTER_IDLE; // state of connection
 
     private PrinterDelegate delegate_ = null; // delegate callback
+    private PrinterCallback printCallback_ = null; // callback
+    private PrinterCallback getPrinterSettingCallback_ = null; // callback
 
     /**
      * Returns ThePrinter
@@ -55,14 +68,12 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
      @param callback delegate callbacks
      returns void
      */
-    synchronized public void setupWith(final String printerTarget, final int series, final int lang, final PrinterDelegate callback) throws Epos2Exception {
+    synchronized public void setupWith(final String printerTarget, final int series, final int lang, Context context) throws Epos2Exception {
 
         connectingState_ = ThePrinterState.PRINTER_IDLE;
-        synchronized (delegateSync_) {
-            delegate_ = callback;
-        }
+
         printerTarget_ = printerTarget;
-        epos2Printer_ = new Printer(series, lang, callback.getContext());
+        epos2Printer_ = new Printer(series, lang, context);
         epos2Printer_.setReceiveEventListener(this);
     }
 
@@ -224,9 +235,7 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
             connectingState_ = ThePrinterState.PRINTER_CONNECTING;
 
             isConnected_ = false;
-            isWaitingForPrinterSettings_ = false;
-            didStartMonitor_ = false;
-            didBeginTransaction_ = false;
+
             try {
                 epos2Printer_.connect(printerTarget_, timeout);
                 isConnected_ = true;
@@ -288,7 +297,7 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
                     if (((Epos2Exception) e).getErrorStatus() == Epos2Exception.ERR_PROCESSING) {
                         count--;
                         try {
-                            Thread.sleep(DISCONNECT_INTERVAL);
+                           Thread.sleep(DISCONNECT_INTERVAL);
                         } catch (Exception ignored) {
                         }
                     } else {
@@ -315,6 +324,20 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
         didBeginTransaction_ = false;
         connectingState_ = ThePrinterState.PRINTER_IDLE;
 
+    }
+
+
+    synchronized public void sendData(int timeout, PrinterCallback handler) throws Epos2Exception {
+        if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+        synchronized (shutdownLock_) {
+            if (shutdown_) throw new Epos2Exception(Epos2Exception.ERR_ILLEGAL);
+        }
+
+
+        beginTransaction();
+        epos2Printer_.sendData(timeout);
+        printCallback_ = handler;
     }
 
     /**
@@ -426,33 +449,115 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
         }
     }
 
-    /**
+    synchronized public void addText(String data) throws Epos2Exception {
+        if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+        epos2Printer_.addText(data);
+    }
+
+    synchronized public void addFeedLine(int line) throws Epos2Exception {
+      if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+      epos2Printer_.addFeedLine(line);
+    }
+
+    synchronized public void addCut(int type) throws Epos2Exception {
+      if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+      epos2Printer_.addCut(type);
+    }
+
+    synchronized public void addCommand(String base64string) throws Epos2Exception {
+      if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+      byte[] data = Base64.decode(base64string, Base64.DEFAULT);
+      epos2Printer_.addCommand(data);
+    }
+
+    synchronized public void addPulse(int drawer, int time) throws Epos2Exception {
+      if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+      epos2Printer_.addPulse(drawer, time);
+    }
+
+    synchronized public void addTextAlign(int align) throws Epos2Exception {
+      if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+      epos2Printer_.addTextAlign(align);
+    }
+
+    synchronized public void addTextSize(int width, int height) throws Epos2Exception {
+      if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+      epos2Printer_.addTextSize(width, height);
+    }
+
+    synchronized public void addTextSmooth(int smooth) throws Epos2Exception {
+      if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+      epos2Printer_.addTextSmooth(smooth);
+    }
+
+    synchronized public void addTextStyle(int reverse, int ul, int em, int color) throws Epos2Exception {
+      if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+      epos2Printer_.addTextStyle(reverse, ul, em, color);
+    }
+
+    synchronized public void addImage(ReadableMap source, Context mContext, int width, int color,
+                                      int mode, int halftone, double brightness, int compress) throws Epos2Exception {
+      if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+      Bitmap bitmap = null;
+
+      try {
+        bitmap = ImageManager.getBitmapFromSource(source, mContext);
+      } catch (Exception e) {
+        throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+      }
+
+      float aspectRatio = bitmap.getWidth() / (float) bitmap.getHeight();
+      int newHeight = Math.round(width / aspectRatio);
+      bitmap = Bitmap.createScaledBitmap(bitmap, width, newHeight, false);
+
+      epos2Printer_.addImage(bitmap, 0, 0, width, newHeight, color, mode, halftone, brightness, compress);
+
+    }
+
+    synchronized public void addBarcode(String data, int type, int hri, int font, int width, int height) throws Epos2Exception {
+      if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+      epos2Printer_.addBarcode(data, type, hri, font, width, height);
+    }
+
+    synchronized public void addSymbol(String data, int type, int level, int width, int height, int size) throws Epos2Exception {
+      if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+      epos2Printer_.addSymbol(data, type, level, width, height, size);
+    }
+
+    synchronized public WritableMap getStatus() throws Epos2Exception {
+      if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+      PrinterStatusInfo status = epos2Printer_.getStatus();
+      WritableMap statusMap = EposStringHelper.convertStatusInfoToWritableMap(status);
+      return statusMap;
+    }
+
+  /**
      throws Epos2Exception if there is an error
      Function getPrinterSetting see ePOS SDK
      */
-    synchronized public void getPrinterSetting(int timeout, int type) throws Epos2Exception {
+    synchronized public void getPrinterSetting(int timeout, int type, PrinterCallback handler) throws Epos2Exception {
+        if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
 
         synchronized (shutdownLock_) {
             if (shutdown_) throw new Epos2Exception(Epos2Exception.ERR_ILLEGAL);
         }
 
-        if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
 
-        if (!isConnected_) {
-            throw new Epos2Exception(Epos2Exception.ERR_CONNECT);
-        }
-
-        // still waiting for previous attempt
-        if (isWaitingForPrinterSettings_) {
-            throw new Epos2Exception(Epos2Exception.ERR_PROCESSING);
-        }
-
-        if (delegate_ == null) {
-            throw new Epos2Exception(Epos2Exception.ERR_PARAM);
-        }
-
-        isWaitingForPrinterSettings_ = true;
+        beginTransaction();
         epos2Printer_.getPrinterSetting(timeout, type, this);
+        getPrinterSettingCallback_ = handler;
     }
 
     /**
@@ -493,24 +598,28 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
     @Override
     public void onGetPrinterSetting(int code, int type, int value) {
 
-        String _objID = Integer.toString(this.hashCode());
-
-        synchronized (shutdownLock_) {
-            if (shutdown_) {
-                isWaitingForPrinterSettings_ = false;
-                return;
-            }
-        }
-
-
         new Thread(new Runnable() {
             @Override
-            public void run() {
-
-                synchronized (delegateSync_) {
-                    if (delegate_ != null) delegate_.onGetPrinterSetting(_objID , code, type, value);
+            synchronized public void run() {
+                try {
+                    endTransaction();
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-                isWaitingForPrinterSettings_ = false;
+                if (getPrinterSettingCallback_ != null) {
+                  if(code == Epos2CallbackCode.CODE_SUCCESS) {
+                   WritableMap returnData = Arguments.createMap();
+                    returnData.putInt("type", type);
+                    returnData.putInt("value",value);
+
+                    getPrinterSettingCallback_.onSuccess(returnData);
+                  } else {
+                    getPrinterSettingCallback_.onError(EscPosPrinterErrorManager.getErrorTextData(code, "code"));
+                  }
+                  getPrinterSettingCallback_ = null;
+                } else {
+                  connectingState_ = ThePrinterState.PRINTER_IDLE;
+                }
             }
         }).start();
     }
@@ -525,45 +634,29 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
     @Override
     public void onPtrReceive(Printer printer, int code, PrinterStatusInfo status, String printJobId) {
 
-        synchronized (shutdownLock_) {
-            if (shutdown_) {
-                connectingState_ = ThePrinterState.PRINTER_IDLE;
-                return;
-            }
-        }
-
-        String _objID = Integer.toString(this.hashCode());
-
-        if (printJobId == null) {
-            printJobId = "";
-        }
-
-        // store result of printing
-        JSONObject returnData = new JSONObject();
-        try {
-            returnData.put("ResultRawCode", code);
-            returnData.put("ResultCode", EposStringHelper.getEposResultText(code));
-            returnData.put("ResultStatus", EposStringHelper.makeStatusMessage(status));
-            returnData.put("printJobId", printJobId);
-
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
         new Thread(new Runnable() {
             @Override
             synchronized public void run() {
-                synchronized (delegateSync_) {
-                    if (delegate_ != null) {
-                        delegate_.onPtrReceive(_objID, returnData);
-                    } else {
-                        connectingState_ = ThePrinterState.PRINTER_IDLE;
-                    }
+                try {
+                    endTransaction();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if (printCallback_ != null) {
+                  if(code == Epos2CallbackCode.CODE_SUCCESS) {
+                    WritableMap returnData = EposStringHelper.convertStatusInfoToWritableMap(status);
+                    printCallback_.onSuccess(returnData);
+                  } else {
+                    printCallback_.onError(EscPosPrinterErrorManager.getErrorTextData(code, "code"));
+                  }
+                  printCallback_ = null;
+                } else {
+                  connectingState_ = ThePrinterState.PRINTER_IDLE;
                 }
             }
         }).start();
 
     }
+
     // endregion
 }

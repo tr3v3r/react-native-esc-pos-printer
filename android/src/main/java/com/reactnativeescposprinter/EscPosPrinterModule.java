@@ -37,44 +37,27 @@ import java.util.concurrent.Executors;
 import java.util.Timer;
 import java.util.TimerTask;
 import com.facebook.react.bridge.WritableMap;
+import com.facebook.react.bridge.Arguments;
+
 import android.os.Handler;
 import java.util.concurrent.Callable;
 
 import com.facebook.react.bridge.ReadableMap;
 import android.util.Log;
-import java.net.URL;
-class PrintingCommands {
-  public static final int COMMAND_ADD_TEXT = 0;
-  public static final int COMMAND_ADD_NEW_LINE = 1;
-  public static final int COMMAND_ADD_TEXT_STYLE = 2;
-  public static final int COMMAND_ADD_TEXT_SIZE = 3;
-  public static final int COMMAND_ADD_ALIGN = 4;
-  public static final int COMMAND_ADD_IMAGE_BASE_64 = 5;
-  public static final int COMMAND_ADD_IMAGE_ASSET = 6;
-  public static final int COMMAND_ADD_CUT = 7;
-  public static final int COMMAND_ADD_DATA = 8;
-  public static final int COMMAND_ADD_TEXT_SMOOTH = 9;
-  public static final int COMMAND_ADD_BARCODE = 10;
-  public static final int COMMAND_ADD_QRCODE = 11;
-  public static final int COMMAND_ADD_IMAGE = 12;
-  public static final int COMMAND_ADD_PULSE = 13;
-}
+
+import com.reactnativeescposprinter.ThePrinterManager;
+import com.reactnativeescposprinter.ThePrinter;
+import com.reactnativeescposprinter.EposStringHelper;
+import com.reactnativeescposprinter.PrinterCallback;
+import com.reactnativeescposprinter.EscPosPrinterErrorManager;
+
 
 @ReactModule(name = EscPosPrinterModule.NAME)
-public class EscPosPrinterModule extends ReactContextBaseJavaModule implements ReceiveListener {
-    private static final int DISCONNECT_INTERVAL = 500;
+public class EscPosPrinterModule extends ReactContextBaseJavaModule {
     private Context mContext;
-    public static Printer  mPrinter = null;
     private final ReactApplicationContext reactContext;
-    private String printerAddress = null;
-    private Runnable monitor = null;
-
-    ExecutorService tasksQueue = Executors.newSingleThreadExecutor();
-    private Boolean mIsMonitoring = false;
-    interface MyCallbackInterface {
-      void onSuccess(String result);
-      void onError(String result);
-   }
+    private ThePrinterManager thePrinterManager_ = ThePrinterManager.getInstance();
+    private int ERR_INIT = -1;
 
     public static final String NAME = "EscPosPrinter";
 
@@ -93,622 +76,554 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule implements R
     @Override
     public Map<String, Object> getConstants() {
       final Map<String, Object> constants = new HashMap<>();
-      // Printer series
-      constants.put("EPOS2_TM_M10", Printer.TM_M10);
-      constants.put("EPOS2_TM_M30", Printer.TM_M30);
-      constants.put("EPOS2_TM_P20", Printer.TM_P20);
-      constants.put("EPOS2_TM_P60", Printer.TM_P60);
-      constants.put("EPOS2_TM_P60II", Printer.TM_P60II);
-      constants.put("EPOS2_TM_P80", Printer.TM_P80);
-      constants.put("EPOS2_TM_T20", Printer.TM_T20);
-      constants.put("EPOS2_TM_T60", Printer.TM_T60);
-      constants.put("EPOS2_TM_T70", Printer.TM_T70);
-      constants.put("EPOS2_TM_T81", Printer.TM_T81);
-      constants.put("EPOS2_TM_T82", Printer.TM_T82);
-      constants.put("EPOS2_TM_T83", Printer.TM_T83);
-      constants.put("EPOS2_TM_T88", Printer.TM_T88);
-      constants.put("EPOS2_TM_T90", Printer.TM_T90);
-      constants.put("EPOS2_TM_T90KP", Printer.TM_T90KP);
-      constants.put("EPOS2_TM_U220", Printer.TM_U220);
-      constants.put("EPOS2_TM_U330", Printer.TM_U330);
-      constants.put("EPOS2_TM_L90", Printer.TM_L90);
-      constants.put("EPOS2_TM_H6000", Printer.TM_H6000);
-      constants.put("EPOS2_TM_T83III", Printer.TM_T83III);
-      constants.put("EPOS2_TM_T100", Printer.TM_T100);
-      constants.put("EPOS2_TM_M30II", Printer.TM_M30II);
-      constants.put("EPOS2_TS_100", Printer.TS_100);
-      constants.put("EPOS2_TM_M50", Printer.TM_M50);
-      constants.put("EPOS2_TM_T88VII", Printer.TM_T88VII);
-      constants.put("EPOS2_TM_L90LFC", Printer.TM_L90LFC);
-      constants.put("EPOS2_TM_L100", Printer.TM_L100);
 
-      // Print commands
-      constants.put("COMMAND_ADD_TEXT", PrintingCommands.COMMAND_ADD_TEXT);
-      constants.put("COMMAND_ADD_NEW_LINE", PrintingCommands.COMMAND_ADD_NEW_LINE);
-      constants.put("COMMAND_ADD_TEXT_STYLE", PrintingCommands.COMMAND_ADD_TEXT_STYLE);
-      constants.put("COMMAND_ADD_TEXT_SIZE", PrintingCommands.COMMAND_ADD_TEXT_SIZE);
-      constants.put("COMMAND_ADD_TEXT_SMOOTH", PrintingCommands.COMMAND_ADD_TEXT_SMOOTH);
-      constants.put("COMMAND_ADD_ALIGN", PrintingCommands.COMMAND_ADD_ALIGN);
-      constants.put("COMMAND_ADD_IMAGE_BASE_64", PrintingCommands.COMMAND_ADD_IMAGE_BASE_64);
-      constants.put("COMMAND_ADD_IMAGE_ASSET", PrintingCommands.COMMAND_ADD_IMAGE_ASSET);
-      constants.put("COMMAND_ADD_IMAGE", PrintingCommands.COMMAND_ADD_IMAGE);
-      constants.put("COMMAND_ADD_BARCODE", PrintingCommands.COMMAND_ADD_BARCODE);
-      constants.put("COMMAND_ADD_QRCODE", PrintingCommands.COMMAND_ADD_QRCODE);
-      constants.put("COMMAND_ADD_CUT", PrintingCommands.COMMAND_ADD_CUT);
-      constants.put("COMMAND_ADD_DATA", PrintingCommands.COMMAND_ADD_DATA);
-      constants.put("COMMAND_ADD_PULSE", PrintingCommands.COMMAND_ADD_PULSE);
+      // init models lang
+      constants.put("MODEL_ANK", Printer.MODEL_ANK);
+      constants.put("MODEL_CHINESE", Printer.MODEL_CHINESE);
+      constants.put("MODEL_TAIWAN", Printer.MODEL_TAIWAN);
+      constants.put("MODEL_KOREAN", Printer.MODEL_KOREAN);
+      constants.put("MODEL_THAI", Printer.MODEL_THAI);
+      constants.put("MODEL_SOUTHASIA", Printer.MODEL_SOUTHASIA);
 
-      constants.put("EPOS2_ALIGN_LEFT", Printer.ALIGN_LEFT);
-      constants.put("EPOS2_ALIGN_RIGHT", Printer.ALIGN_RIGHT);
-      constants.put("EPOS2_ALIGN_CENTER", Printer.ALIGN_CENTER);
-      constants.put("EPOS2_TRUE", Printer.TRUE);
-      constants.put("EPOS2_FALSE", Printer.FALSE);
+      // cut types
+      constants.put("CUT_FEED", Printer.CUT_FEED);
+      constants.put("CUT_NO_FEED", Printer.CUT_NO_FEED);
+      constants.put("CUT_RESERVE", Printer.CUT_RESERVE);
+      constants.put("FULL_CUT_FEED", Printer.FULL_CUT_FEED);
+      constants.put("FULL_CUT_NO_FEED", Printer.FULL_CUT_NO_FEED);
+      constants.put("FULL_CUT_RESERVE", Printer.FULL_CUT_RESERVE);
+      constants.put("PARAM_DEFAULT", Printer.PARAM_DEFAULT);
+      constants.put("PARAM_UNSPECIFIED", Printer.PARAM_UNSPECIFIED);
 
-      // Print languages
-      constants.put("EPOS2_LANG_EN", Printer.LANG_EN);
-      constants.put("EPOS2_LANG_JA", Printer.LANG_JA);
-      constants.put("EPOS2_LANG_ZH_CN", Printer.LANG_ZH_CN);
-      constants.put("EPOS2_LANG_ZH_TW", Printer.LANG_ZH_TW);
-      constants.put("EPOS2_LANG_KO", Printer.LANG_KO);
-      constants.put("EPOS2_LANG_TH", Printer.LANG_TH);
-      constants.put("EPOS2_LANG_VI", Printer.LANG_VI);
-      constants.put("EPOS2_LANG_MULTI", Printer.PARAM_DEFAULT);
+      // errors
+      constants.put("ERR_PARAM", Epos2Exception.ERR_PARAM);
+      constants.put("ERR_MEMORY", Epos2Exception.ERR_MEMORY);
+      constants.put("ERR_UNSUPPORTED", Epos2Exception.ERR_UNSUPPORTED);
+      constants.put("ERR_FAILURE", Epos2Exception.ERR_FAILURE);
+      constants.put("ERR_PROCESSING", Epos2Exception.ERR_PROCESSING);
+      constants.put("ERR_CONNECT", Epos2Exception.ERR_CONNECT);
+      constants.put("ERR_TIMEOUT", Epos2Exception.ERR_TIMEOUT);
+      constants.put("ERR_ILLEGAL", Epos2Exception.ERR_ILLEGAL);
+      constants.put("ERR_NOT_FOUND", Epos2Exception.ERR_NOT_FOUND);
+      constants.put("ERR_IN_USE", Epos2Exception.ERR_IN_USE);
+      constants.put("ERR_TYPE_INVALID", Epos2Exception.ERR_TYPE_INVALID);
+      constants.put("ERR_RECOVERY_FAILURE", Epos2Exception.ERR_RECOVERY_FAILURE);
+      constants.put("ERR_DISCONNECT", Epos2Exception.ERR_DISCONNECT);
+      constants.put("ERR_INIT", ERR_INIT);
 
-      // Print Barcodes
-      constants.put("EPOS2_BARCODE_UPC_A", Printer.BARCODE_UPC_A);
-      constants.put("EPOS2_BARCODE_UPC_E", Printer.BARCODE_UPC_E);
-      constants.put("EPOS2_BARCODE_EAN13", Printer.BARCODE_EAN13);
-      constants.put("EPOS2_BARCODE_JAN13", Printer.BARCODE_JAN13);
-      constants.put("EPOS2_BARCODE_EAN8", Printer.BARCODE_EAN8);
-      constants.put("EPOS2_BARCODE_JAN8", Printer.BARCODE_JAN8);
-      constants.put("EPOS2_BARCODE_CODE39", Printer.BARCODE_CODE39);
-      constants.put("EPOS2_BARCODE_ITF", Printer.BARCODE_ITF);
-      constants.put("EPOS2_BARCODE_CODABAR", Printer.BARCODE_CODABAR);
-      constants.put("EPOS2_BARCODE_CODE93", Printer.BARCODE_CODE93);
-      constants.put("EPOS2_BARCODE_CODE128", Printer.BARCODE_CODE128);
-      constants.put("EPOS2_BARCODE_GS1_128", Printer.BARCODE_GS1_128);
-      constants.put("EPOS2_BARCODE_GS1_DATABAR_OMNIDIRECTIONAL", Printer.BARCODE_GS1_DATABAR_OMNIDIRECTIONAL);
-      constants.put("EPOS2_BARCODE_GS1_DATABAR_TRUNCATED", Printer.BARCODE_GS1_DATABAR_TRUNCATED);
-      constants.put("EPOS2_BARCODE_GS1_DATABAR_LIMITED", Printer.BARCODE_GS1_DATABAR_LIMITED);
-      constants.put("EPOS2_BARCODE_GS1_DATABAR_EXPANDED", Printer.BARCODE_GS1_DATABAR_EXPANDED);
-      constants.put("EPOS2_BARCODE_CODE128_AUTO", Printer.BARCODE_CODE128_AUTO);
-      constants.put("EPOS2_HRI_NONE", Printer.HRI_NONE);
-      constants.put("EPOS2_HRI_ABOVE", Printer.HRI_ABOVE);
-      constants.put("EPOS2_HRI_BELOW", Printer.HRI_BELOW);
-      constants.put("EPOS2_HRI_BOTH", Printer.HRI_BOTH);
-      constants.put("EPOS2_LEVEL_L", Printer.LEVEL_L);
-      constants.put("EPOS2_LEVEL_M", Printer.LEVEL_M);
-      constants.put("EPOS2_LEVEL_Q", Printer.LEVEL_Q);
-      constants.put("EPOS2_LEVEL_H", Printer.LEVEL_H);
-      constants.put("EPOS2_SYMBOL_QRCODE_MODEL_1", Printer.SYMBOL_QRCODE_MODEL_1);
-      constants.put("EPOS2_SYMBOL_QRCODE_MODEL_2", Printer.SYMBOL_QRCODE_MODEL_2);
-      constants.put("EPOS2_SYMBOL_QRCODE_MICRO", Printer.SYMBOL_QRCODE_MICRO);
+      // code errors
 
-      // Print image settings
-      constants.put("EPOS2_COLOR_1", Printer.COLOR_1);
-      constants.put("EPOS2_COLOR_2", Printer.COLOR_2);
-      constants.put("EPOS2_COLOR_3", Printer.COLOR_3);
-      constants.put("EPOS2_COLOR_4", Printer.COLOR_4);
+      constants.put("CODE_ERR_AUTORECOVER", Epos2CallbackCode.CODE_ERR_AUTORECOVER);
+      constants.put("CODE_ERR_COVER_OPEN", Epos2CallbackCode.CODE_ERR_COVER_OPEN);
+      constants.put("CODE_ERR_CUTTER", Epos2CallbackCode.CODE_ERR_CUTTER);
+      constants.put("CODE_ERR_MECHANICAL", Epos2CallbackCode.CODE_ERR_MECHANICAL);
+      constants.put("CODE_ERR_EMPTY", Epos2CallbackCode.CODE_ERR_EMPTY);
+      constants.put("CODE_ERR_UNRECOVERABLE", Epos2CallbackCode.CODE_ERR_UNRECOVERABLE);
+      constants.put("CODE_ERR_FAILURE", Epos2CallbackCode.CODE_ERR_FAILURE);
+      constants.put("CODE_ERR_NOT_FOUND", Epos2CallbackCode.CODE_ERR_NOT_FOUND);
+      constants.put("CODE_ERR_SYSTEM", Epos2CallbackCode.CODE_ERR_SYSTEM);
+      constants.put("CODE_ERR_PORT", Epos2CallbackCode.CODE_ERR_PORT);
+      constants.put("CODE_ERR_TIMEOUT", Epos2CallbackCode.CODE_ERR_TIMEOUT);
+      constants.put("CODE_ERR_JOB_NOT_FOUND", Epos2CallbackCode.CODE_ERR_JOB_NOT_FOUND);
+      constants.put("CODE_ERR_SPOOLER", Epos2CallbackCode.CODE_ERR_SPOOLER);
+      constants.put("CODE_ERR_BATTERY_LOW", Epos2CallbackCode.CODE_ERR_BATTERY_LOW);
+      constants.put("CODE_ERR_TOO_MANY_REQUESTS", Epos2CallbackCode.CODE_ERR_TOO_MANY_REQUESTS);
+      constants.put("CODE_ERR_REQUEST_ENTITY_TOO_LARGE", Epos2CallbackCode.CODE_ERR_REQUEST_ENTITY_TOO_LARGE);
+      constants.put("CODE_ERR_WAIT_REMOVAL", Epos2CallbackCode.CODE_ERR_WAIT_REMOVAL);
+      constants.put("CODE_PRINTING", Epos2CallbackCode.CODE_PRINTING);
+      constants.put("CODE_ERR_MEMORY", Epos2CallbackCode.CODE_ERR_MEMORY);
+      constants.put("CODE_ERR_PROCESSING", Epos2CallbackCode.CODE_ERR_PROCESSING);
+      constants.put("CODE_ERR_ILLEGAL", Epos2CallbackCode.CODE_ERR_ILLEGAL);
+      constants.put("CODE_ERR_DEVICE_BUSY", Epos2CallbackCode.CODE_ERR_DEVICE_BUSY);
 
-      constants.put("EPOS2_MODE_MONO", Printer.MODE_MONO);
-      constants.put("EPOS2_MODE_GRAY16", Printer.MODE_GRAY16);
-      constants.put("EPOS2_MODE_MONO_HIGH_DENSITY", Printer.MODE_MONO_HIGH_DENSITY);
+          // get printer settings
 
-      constants.put("EPOS2_HALFTONE_DITHER", Printer.HALFTONE_DITHER);
-      constants.put("EPOS2_HALFTONE_ERROR_DIFFUSION", Printer.HALFTONE_ERROR_DIFFUSION);
-      constants.put("EPOS2_HALFTONE_THRESHOLD", Printer.HALFTONE_THRESHOLD);
+      constants.put("PRINTER_SETTING_PAPERWIDTH", Printer.SETTING_PAPERWIDTH);
+      constants.put("PRINTER_SETTING_PRINTDENSITY", Printer.SETTING_PRINTDENSITY);
+      constants.put("PRINTER_SETTING_PRINTSPEED", Printer.SETTING_PRINTSPEED);
 
-      // Add pulse settings
-      constants.put("EPOS2_DRAWER_2PIN", Printer.DRAWER_2PIN);
-      constants.put("EPOS2_DRAWER_5PIN", Printer.DRAWER_5PIN);
+      constants.put("PRINTER_SETTING_PAPERWIDTH58_0", Printer.SETTING_PAPERWIDTH_58_0);
+      constants.put("PRINTER_SETTING_PAPERWIDTH60_0", Printer.SETTING_PAPERWIDTH_60_0);
+      constants.put("PRINTER_SETTING_PAPERWIDTH70_0", Printer.SETTING_PAPERWIDTH_70_0);
+      constants.put("PRINTER_SETTING_PAPERWIDTH76_0", Printer.SETTING_PAPERWIDTH_76_0);
+      constants.put("PRINTER_SETTING_PAPERWIDTH80_0", Printer.SETTING_PAPERWIDTH_80_0);
+      constants.put("PRINTER_SETTING_PRINTDENSITYDIP", Printer.SETTING_PRINTDENSITY_DIP);
+      constants.put("PRINTER_SETTING_PRINTDENSITY70", Printer.SETTING_PRINTDENSITY_70);
+      constants.put("PRINTER_SETTING_PRINTDENSITY75", Printer.SETTING_PRINTDENSITY_75);
+      constants.put("PRINTER_SETTING_PRINTDENSITY80", Printer.SETTING_PRINTDENSITY_80);
+      constants.put("PRINTER_SETTING_PRINTDENSITY85", Printer.SETTING_PRINTDENSITY_85);
+      constants.put("PRINTER_SETTING_PRINTDENSITY90", Printer.SETTING_PRINTDENSITY_90);
+      constants.put("PRINTER_SETTING_PRINTDENSITY95", Printer.SETTING_PRINTDENSITY_95);
+      constants.put("PRINTER_SETTING_PRINTDENSITY100", Printer.SETTING_PRINTDENSITY_100);
+      constants.put("PRINTER_SETTING_PRINTDENSITY105", Printer.SETTING_PRINTDENSITY_105);
+      constants.put("PRINTER_SETTING_PRINTDENSITY110", Printer.SETTING_PRINTDENSITY_110);
+      constants.put("PRINTER_SETTING_PRINTDENSITY115", Printer.SETTING_PRINTDENSITY_115);
+      constants.put("PRINTER_SETTING_PRINTDENSITY120", Printer.SETTING_PRINTDENSITY_120);
+      constants.put("PRINTER_SETTING_PRINTDENSITY125", Printer.SETTING_PRINTDENSITY_125);
+      constants.put("PRINTER_SETTING_PRINTDENSITY130", Printer.SETTING_PRINTDENSITY_130);
+      constants.put("PRINTER_SETTING_PRINTSPEED1", Printer.SETTING_PRINTSPEED_1);
+      constants.put("PRINTER_SETTING_PRINTSPEED2", Printer.SETTING_PRINTSPEED_2);
+      constants.put("PRINTER_SETTING_PRINTSPEED3", Printer.SETTING_PRINTSPEED_3);
+      constants.put("PRINTER_SETTING_PRINTSPEED4", Printer.SETTING_PRINTSPEED_4);
+      constants.put("PRINTER_SETTING_PRINTSPEED5", Printer.SETTING_PRINTSPEED_5);
+      constants.put("PRINTER_SETTING_PRINTSPEED6", Printer.SETTING_PRINTSPEED_6);
+      constants.put("PRINTER_SETTING_PRINTSPEED7", Printer.SETTING_PRINTSPEED_7);
+      constants.put("PRINTER_SETTING_PRINTSPEED8", Printer.SETTING_PRINTSPEED_8);
+      constants.put("PRINTER_SETTING_PRINTSPEED9", Printer.SETTING_PRINTSPEED_9);
+      constants.put("PRINTER_SETTING_PRINTSPEED10", Printer.SETTING_PRINTSPEED_10);
+      constants.put("PRINTER_SETTING_PRINTSPEED11", Printer.SETTING_PRINTSPEED_11);
+      constants.put("PRINTER_SETTING_PRINTSPEED12", Printer.SETTING_PRINTSPEED_12);
+      constants.put("PRINTER_SETTING_PRINTSPEED13", Printer.SETTING_PRINTSPEED_13);
+      constants.put("PRINTER_SETTING_PRINTSPEED14", Printer.SETTING_PRINTSPEED_14);
+      constants.put("PRINTER_SETTING_PRINTSPEED15", Printer.SETTING_PRINTSPEED_15);
+      constants.put("PRINTER_SETTING_PRINTSPEED16", Printer.SETTING_PRINTSPEED_16);
+      constants.put("PRINTER_SETTING_PRINTSPEED17", Printer.SETTING_PRINTSPEED_17);
+
+      // printer status
+
+      constants.put("TRUE", Printer.TRUE);
+      constants.put("FALSE", Printer.FALSE);
+      constants.put("UNKNOWN", Printer.UNKNOWN);
+      constants.put("PAPER_OK", Printer.PAPER_OK);
+      constants.put("PAPER_NEAR_END", Printer.PAPER_NEAR_END);
+      constants.put("PAPER_EMPTY", Printer.PAPER_EMPTY);
+      constants.put("SWITCH_ON", Printer.SWITCH_ON);
+      constants.put("SWITCH_OFF", Printer.SWITCH_OFF);
+      constants.put("DRAWER_HIGH", Printer.DRAWER_HIGH);
+      constants.put("DRAWER_LOW", Printer.DRAWER_LOW);
+      constants.put("NO_ERR", Printer.NO_ERR);
+      constants.put("MECHANICAL_ERR", Printer.MECHANICAL_ERR);
+      constants.put("AUTOCUTTER_ERR", Printer.AUTOCUTTER_ERR);
+      constants.put("UNRECOVER_ERR", Printer.UNRECOVER_ERR);
+      constants.put("AUTORECOVER_ERR", Printer.AUTORECOVER_ERR);
+      constants.put("HEAD_OVERHEAT", Printer.HEAD_OVERHEAT);
+      constants.put("MOTOR_OVERHEAT", Printer.MOTOR_OVERHEAT);
+      constants.put("BATTERY_OVERHEAT", Printer.BATTERY_OVERHEAT);
+      constants.put("WRONG_PAPER", Printer.WRONG_PAPER);
+      constants.put("COVER_OPEN", Printer.COVER_OPEN);
+      constants.put("EPOS2_BATTERY_LEVEL_6", Printer.BATTERY_LEVEL_6);
+      constants.put("EPOS2_BATTERY_LEVEL_5", Printer.BATTERY_LEVEL_5);
+      constants.put("EPOS2_BATTERY_LEVEL_4", Printer.BATTERY_LEVEL_4);
+      constants.put("EPOS2_BATTERY_LEVEL_3", Printer.BATTERY_LEVEL_3);
+      constants.put("EPOS2_BATTERY_LEVEL_2", Printer.BATTERY_LEVEL_2);
+      constants.put("EPOS2_BATTERY_LEVEL_1", Printer.BATTERY_LEVEL_1);
+      constants.put("EPOS2_BATTERY_LEVEL_0", Printer.BATTERY_LEVEL_0);
+      constants.put("REMOVAL_WAIT_PAPER", Printer.REMOVAL_WAIT_PAPER);
+      constants.put("REMOVAL_WAIT_NONE", Printer.REMOVAL_WAIT_NONE);
+      constants.put("REMOVAL_DETECT_PAPER", Printer.REMOVAL_DETECT_PAPER);
+      constants.put("REMOVAL_DETECT_PAPER_NONE", Printer.REMOVAL_DETECT_PAPER_NONE);
+      constants.put("REMOVAL_DETECT_UNKNOWN", Printer.REMOVAL_DETECT_UNKNOWN);
+      constants.put("HIGH_VOLTAGE_ERR", Printer.HIGH_VOLTAGE_ERR);
+      constants.put("LOW_VOLTAGE_ERR", Printer.LOW_VOLTAGE_ERR);
+
+
+      // image
+      constants.put("COLOR_NONE", Printer.COLOR_NONE);
+      constants.put("COLOR_1", Printer.COLOR_1);
+      constants.put("COLOR_2", Printer.COLOR_2);
+      constants.put("COLOR_3", Printer.COLOR_3);
+      constants.put("COLOR_4", Printer.COLOR_4);
+      constants.put("MODE_MONO", Printer.MODE_MONO);
+      constants.put("MODE_GRAY16", Printer.MODE_GRAY16);
+      constants.put("MODE_MONO_HIGH_DENSITY", Printer.MODE_MONO_HIGH_DENSITY);
+      constants.put("HALFTONE_DITHER", Printer.HALFTONE_DITHER);
+      constants.put("HALFTONE_ERROR_DIFFUSION", Printer.HALFTONE_ERROR_DIFFUSION);
+      constants.put("HALFTONE_THRESHOLD", Printer.HALFTONE_THRESHOLD);
+      constants.put("COMPRESS_DEFLATE", Printer.COMPRESS_DEFLATE);
+      constants.put("COMPRESS_NONE", Printer.COMPRESS_NONE);
+      constants.put("COMPRESS_AUTO", Printer.COMPRESS_AUTO);
+
+      // barcode
+      constants.put("BARCODE_UPC_A", Printer.BARCODE_UPC_A);
+      constants.put("BARCODE_UPC_E", Printer.BARCODE_UPC_E);
+      constants.put("BARCODE_EAN13", Printer.BARCODE_EAN13);
+      constants.put("BARCODE_JAN13", Printer.BARCODE_JAN13);
+      constants.put("BARCODE_EAN8", Printer.BARCODE_EAN8);
+      constants.put("BARCODE_JAN8", Printer.BARCODE_JAN8);
+      constants.put("BARCODE_CODE39", Printer.BARCODE_CODE39);
+      constants.put("BARCODE_ITF", Printer.BARCODE_ITF);
+      constants.put("BARCODE_CODABAR", Printer.BARCODE_CODABAR);
+      constants.put("BARCODE_CODE93", Printer.BARCODE_CODE93);
+      constants.put("BARCODE_CODE128", Printer.BARCODE_CODE128);
+      constants.put("BARCODE_CODE128_AUTO", Printer.BARCODE_CODE128_AUTO);
+      constants.put("BARCODE_GS1_128", Printer.BARCODE_GS1_128);
+      constants.put("BARCODE_GS1_DATABAR_OMNIDIRECTIONAL", Printer.BARCODE_GS1_DATABAR_OMNIDIRECTIONAL);
+      constants.put("BARCODE_GS1_DATABAR_TRUNCATED", Printer.BARCODE_GS1_DATABAR_TRUNCATED);
+      constants.put("BARCODE_GS1_DATABAR_LIMITED", Printer.BARCODE_GS1_DATABAR_LIMITED);
+      constants.put("BARCODE_GS1_DATABAR_EXPANDED", Printer.BARCODE_GS1_DATABAR_EXPANDED);
+      constants.put("HRI_NONE", Printer.HRI_NONE);
+      constants.put("HRI_ABOVE", Printer.HRI_ABOVE);
+      constants.put("HRI_BELOW", Printer.HRI_BELOW);
+      constants.put("HRI_BOTH", Printer.HRI_BOTH);
+
+      // font
+
+      constants.put("FONT_A", Printer.FONT_A);
+      constants.put("FONT_B", Printer.FONT_B);
+      constants.put("FONT_C", Printer.FONT_C);
+      constants.put("FONT_D", Printer.FONT_D);
+      constants.put("FONT_E", Printer.FONT_E);
+
+      // symbol
+
+      constants.put("SYMBOL_PDF417_STANDARD", Printer.SYMBOL_PDF417_STANDARD);
+      constants.put("SYMBOL_PDF417_TRUNCATED", Printer.SYMBOL_PDF417_TRUNCATED);
+      constants.put("SYMBOL_QRCODE_MODEL_1", Printer.SYMBOL_QRCODE_MODEL_1);
+      constants.put("SYMBOL_QRCODE_MODEL_2", Printer.SYMBOL_QRCODE_MODEL_2);
+      constants.put("SYMBOL_QRCODE_MICRO", Printer.SYMBOL_QRCODE_MICRO);
+      constants.put("SYMBOL_MAXICODE_MODE_2", Printer.SYMBOL_MAXICODE_MODE_2);
+      constants.put("SYMBOL_MAXICODE_MODE_3", Printer.SYMBOL_MAXICODE_MODE_3);
+      constants.put("SYMBOL_MAXICODE_MODE_4", Printer.SYMBOL_MAXICODE_MODE_4);
+      constants.put("SYMBOL_MAXICODE_MODE_5", Printer.SYMBOL_MAXICODE_MODE_5);
+      constants.put("SYMBOL_MAXICODE_MODE_6", Printer.SYMBOL_MAXICODE_MODE_6);
+      constants.put("SYMBOL_GS1_DATABAR_STACKED", Printer.SYMBOL_GS1_DATABAR_STACKED);
+      constants.put("SYMBOL_GS1_DATABAR_STACKED_OMNIDIRECTIONAL", Printer.SYMBOL_GS1_DATABAR_STACKED_OMNIDIRECTIONAL);
+      constants.put("SYMBOL_GS1_DATABAR_EXPANDED_STACKED", Printer.SYMBOL_GS1_DATABAR_EXPANDED_STACKED);
+      constants.put("SYMBOL_AZTECCODE_FULLRANGE", Printer.SYMBOL_AZTECCODE_FULLRANGE);
+      constants.put("SYMBOL_AZTECCODE_COMPACT", Printer.SYMBOL_AZTECCODE_COMPACT);
+      constants.put("SYMBOL_DATAMATRIX_SQUARE", Printer.SYMBOL_DATAMATRIX_SQUARE);
+      constants.put("SYMBOL_DATAMATRIX_RECTANGLE_8", Printer.SYMBOL_DATAMATRIX_RECTANGLE_8);
+      constants.put("SYMBOL_DATAMATRIX_RECTANGLE_12", Printer.SYMBOL_DATAMATRIX_RECTANGLE_12);
+      constants.put("SYMBOL_DATAMATRIX_RECTANGLE_16", Printer.SYMBOL_DATAMATRIX_RECTANGLE_16);
+      constants.put("LEVEL_0", Printer.LEVEL_0);
+      constants.put("LEVEL_1", Printer.LEVEL_1);
+      constants.put("LEVEL_2", Printer.LEVEL_2);
+      constants.put("LEVEL_3", Printer.LEVEL_3);
+      constants.put("LEVEL_4", Printer.LEVEL_4);
+      constants.put("LEVEL_5", Printer.LEVEL_5);
+      constants.put("LEVEL_6", Printer.LEVEL_6);
+      constants.put("LEVEL_7", Printer.LEVEL_7);
+      constants.put("LEVEL_8", Printer.LEVEL_8);
+      constants.put("LEVEL_L", Printer.LEVEL_L);
+      constants.put("LEVEL_M", Printer.LEVEL_M);
+      constants.put("LEVEL_Q", Printer.LEVEL_Q);
+      constants.put("LEVEL_H", Printer.LEVEL_H);
+
+      // add pulse
+
+      constants.put("DRAWER_2PIN", Printer.DRAWER_2PIN);
+      constants.put("DRAWER_5PIN", Printer.DRAWER_5PIN);
+      constants.put("PULSE_100", Printer.PULSE_100);
+      constants.put("PULSE_200", Printer.PULSE_200);
+      constants.put("PULSE_300", Printer.PULSE_300);
+      constants.put("PULSE_400", Printer.PULSE_400);
+      constants.put("PULSE_500", Printer.PULSE_500);
+
+      // text align
+
+      constants.put("ALIGN_LEFT", Printer.ALIGN_LEFT);
+      constants.put("ALIGN_CENTER", Printer.ALIGN_CENTER);
+      constants.put("ALIGN_RIGHT", Printer.ALIGN_RIGHT);
 
       return constants;
     }
 
-    private void sendEvent(ReactApplicationContext reactContext,
-    String eventName,
-    @Nullable String params) {
-      reactContext
-      .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-      .emit(eventName, params);
-  }
+    @ReactMethod
+    synchronized public void initWithPrinterDeviceName(String target, String deviceName, int lang, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
 
-  @ReactMethod
-  public void init(String target, int series, int language,Promise promise) {
-    this.finalizeObject();
-    this.initializeObject(series, language, new MyCallbackInterface() {
-      @Override
-      public void onSuccess(String result) {
-        promise.resolve(result);
-      }
-      @Override
-      public void onError(String result) {
-        promise.reject(result);
-      }
-    });
-
-    this.printerAddress = target;
-  }
-
-  @ReactMethod
-  public void getPaperWidth(Promise promise) {
-
-    tasksQueue.submit(new Runnable() {
-      @Override
-      public void run() {
-        getPrinterSettings(Printer.SETTING_PAPERWIDTH, new MyCallbackInterface() {
-          @Override
-          public void onSuccess(String result) {
-            promise.resolve(result);
-          }
-          @Override
-          public void onError(String result) {
-            promise.reject(result);
-          }
-        });
-      }
-    });
-
-  }
-
-    private void initializeObject(int series, int language,MyCallbackInterface callback) {
-       try {
-        mPrinter = new Printer(series, Printer.MODEL_ANK, mContext);
-        mPrinter.addTextLang(language);
-       }
-        catch (Epos2Exception e) {
-          int status = EscPosPrinterErrorManager.getErrorStatus(e);
-          String errorString = EscPosPrinterErrorManager.getEposExceptionText(status);
-          callback.onError(errorString);
-
+      try {
+        if (thePrinter == null) {
+          thePrinter = new ThePrinter();
+          thePrinterManager_.add(thePrinter, target);
+          int series = EposStringHelper.getPrinterSeries(deviceName);
+          thePrinter.setupWith(target, series, lang, mContext);
         }
-        mPrinter.setReceiveEventListener(this);
-        callback.onSuccess("init: success");
-  }
 
-   private void finalizeObject() {
-     if(mPrinter == null) {
-       return;
-     }
+        Printer mPrinter = thePrinter.getEpos2Printer();
 
-     mPrinter.clearCommandBuffer();
-     mPrinter.setReceiveEventListener(null);
-     mPrinter = null;
-   }
-
-   private void connectPrinter() throws Epos2Exception {
-
-    if (mPrinter == null) {
-      throw new Epos2Exception(Epos2Exception.ERR_PARAM);
-    }
-
-    mPrinter.connect(this.printerAddress, Printer.PARAM_DEFAULT);
-    mPrinter.beginTransaction();
-   }
-
-   private void disconnectPrinter() {
-    if (mPrinter == null) {
-        return;
-    }
-
-    try {
-      mPrinter.endTransaction();
-    } catch(Epos2Exception e) {
-
-    }
-
-    while (true) {
-        try {
-            mPrinter.disconnect();
-            System.out.println("Disconnected!");
-            break;
-        } catch (final Exception e) {
-            if (e instanceof Epos2Exception) {
-                //Note: If printer is processing such as printing and so on, the disconnect API returns ERR_PROCESSING.
-                if (((Epos2Exception) e).getErrorStatus() == Epos2Exception.ERR_PROCESSING) {
-                    try {
-                        Thread.sleep(DISCONNECT_INTERVAL);
-                    } catch (Exception ex) {
-                    }
-                }else{
-                  break;
-                }
-            }else{
-                break;
-            }
+        if(mPrinter == null) {
+          promise.reject(EscPosPrinterErrorManager.getErrorTextData(Epos2Exception.ERR_MEMORY, ""));
+        } else {
+          promise.resolve(null);
         }
-    }
-
-
-
-      mPrinter.clearCommandBuffer();
-    }
-
-    private void printData(final ReadableMap paramsMap) throws Epos2Exception {
-      int timeout = Printer.PARAM_DEFAULT;
-      if(paramsMap != null) {
-        if(paramsMap.hasKey("timeout")) {
-          timeout = paramsMap.getInt("timeout");
-        }
-      }
-
-      this.connectPrinter();
-      mPrinter.sendData(timeout);
-    }
-
-  @Override
-  public void onPtrReceive(final Printer printerObj, final int code, final PrinterStatusInfo status, final String printJobId) {
-    UiThreadUtil.runOnUiThread(new Runnable() {
-          @Override
-          public synchronized void run() {
-              String result = EscPosPrinterErrorManager.getCodeText(code);
-              if(code == Epos2CallbackCode.CODE_SUCCESS) {
-                WritableMap msg = EscPosPrinterErrorManager.makeStatusMassage(status);
-
-                reactContext
-                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit("onPrintSuccess", msg);
-
-              } else {
-                sendEvent(reactContext, "onPrintFailure", result);
-              }
-
-              new Thread(new Runnable() {
-                  @Override
-                  public void run() {
-                      disconnectPrinter();
-                  }
-              }).start();
-          }
-      });
-  }
-
-  private void getPrinterSettings(int type, MyCallbackInterface callback) {
-    if (mPrinter == null) {
-      String errorString = EscPosPrinterErrorManager.getEposExceptionText(Epos2Exception.ERR_PARAM);
-      callback.onError(errorString);
-      return;
-    }
-
-    try {
-      this.connectPrinter();
-    }
-    catch (Epos2Exception e) {
-        int status = EscPosPrinterErrorManager.getErrorStatus(e);
-        String errorString = EscPosPrinterErrorManager.getEposExceptionText(status);
-        callback.onError(errorString);
-        return;
-    }
-
-    try {
-      mPrinter.getPrinterSetting(Printer.PARAM_DEFAULT, type, mSettingListener);
-    }
-    catch (Epos2Exception e) {
-        mPrinter.clearCommandBuffer();
-        int status = EscPosPrinterErrorManager.getErrorStatus(e);
-        String errorString = EscPosPrinterErrorManager.getEposExceptionText(status);
-        callback.onError(errorString);
-        this.disconnectPrinter();
-        return;
-    }
-
-    String successString = EscPosPrinterErrorManager.getCodeText(Epos2CallbackCode.CODE_SUCCESS);
-    callback.onSuccess(successString);
-
-  }
-
-  private PrinterSettingListener mSettingListener = new PrinterSettingListener() {
-    @Override
-    public void onGetPrinterSetting(int code, int type, int value) {
-           UiThreadUtil.runOnUiThread(new Runnable() {
-          @Override
-          public synchronized void run() {
-              String result = EscPosPrinterErrorManager.getCodeText(code);
-              if(code == Epos2CallbackCode.CODE_SUCCESS) {
-                if(type == Printer.SETTING_PAPERWIDTH) {
-                  int paperWidth = EscPosPrinterErrorManager.getEposGetWidthResult(value);
-                  reactContext
-                    .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                    .emit("onGetPaperWidthSuccess", paperWidth);
-                }
-              } else {
-                if(type == Printer.SETTING_PAPERWIDTH) {
-                  sendEvent(reactContext, "onGetPaperWidthFailure", result);
-                }
-              }
-              new Thread(new Runnable() {
-                  @Override
-                  public void run() {
-                      disconnectPrinter();
-                  }
-              }).start();
-          }
-      });
-
-    }
-
-    @Override public void onSetPrinterSetting(int code) {
-        // do nothing
-    }
-  };
-
-  private void performMonitoring(int inteval) {
-    final Handler handler = new Handler();
-    monitor = new Runnable(){
-
-      @Override
-      public void run() {
-
-        if(mIsMonitoring) {
-         tasksQueue.submit(new Callable<String>() {
-          @Override
-          public String call() {
-            PrinterStatusInfo statusInfo = null;
-             try {
-               connectPrinter();
-               statusInfo = mPrinter.getStatus();
-               WritableMap msg = EscPosPrinterErrorManager.makeStatusMassage(statusInfo);
-
-               reactContext
-               .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-               .emit("onMonitorStatusUpdate", msg);
-               disconnectPrinter();
-               return null;
-             } catch(Epos2Exception e) {
-               int errorStatus = ((Epos2Exception) e).getErrorStatus();
-
-              if (errorStatus != Epos2Exception.ERR_PROCESSING && errorStatus != Epos2Exception.ERR_ILLEGAL) {
-
-                WritableMap msg = EscPosPrinterErrorManager.getOfflineStatusMessage();
-
-                reactContext
-                .getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-                .emit("onMonitorStatusUpdate", msg);
-               }
-               return null;
-             } finally {
-               handler.postDelayed(monitor, inteval);
-             }
-
-          }
-      });
-    }
-      }
-    };
-
-
-    monitor.run();
-  }
-
-  @ReactMethod
-  public void startMonitorPrinter(int interval, Promise promise) {
-
-    if (mIsMonitoring){
-      promise.reject("Already monitoring!");
-      return;
-    }
-
-    if (mPrinter == null) {
-      String errorString = EscPosPrinterErrorManager.getEposExceptionText(Epos2Exception.ERR_PARAM);
-      promise.reject(errorString);
-      return;
-    }
-
-    mIsMonitoring = true;
-    this.performMonitoring(interval * 1000);
-
-
-    String successString = EscPosPrinterErrorManager.getCodeText(Epos2CallbackCode.CODE_SUCCESS);
-    promise.resolve(successString);
-  }
-
-  @ReactMethod
-  public void stopMonitorPrinter(Promise promise) {
-    if(!mIsMonitoring) {
-      promise.reject("Printer is not monitorring!");
-      return;
-    }
-
-    mIsMonitoring = false;
-    monitor = null;
-    String successString = EscPosPrinterErrorManager.getCodeText(Epos2CallbackCode.CODE_SUCCESS);
-    promise.resolve(successString);
-  }
-
-  @ReactMethod
-  public void printBuffer(ReadableArray printBuffer, final ReadableMap paramsMap, Promise promise) {
-    tasksQueue.submit(new Runnable() {
-      @Override
-      public void run() {
-        printFromBuffer(printBuffer, paramsMap, new MyCallbackInterface() {
-          @Override
-          public void onSuccess(String result) {
-            promise.resolve(result);
-          }
-
-          @Override
-          public void onError(String result) {
-            promise.reject(result);
-          }
-        });
-      }
-    });
-  }
-
-  public void printFromBuffer(ReadableArray printBuffer, final ReadableMap paramsMap, MyCallbackInterface callback) {
-    if (mPrinter == null) {
-      String errorString = EscPosPrinterErrorManager.getEposExceptionText(Epos2Exception.ERR_PARAM);
-      callback.onError(errorString);
-      return;
-    }
-
-    try {
-      int bufferLength = printBuffer.size();
-      for (int curr = 0; curr < bufferLength; curr++) {
-        ReadableArray command = printBuffer.getArray(curr);
-        handleCommand(command.getInt(0), command.getArray(1));
-      }
-    } catch (Epos2Exception e) {
-      mPrinter.clearCommandBuffer();
-      int status = EscPosPrinterErrorManager.getErrorStatus(e);
-      String errorString = EscPosPrinterErrorManager.getEposExceptionText(status);
-      callback.onError(errorString);
-      return;
-    } catch (IOException e){
-      mPrinter.clearCommandBuffer();
-      callback.onError(e.getMessage());
-      return;
-    }
-    try {
-      this.printData(paramsMap);
-      String successString = EscPosPrinterErrorManager.getCodeText(Epos2CallbackCode.CODE_SUCCESS);
-      callback.onSuccess(successString);
-    } catch (Epos2Exception e) {
-      int status = EscPosPrinterErrorManager.getErrorStatus(e);
-      String errorString = EscPosPrinterErrorManager.getEposExceptionText(status);
-      callback.onError(errorString);
-    }
-  }
-
-  @ReactMethod
-  public void addListener(String eventName) {
-    // Keep: Required for RN built in Event Emitter Calls.
-  }
-
-  @ReactMethod
-  public void removeListeners(Integer count) {
-    // Keep: Required for RN built in Event Emitter Calls.
-  }
-
-  private Bitmap getBitmapFromSource(ReadableMap source) throws Exception {
-    String uriString = source.getString("uri");
-
-    if(uriString.startsWith("data")) {
-        final String pureBase64Encoded = uriString.substring(uriString.indexOf(",") + 1);
-        byte[] decodedString = Base64.decode(pureBase64Encoded, Base64.DEFAULT);
-        Bitmap image = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-
-        return image;
-    }
-
-    if(uriString.startsWith("http") || uriString.startsWith("https")) {
-      URL url = new URL(uriString);
-      Bitmap image = BitmapFactory.decodeStream(url.openConnection().getInputStream());
-      return image;
-    }
-
-    if(uriString.startsWith("file")) {
-      BitmapFactory.Options options = new BitmapFactory.Options();
-      options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-      Bitmap image = BitmapFactory.decodeFile(uriString, options);
-
-      return image;
-    }
-
-    int resourceId = mContext.getResources().getIdentifier(uriString, "drawable", mContext.getPackageName());
-    Bitmap image = BitmapFactory.decodeResource(mContext.getResources(), resourceId);
-
-    return image;
-  }
-
-
-  private void handleCommand(int command, ReadableArray params) throws Epos2Exception, IOException {
-    switch (command) {
-      case PrintingCommands.COMMAND_ADD_TEXT:
-        mPrinter.addText(params.getString(0));
-        break;
-      case PrintingCommands.COMMAND_ADD_PULSE:
-        mPrinter.addPulse(params.getInt(0), Printer.PARAM_DEFAULT);
-        break;
-      case PrintingCommands.COMMAND_ADD_NEW_LINE:
-        mPrinter.addFeedLine(params.getInt(0));
-        break;
-      case PrintingCommands.COMMAND_ADD_TEXT_STYLE:
-        mPrinter.addTextStyle(Printer.FALSE, params.getInt(0), params.getInt(1), Printer.COLOR_1);
-        break;
-      case PrintingCommands.COMMAND_ADD_TEXT_SIZE:
-        mPrinter.addTextSize(params.getInt(0), params.getInt(1));
-        break;
-      case PrintingCommands.COMMAND_ADD_ALIGN:
-        mPrinter.addTextAlign(params.getInt(0));
-        break;
-
-      case PrintingCommands.COMMAND_ADD_IMAGE:
-        ReadableMap source = params.getMap(0);
-
-        int imgWidth = params.getInt(1);
-        int color = params.getInt(2);
-        int mode = params.getInt(3);
-        int halftone = params.getInt(4);
-        double brightness = params.getDouble(5);
-        try {
-          Bitmap imgBitmap = getBitmapFromSource(source);
-          handlePrintImage(imgBitmap, imgWidth, color, mode, halftone, brightness);
         } catch(Exception e) {
-          Log.e("MYAPP", "exception", e); // TODO: fallback printing
+          processError(promise,e, "");
         }
-
-
-      break;
-      case PrintingCommands.COMMAND_ADD_IMAGE_BASE_64:
-        String uriString = params.getString(0);
-        final String pureBase64Encoded = uriString.substring(uriString.indexOf(",") + 1);
-        byte[] decodedString = Base64.decode(pureBase64Encoded, Base64.DEFAULT);
-        Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-        int inputWidth = params.getInt(1);
-
-        handlePrintImage(bitmap, inputWidth, Printer.COLOR_1, Printer.MODE_MONO, Printer.HALFTONE_DITHER, Printer.PARAM_DEFAULT);
-        break;
-
-      case PrintingCommands.COMMAND_ADD_IMAGE_ASSET:
-        String imageName = params.getString(0);
-        int width = params.getInt(1);
-
-        AssetManager assetManager = mContext.getAssets();
-        InputStream inputStream = assetManager.open(params.getString(0));
-        Bitmap assetBitmap = BitmapFactory.decodeStream(inputStream);
-        inputStream.close();
-
-        handlePrintImage(assetBitmap, width, Printer.COLOR_1, Printer.MODE_MONO, Printer.HALFTONE_DITHER, Printer.PARAM_DEFAULT);
-        break;
-      case PrintingCommands.COMMAND_ADD_CUT:
-        mPrinter.addCut(Printer.CUT_FEED);
-        break;
-      case PrintingCommands.COMMAND_ADD_DATA:
-        String base64String = params.getString(0);
-        byte[] data = Base64.decode(base64String, Base64.DEFAULT);
-        mPrinter.addCommand(data);
-        break;
-      case PrintingCommands.COMMAND_ADD_TEXT_SMOOTH:
-        mPrinter.addTextSmooth(params.getInt(0));
-        break;
-      case PrintingCommands.COMMAND_ADD_BARCODE:
-        mPrinter.addBarcode(params.getString(0), params.getInt(1), params.getInt(2), Printer.FONT_A, params.getInt(3), params.getInt(4));
-        break;
-      case PrintingCommands.COMMAND_ADD_QRCODE:
-        mPrinter.addSymbol(params.getString(0), params.getInt(1), params.getInt(2), params.getInt(3), params.getInt(3), params.getInt(3));
-        break;
-      default:
-        throw new IllegalArgumentException("Invalid Printing Command");
     }
-  }
 
-  private void handlePrintImage(Bitmap bitmap, int width, int color, int mode, int halftone, double brightness) throws Epos2Exception {
-    float aspectRatio = bitmap.getWidth() / (float) bitmap.getHeight();
-    int newHeight = Math.round(width / aspectRatio);
-    bitmap = Bitmap.createScaledBitmap(bitmap, width, newHeight, false);
+    @ReactMethod
+    synchronized public void connect(String target, int timeout, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.connect(timeout, false);
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise,e, "");
+        }
+      }
+    }
 
-    mPrinter.addImage(
-      bitmap,
-      0,
-      0,
-      width,
-      newHeight,
-      color,
-      mode,
-      halftone,
-      brightness,
-      Printer.COMPRESS_AUTO
-    );
-  }
+   @ReactMethod
+    synchronized public void disconnect(String target, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.disconnect();
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise,e, "");
+        }
+      }
+    }
+
+    @ReactMethod
+    synchronized public void addText(String target, String data, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, ""));
+      } else {
+          try {
+            thePrinter.addText(data);
+            promise.resolve(null);
+          } catch(Exception e) {
+            processError(promise, e, "");
+          }
+      }
+    }
+
+    @ReactMethod
+    synchronized public void addFeedLine(String target, int line, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.addFeedLine(line);
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+
+    @ReactMethod
+    synchronized public void addCut(String target, int type, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.addCut(type);
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+
+    @ReactMethod
+    synchronized public void addCommand(String target, String base64string, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.addCommand(base64string);
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+
+    @ReactMethod
+    synchronized public void addPulse(String target, int drawer, int time, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.addPulse(drawer, time);
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+
+    @ReactMethod
+    synchronized public void addTextAlign(String target, int align, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.addTextAlign(align);
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+
+    @ReactMethod
+    synchronized public void addTextSize(String target, int width, int height, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.addTextSize(width, height);
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+
+    @ReactMethod
+    synchronized public void addTextSmooth(String target, int smooth, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.addTextSmooth(smooth);
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+
+    @ReactMethod
+    synchronized public void addTextStyle(String target, int reverse, int ul, int em, int color, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.addTextStyle(reverse, ul, em, color);
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+
+
+    @ReactMethod
+    synchronized public void addImage(String target, ReadableMap source, int width, int color,
+                                      int mode, int halftone, double brightness, int compress, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.addImage(source, mContext, width, color, mode, halftone, brightness, compress);
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+
+    @ReactMethod
+    synchronized public void addBarcode(String target, String data, int type, int hri, int font, int width, int height, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.addBarcode(data, type, hri, font, width, height);
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+
+    @ReactMethod
+    synchronized public void addSymbol(String target, String data, int type, int level, int width, int height, int size, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.addSymbol(data, type, level, width, height, size);
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+
+    @ReactMethod
+    synchronized public void getStatus(String target, int type, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          WritableMap data = thePrinter.getStatus();
+          promise.resolve(data);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+
+    @ReactMethod
+    synchronized public void sendData(String target, int timeout, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, "result"));
+      } else {
+          try {
+            thePrinter.sendData(timeout, new PrinterCallback() {
+            @Override
+            public void onSuccess(WritableMap returnData) {
+              promise.resolve(returnData);
+            }
+
+            @Override
+            public void onError(String errorData) {
+              promise.reject(errorData);
+            }
+          });
+        } catch(Exception e) {
+            processError(promise, e, "result");
+        }
+      }
+    }
+
+    @ReactMethod
+    synchronized public void getPrinterSetting(String target, int timeout, int type, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, "result"));
+      } else {
+          try {
+            thePrinter.getPrinterSetting(timeout, type, new PrinterCallback() {
+            @Override
+            public void onSuccess(WritableMap returnData) {
+              promise.resolve(returnData);
+            }
+
+            @Override
+            public void onError(String errorData) {
+              promise.reject(errorData);
+            }
+          });
+        } catch(Exception e) {
+            processError(promise, e, "result");
+        }
+      }
+    }
+
+    private void  processError(Promise promise, Exception e, String errorType) {
+      int errorCode;
+      if (e instanceof Epos2Exception) {
+        errorCode = ((Epos2Exception) e).getErrorStatus();
+      } else {
+        errorCode = Epos2Exception.ERR_FAILURE;
+      }
+      promise.reject(EscPosPrinterErrorManager.getErrorTextData(errorCode, errorType));
+    }
 }

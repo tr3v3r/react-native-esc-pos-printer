@@ -33,7 +33,7 @@ typedef NS_ENUM(NSUInteger, ThePrinterState) {
 
 
 @interface ThePrinter : NSObject {
-    
+
 @private
     NSString*        printerTarget_; // the printer target
     Epos2Printer*    epos2Printer_;  // eposPrinter
@@ -79,6 +79,39 @@ typedef NS_ENUM(NSUInteger, ThePrinterState) {
  @return int ePOS result
  */
 - (int) disconnect;
+
+
+-(int) addText: (nonnull NSString*)data;
+
+-(int) addFeedLine: (int)line;
+
+-(int) addCut: (int)type;
+
+-(int) addCommand: (nonnull NSString* )base64string;
+
+-(int) addPulse:(int)drawer time:(int)time;
+
+-(int) addTextAlign:(int)align;
+
+-(int) addTextSize:(long)width height:(long)height;
+
+-(int) addTextSmooth:(int)smooth;
+
+-(int) addTextStyle:(int)reverse ul:(int)ul em:(int)em color:(int)color;
+
+-(int) addImage: (nonnull NSDictionary*)source
+      width:(long)width
+      color:(int)color
+      mode:(int)mode
+      halftone:(int)halftone
+      brightness:(double)brightness
+      compress:(int)compress;
+
+-(int) addBarcode: (nonnull NSString *)data type:(int)type hri:(int)hri font:(int)font width:(long)width height:(long)height;
+
+-(int) addSymbol:(nonnull NSString *)data type:(int)type level:(int)level width:(long)width height:(long)height size:(long)size;
+
+-(nonnull NSDictionary*) getStatus;
 
 /**
  Returns BOOL
@@ -140,15 +173,16 @@ typedef NS_ENUM(NSUInteger, ThePrinterState) {
  @param int type of Printer settings to get ie, EPOS2_PRINTER_SETTING_PAPERWIDTH
  @return ePOS int result
  */
--(int) getPrinterSettings:(long)timeout type:(int)type;
-
+-(void) getPrinterSetting:(long)timeout type:(int)type successHandler: (void(^_Nonnull)(NSDictionary*_Nonnull data)) successHandler
+   errorHandler: (void(^_Nonnull)(NSString* data)) errorHandler;
 /**
  Returns ePOS int result
  Function sendData see ePOS SDK
  @param long timeout -- how long to wait before timing out EPOS2_PARAM_DEFAULT
  @return  ePOS int result
  */
--(int) sendData:(long)timeout;
+-(void) sendData:(long)timeout successHandler: (void(^_Nonnull)(NSDictionary*_Nonnull data)) successHandler
+   errorHandler: (void(^_Nonnull)(NSString* data)) errorHandler;
 
 /**
  Returns ePOS int result

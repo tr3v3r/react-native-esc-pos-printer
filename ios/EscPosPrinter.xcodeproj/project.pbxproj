@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 52;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -41,6 +41,8 @@
 		6218CEA425D6963300B59129 /* EscPosPrinterDiscovery.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EscPosPrinterDiscovery.m; sourceTree = "<group>"; };
 		625F9678291CD719000CEA87 /* libepos2.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = libepos2.xcframework; sourceTree = "<group>"; };
 		625F967A291CD754000CEA87 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/System/Library/Frameworks/CoreBluetooth.framework; sourceTree = DEVELOPER_DIR; };
+		62CF91982B977B9C00F811BE /* ImageManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageManager.m; sourceTree = "<group>"; };
+		62CF91992B977B9D00F811BE /* ImageManager.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ImageManager.h; sourceTree = "<group>"; };
 		62DF9CFB25CC6CE30048F83E /* libxml2.2.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libxml2.2.tbd; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/usr/lib/libxml2.2.tbd; sourceTree = DEVELOPER_DIR; };
 		62DF9CFE25CC6CF50048F83E /* ExternalAccessory.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ExternalAccessory.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/System/Library/Frameworks/ExternalAccessory.framework; sourceTree = DEVELOPER_DIR; };
 		62DF9FD325CDBEDE0048F83E /* PrinterInfo.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = PrinterInfo.h; sourceTree = "<group>"; };
@@ -88,6 +90,8 @@
 		58B511D21A9E6C8500147676 = {
 			isa = PBXGroup;
 			children = (
+				62CF91992B977B9D00F811BE /* ImageManager.h */,
+				62CF91982B977B9C00F811BE /* ImageManager.m */,
 				874BE12528636F5C00EC5122 /* EposStringHelper.h */,
 				874BE12628636F6E00EC5122 /* EposStringHelper.m */,
 				874BE11C28635EE100EC5122 /* ThePrinterManager.h */,

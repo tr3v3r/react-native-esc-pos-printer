@@ -2,112 +2,86 @@ import React, { memo, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { PrinterInfo, Button, ScreenTitle } from '../components';
 import type { RootStackParamList } from '../navigation/RootNavigator';
-import EscPosPrinter, {
-  getPrinterSeriesByName,
-} from 'react-native-esc-pos-printer';
+import { Printer, PrinterConstants } from 'react-native-esc-pos-printer';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { base64Image } from '../base64Image';
 
+import { launchCamera, launchImageLibrary } from 'react-native-image-picker';
+// import { base64Image } from '../base64Image';
+
 type SimplePrintRouteProp = RouteProp<RootStackParamList, 'SimplePrint'>;
-
-async function print(printerId: string) {
-  const printing = new EscPosPrinter.printing();
-
-  await printing
-    .initialize()
-    .align('center')
-    .size(3, 3)
-    .line('DUDE!')
-    .smooth(true)
-    .line('DUDE!')
-    .size(1, 1)
-    .text('is that a ')
-    .bold()
-    .underline()
-    .text('printer?')
-    .newline()
-    .bold()
-    .underline()
-    .align('left')
-    .text('Left')
-    .newline()
-    .align('right')
-    .text('Right')
-    .newline()
-    .size(1, 1)
-    .textLine(48, {
-      left: 'Cheesburger',
-      right: '3 EUR',
-      gapSymbol: '_',
-    })
-    .newline()
-    .textLine(48, {
-      left: 'Chickenburger',
-      right: '1.5 EUR',
-      gapSymbol: '.',
-    })
-    .newline()
-    .size(2, 2)
-    .textLine(48, { left: 'Happy Meal', right: '7 EUR' })
-    .newline()
-    .align('left')
-    .text('Left')
-    .newline()
-
-    .align('right')
-    .text('Right')
-    .newline()
-
-    .align('center')
-    .image(require('../store.png'), {
-      width: 75,
-      halftone: 'EPOS2_HALFTONE_THRESHOLD',
-    })
-
-    .image({ uri: base64Image }, { width: 75 })
-    .image(
-      {
-        uri: 'https://raw.githubusercontent.com/tr3v3r/react-native-esc-pos-printer/main/ios/store.png',
-      },
-      { width: 75 }
-    )
-    .barcode({
-      value: 'Test123',
-      type: 'EPOS2_BARCODE_CODE93',
-      width: 2,
-      height: 50,
-      hri: 'EPOS2_HRI_BELOW',
-    })
-    .qrcode({
-      value: 'Test123',
-      level: 'EPOS2_LEVEL_M',
-      width: 5,
-    })
-    .cut()
-    .send({ printerId: printerId });
-}
 
 export const SimplePrint = memo(() => {
   const {
     params: { printer },
   } = useRoute<SimplePrintRouteProp>();
 
-  const [init, setInit] = useState(false);
   const [printing, setPrinting] = useState(false);
 
   const printSimpleReceipt = async () => {
-    if (!init) {
-      await EscPosPrinter.init({
-        target: printer.target,
-        seriesName: getPrinterSeriesByName(printer.deviceName),
-        language: 'EPOS2_LANG_EN',
-      });
-      setInit(true);
-    }
+    const printerInstance = new Printer({
+      target: printer.target,
+      deviceName: printer.deviceName,
+    });
+
+    // const result = await launchImageLibrary({ mediaType: 'photo' });
+    // console.log(result);
     try {
       setPrinting(true);
-      await print(printer.target);
+      const res = await printerInstance.queue.add(async () => {
+        await printerInstance.connect();
+
+        await printerInstance.addImage({
+          source: { uri: base64Image },
+          width: 100,
+        });
+
+        // await printerInstance.addImage({
+        //   source: {
+        //     uri: 'file:///data/user/0/com.escposprinterexample/cache/rn_image_picker_lib_temp_bed8229d-f605-4417-94b9-41062c6a80e5.jpg',
+        //   },
+        //   width: 200,
+        // });
+
+        await printerInstance.addBarcode({
+          data: 'Test123',
+          type: PrinterConstants.BARCODE_CODE93,
+          width: 2,
+          height: 50,
+          hri: PrinterConstants.HRI_BELOW,
+        });
+
+        // await printerInstance.addSymbol({
+        //   type: PrinterConstants.SYMBOL_QRCODE_MODEL_2,
+        //   level: PrinterConstants.LEVEL_M,
+        //   width: 5,
+        //   height: 5,
+        //   size: 5,
+        //   data: 'Test123',
+        // });
+
+        await printerInstance.addFeedLine();
+        await printerInstance.addCut();
+
+        // const test = await printerInstance.getStatus();
+        // console.log('test', test);
+        // console.log('test', test);
+
+        // const printerSettings = await printerInstance.getPrinterSetting(
+        //   PrinterGetSettingsType.PRINTER_SETTING_PAPERWIDTH
+        // );
+
+        // console.log('printerSettings', printerSettings);
+
+        const result = await printerInstance.sendData();
+
+        await printerInstance.disconnect();
+        return result;
+      });
+
+      console.log('result', res);
     } catch (e) {
+      await printerInstance.disconnect();
       console.log('Print error', e);
     } finally {
       setPrinting(false);

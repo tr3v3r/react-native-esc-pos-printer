@@ -206,12 +206,12 @@
 
 + (NSString *)makeStatusMonitorMessage:(int)status
 {
-    
+
     NSMutableString *stringStatus = [[NSMutableString alloc] initWithString:@""];
     if(stringStatus == nil){
         return nil;
     }
-    
+
     switch (status) {
         case EPOS2_EVENT_ONLINE:
             [stringStatus appendString:@"ONLINE"];
@@ -269,7 +269,7 @@
         default:
             break;
     }
-    
+
     [stringStatus appendString:@"\n"];
     return stringStatus;
 }
@@ -331,240 +331,24 @@
 }
 
 
-+ (NSDictionary *)makeStatusMessage:(Epos2PrinterStatusInfo *)status
++ (NSDictionary *)convertStatusInfoToDictionary:(Epos2PrinterStatusInfo *)info
 {
-    NSString *connection = @"";
-    NSString *online = @"";
-    NSString *coverOpen = @"";
-    NSString *paper = @"";
-    NSString *paperFeed = @"";
-    NSString *panelSwitch = @"";
-    NSString *drawer = @"";
-    NSString *errorStatus = @"";
-    NSString *autoRecoverErr = @"";
-    NSString *adapter = @"";
-    NSString *batteryLevel = @"";
-
-    switch(status.connection){
-        case EPOS2_TRUE:
-            connection = @"CONNECT";
-            break;
-        case EPOS2_FALSE:
-            connection = @"DISCONNECT";
-            break;
-        case EPOS2_UNKNOWN:
-            connection = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.online){
-        case EPOS2_TRUE:
-            online = @"ONLINE";
-            break;
-        case EPOS2_FALSE:
-            online = @"OFFLINE";
-            break;
-        case EPOS2_UNKNOWN:
-            online = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.coverOpen){
-        case EPOS2_TRUE:
-            coverOpen = @"COVER_OPEN";
-            break;
-        case EPOS2_FALSE:
-            coverOpen = @"COVER_CLOSE";
-            break;
-        case EPOS2_UNKNOWN:
-            coverOpen = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.paper){
-        case EPOS2_PAPER_OK:
-            paper = @"PAPER_OK";
-            break;
-        case EPOS2_PAPER_NEAR_END:
-            paper = @"PAPER_NEAR_END";
-            break;
-        case EPOS2_PAPER_EMPTY:
-            paper = @"PAPER_EMPTY";
-            break;
-        case EPOS2_UNKNOWN:
-            paper = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.paperFeed){
-        case EPOS2_TRUE:
-            paperFeed = @"PAPER_FEED";
-            break;
-        case EPOS2_FALSE:
-            paperFeed = @"PAPER_STOP";
-            break;
-        case EPOS2_UNKNOWN:
-            paperFeed = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.panelSwitch){
-        case EPOS2_TRUE:
-            panelSwitch = @"SWITCH_ON";
-            break;
-        case EPOS2_FALSE:
-            panelSwitch = @"SWITCH_OFF";
-            break;
-        case EPOS2_UNKNOWN:
-            panelSwitch = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.drawer){
-        case EPOS2_DRAWER_HIGH:
-            //This status depends on the drawer setting.
-            drawer = @"DRAWER_HIGH(Drawer close)";
-            break;
-        case EPOS2_DRAWER_LOW:
-            //This status depends on the drawer setting.
-            drawer = @"DRAWER_LOW(Drawer open)";
-            break;
-        case EPOS2_UNKNOWN:
-            drawer = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.errorStatus){
-        case EPOS2_NO_ERR:
-            errorStatus = @"NO_ERR";
-            break;
-        case EPOS2_MECHANICAL_ERR:
-            errorStatus = @"MECHANICAL_ERR";
-            break;
-        case EPOS2_AUTOCUTTER_ERR:
-            errorStatus = @"AUTOCUTTER_ERR";
-            break;
-        case EPOS2_UNRECOVER_ERR:
-            errorStatus = @"UNRECOVER_ERR";
-            break;
-        case EPOS2_AUTORECOVER_ERR:
-            errorStatus = @"AUTORECOVER_ERR";
-            break;
-        case EPOS2_UNKNOWN:
-            errorStatus = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.autoRecoverError){
-        case EPOS2_HEAD_OVERHEAT:
-            autoRecoverErr = @"HEAD_OVERHEAT";
-            break;
-        case EPOS2_MOTOR_OVERHEAT:
-            autoRecoverErr = @"MOTOR_OVERHEAT";
-            break;
-        case EPOS2_BATTERY_OVERHEAT:
-            autoRecoverErr = @"BATTERY_OVERHEAT";
-            break;
-        case EPOS2_WRONG_PAPER:
-            autoRecoverErr = @"WRONG_PAPER";
-            break;
-        case EPOS2_COVER_OPEN:
-            autoRecoverErr = @"COVER_OPEN";
-            break;
-        case EPOS2_UNKNOWN:
-            autoRecoverErr = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.adapter){
-        case EPOS2_TRUE:
-            adapter = @"AC ADAPTER CONNECT";
-            break;
-        case EPOS2_FALSE:
-            adapter = @"AC ADAPTER DISCONNECT";
-            break;
-        case EPOS2_UNKNOWN:
-            adapter = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.batteryLevel){
-        case EPOS2_BATTERY_LEVEL_0:
-           batteryLevel = @"BATTERY_LEVEL_0";
-            break;
-        case EPOS2_BATTERY_LEVEL_1:
-           batteryLevel = @"BATTERY_LEVEL_1";
-            break;
-        case EPOS2_BATTERY_LEVEL_2:
-           batteryLevel = @"BATTERY_LEVEL_2";
-            break;
-        case EPOS2_BATTERY_LEVEL_3:
-           batteryLevel = @"BATTERY_LEVEL_3";
-            break;
-        case EPOS2_BATTERY_LEVEL_4:
-           batteryLevel = @"BATTERY_LEVEL_4";
-            break;
-        case EPOS2_BATTERY_LEVEL_5:
-           batteryLevel = @"BATTERY_LEVEL_5";
-            break;
-        case EPOS2_BATTERY_LEVEL_6:
-           batteryLevel = @"BATTERY_LEVEL_6";
-            break;
-        case EPOS2_UNKNOWN:
-           batteryLevel = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    return @{
-      @"connection": connection,
-      @"online": online,
-      @"coverOpen": coverOpen,
-      @"paper": paper,
-      @"paperFeed": paperFeed,
-      @"panelSwitch": panelSwitch,
-      @"drawer": drawer,
-      @"errorStatus": errorStatus,
-      @"autoRecoverErr": autoRecoverErr,
-      @"adapter": adapter,
-      @"batteryLevel": batteryLevel
-    };
-}
-
-+ (NSDictionary *)getOfflineStatusMessage {
    return @{
-      @"connection": @"DISCONNECT",
-      @"online": @"OFFLINE",
-      @"coverOpen": @"UNKNOWN",
-      @"paper": @"UNKNOWN",
-      @"paperFeed": @"UNKNOWN",
-      @"panelSwitch": @"UNKNOWN",
-      @"drawer": @"UNKNOWN",
-      @"errorStatus": @"UNKNOWN",
-      @"autoRecoverErr": @"UNKNOWN",
-      @"adapter": @"UNKNOWN",
-      @"batteryLevel": @"UNKNOWN"
+      @"connection": [@(info.connection) stringValue],
+      @"online": [@(info.online) stringValue],
+      @"coverOpen": [@(info.coverOpen) stringValue],
+      @"paper": [@(info.paper) stringValue],
+      @"paperFeed": [@(info.paperFeed) stringValue],
+      @"panelSwitch": [@(info.panelSwitch) stringValue],
+      @"drawer": [@(info.drawer) stringValue],
+      @"errorStatus": [@(info.errorStatus) stringValue],
+      @"autoRecoverError": [@(info.autoRecoverError) stringValue],
+      @"buzzer": [@(info.buzzer) stringValue],
+      @"adapter": [@(info.adapter) stringValue],
+      @"batteryLevel": [@(info.batteryLevel) stringValue],
+      @"removalWaiting": [@(info.removalWaiting) stringValue],
+      @"paperTakenSensor": [@(info.paperTakenSensor) stringValue],
+      @"unrecoverError": [@(info.unrecoverError) stringValue],
     };
 }
 
@@ -625,7 +409,7 @@
         default:
             break;
     }
-    
+
     return speedStr;
 }
 
@@ -677,7 +461,7 @@
         default:
             break;
     }
-    
+
     return deinsityStr;
 }
 
@@ -702,12 +486,12 @@
         default:
             break;
     }
-    
+
     return paperWidthStr;
 }
 
 + (NSString *)convertEpos2PrinterSettingTypeEnum2String:(int)printerSettingTypeEnum {
-    
+
     NSString *printerSettingTypeStr = @"invalid";
     switch (printerSettingTypeEnum) {
         case EPOS2_PRINTER_SETTING_PAPERWIDTH:
@@ -722,27 +506,27 @@
         default:
             break;
     }
-    
+
     return printerSettingTypeStr;
-    
+
 }
 
 + (int)getPrinterSeries:(NSString*)name
 {
-    
+
     if (name == nil || [name isEqualToString:@""]) return EPOS2_TM_T88;
 
-    if ([name hasPrefix:@"TM-T88VII"]) return EPOS2_TM_T88VII;
-    if ([name hasPrefix:@"TM-m30II"]) return EPOS2_TM_M30II;
-    if ([name hasPrefix:@"TM-m30"]) return EPOS2_TM_M30;
-    if ([name hasPrefix:@"TM-L90LFC"]) return EPOS2_TM_L90LFC;
-    if ([name hasPrefix:@"TM-L90"]) return EPOS2_TM_L90;
-    if ([name hasPrefix:@"TM-m50"]) return EPOS2_TM_M50;
-    if ([name hasPrefix:@"TM-L100"]) return EPOS2_TM_L100;
     if ([name hasPrefix:@"TM-m10"]) return EPOS2_TM_M10;
+    if ([name hasPrefix:@"TM-m30"]) return EPOS2_TM_M30;
+    if ([name hasPrefix:@"TM-m30III"]) return EPOS2_TM_M30III;
+    if ([name hasPrefix:@"TM-m30II"]) return EPOS2_TM_M30II;
+    if ([name hasPrefix:@"TM-m50II"]) return EPOS2_TM_M50II;
+    if ([name hasPrefix:@"TM-m50"]) return EPOS2_TM_M50;
+    if ([name hasPrefix:@"TM-P20II"]) return EPOS2_TM_P20II;
     if ([name hasPrefix:@"TM-P20"]) return EPOS2_TM_P20;
     if ([name hasPrefix:@"TM-P60II"]) return EPOS2_TM_P60II;
     if ([name hasPrefix:@"TM-P60"]) return EPOS2_TM_P60;
+    if ([name hasPrefix:@"TM-P80II"]) return EPOS2_TM_P80II;
     if ([name hasPrefix:@"TM-P80"]) return EPOS2_TM_P80;
     if ([name hasPrefix:@"TM-T20"]) return EPOS2_TM_T20;
     if ([name hasPrefix:@"TM-T60"]) return EPOS2_TM_T60;
@@ -751,18 +535,17 @@
     if ([name hasPrefix:@"TM-T82"]) return EPOS2_TM_T82;
     if ([name hasPrefix:@"TM-T83III"]) return EPOS2_TM_T83III;
     if ([name hasPrefix:@"TM-T83"]) return EPOS2_TM_T83;
+    if ([name hasPrefix:@"TM-T88VII"]) return EPOS2_TM_T88VII;
     if ([name hasPrefix:@"TM-T88"]) return EPOS2_TM_T88;
-    if ([name hasPrefix:@"TM-T90KP"]) return EPOS2_TM_T90KP;
     if ([name hasPrefix:@"TM-T90"]) return EPOS2_TM_T90;
+    if ([name hasPrefix:@"TM-T100"]) return EPOS2_TM_T100;
     if ([name hasPrefix:@"TM-U220"]) return EPOS2_TM_U220;
     if ([name hasPrefix:@"TM-U330"]) return EPOS2_TM_U330;
+    if ([name hasPrefix:@"TM-L90LFC"]) return EPOS2_TM_L90LFC;
+    if ([name hasPrefix:@"TM-L90"]) return EPOS2_TM_L90;
+    if ([name hasPrefix:@"TM-L100"]) return EPOS2_TM_L100;
     if ([name hasPrefix:@"TM-H6000"]) return EPOS2_TM_H6000;
-    if ([name hasPrefix:@"TM-T100"]) return EPOS2_TM_T100;
-    if ([name hasPrefix:@"TS-100"]) return EPOS2_TS_100;
-    if ([name hasPrefix:@"TM_T88VII"]) return EPOS2_TM_T88VII;
-    if ([name hasPrefix:@"TM_L90LFC"]) return EPOS2_TM_L90LFC;
-    if ([name hasPrefix:@"TM_L100"]) return EPOS2_TM_L100;
-    
+
     return EPOS2_TM_T88;
 }
 
