@@ -6,8 +6,7 @@
 + (NSString *)getEposErrorText:(int)error;
 + (NSString *)getEposResultText:(int)result;
 + (NSString *)getEposBTResultText:(int)result;
-+ (NSDictionary *)makeStatusMessage:(Epos2PrinterStatusInfo *)status;
-+ (NSDictionary *)getOfflineStatusMessage;
++ (NSDictionary *)convertStatusInfoToDictionary:(Epos2PrinterStatusInfo *)status;
 + (int)getEposGetWidthResult:(int)result;
 + (NSString *)makeStatusMonitorMessage:(int)status;
 + (NSString *)convertPrintSpeedEnum2String:(int)speedEnum;

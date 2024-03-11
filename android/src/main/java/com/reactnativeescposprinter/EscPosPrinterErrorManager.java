@@ -6,7 +6,12 @@ import com.epson.epos2.printer.Printer;
 import com.epson.epos2.printer.PrinterStatusInfo;
 import com.facebook.react.bridge.Arguments;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+import com.facebook.react.bridge.ReadableMap;
+import com.facebook.react.bridge.ReadableMapKeySetIterator;
 import com.facebook.react.bridge.WritableMap;
+
 public class EscPosPrinterErrorManager {
 
     public static int getErrorStatus(Epos2Exception e) {
@@ -235,247 +240,46 @@ public class EscPosPrinterErrorManager {
     return result;
     }
 
-    public static WritableMap makeStatusMassage(PrinterStatusInfo statusInfo) {
-      WritableMap statusMessage = Arguments.createMap();
+ public static String convertMapToString(ReadableMap readableMap) {
+  try{
+    JSONObject object = new JSONObject();
+    ReadableMapKeySetIterator iterator = readableMap.keySetIterator();
+    while (iterator.hasNextKey()) {
+        String key = iterator.nextKey();
+        switch (readableMap.getType(key)) {
+            case Null:
+                object.put(key, JSONObject.NULL);
+                break;
+            case Boolean:
+                object.put(key, readableMap.getBoolean(key));
+                break;
+            case Number:
+                object.put(key, readableMap.getDouble(key));
+                break;
+            case String:
+                object.put(key, readableMap.getString(key));
+                break;
+        }
+    }
+    return object.toString();
 
+  } catch(Exception e) {
+    return "";
+  }
+}
 
-      String connection = "";
-      String online = "";
-      String coverOpen = "";
-      String paper = "";
-      String paperFeed = "";
-      String panelSwitch = "";
-      String drawer = "";
-      String errorStatus = "";
-      String autoRecoverErr = "";
-      String adapter = "";
-      String batteryLevel = "";
+  public static String getErrorTextData(int data, String type) {
+      String stringData = String.valueOf(data);
+      if(!type.isEmpty()) {
+        WritableMap errorData = Arguments.createMap();
+        errorData.putString("data", stringData);
+        errorData.putString("type", type);
 
-
-      switch (statusInfo.getConnection()) {
-          case Printer.TRUE:
-              connection = "CONNECT";
-              break;
-          case Printer.FALSE:
-              connection = "DISCONNECT";
-              break;
-          case Printer.UNKNOWN:
-              connection = "UNKNOWN";
-              break;
-          default:
-              break;
+        return convertMapToString(errorData);
       }
 
-      switch (statusInfo.getOnline()) {
-          case Printer.TRUE:
-              online = "ONLINE";
-              break;
-          case Printer.FALSE:
-              online = "OFFLINE";
-              break;
-          case Printer.UNKNOWN:
-              online = "UNKNOWN";
-              break;
-          default:
-              break;
-      }
-
-      switch (statusInfo.getCoverOpen()) {
-          case Printer.TRUE:
-              coverOpen = "COVER_OPEN";
-              break;
-          case Printer.FALSE:
-              coverOpen = "COVER_CLOSE";
-              break;
-          case Printer.UNKNOWN:
-              coverOpen = "UNKNOWN";
-              break;
-          default:
-              break;
-      }
-
-      switch (statusInfo.getPaper()) {
-          case Printer.PAPER_OK:
-              paper = "PAPER_OK";
-              break;
-          case Printer.PAPER_NEAR_END:
-              paper = "PAPER_NEAR_END";
-              break;
-          case Printer.PAPER_EMPTY:
-              paper = "PAPER_EMPTY";
-              break;
-          case Printer.UNKNOWN:
-              paper = "UNKNOWN";
-              break;
-          default:
-              break;
-      }
-
-      switch (statusInfo.getPaperFeed()) {
-          case Printer.TRUE:
-              paperFeed = "PAPER_FEED";
-              break;
-          case Printer.FALSE:
-              paperFeed = "PAPER_STOP";
-              break;
-          case Printer.UNKNOWN:
-              paperFeed = "UNKNOWN";
-              break;
-          default:
-              break;
-      }
-
-      switch (statusInfo.getPanelSwitch()) {
-          case Printer.TRUE:
-              panelSwitch = "SWITCH_ON";
-              break;
-          case Printer.FALSE:
-              panelSwitch = "SWITCH_OFF";
-              break;
-          case Printer.UNKNOWN:
-              panelSwitch = "UNKNOWN";
-              break;
-          default:
-              break;
-      }
-
-      switch (statusInfo.getDrawer()) {
-          case Printer.DRAWER_HIGH:
-              //This status depends on the drawer setting.
-              drawer = "DRAWER_HIGH(Drawer close)";
-              break;
-          case Printer.DRAWER_LOW:
-              //This status depends on the drawer setting.
-              drawer = "DRAWER_LOW(Drawer open)";
-              break;
-          case Printer.UNKNOWN:
-              drawer = "UNKNOWN";
-              break;
-          default:
-              break;
-      }
-
-      switch (statusInfo.getErrorStatus()) {
-          case Printer.NO_ERR:
-              errorStatus = "NO_ERR";
-              break;
-          case Printer.MECHANICAL_ERR:
-              errorStatus = "MECHANICAL_ERR";
-              break;
-          case Printer.AUTOCUTTER_ERR:
-              errorStatus = "AUTOCUTTER_ERR";
-              break;
-          case Printer.UNRECOVER_ERR:
-              errorStatus = "UNRECOVER_ERR";
-              break;
-          case Printer.AUTORECOVER_ERR:
-              errorStatus = "AUTOCUTTER_ERR";
-              break;
-          case Printer.UNKNOWN:
-              errorStatus = "UNKNOWN";
-              break;
-          default:
-              break;
-      }
-
-      switch (statusInfo.getAutoRecoverError()) {
-          case Printer.HEAD_OVERHEAT:
-              autoRecoverErr = "HEAD_OVERHEAT";
-              break;
-          case Printer.MOTOR_OVERHEAT:
-              autoRecoverErr = "MOTOR_OVERHEAT";
-              break;
-          case Printer.BATTERY_OVERHEAT:
-              autoRecoverErr = "BATTERY_OVERHEAT";
-              break;
-          case Printer.WRONG_PAPER:
-              autoRecoverErr = "WRONG_PAPER";
-              break;
-          case Printer.COVER_OPEN:
-              autoRecoverErr = "COVER_OPEN";
-              break;
-          case Printer.UNKNOWN:
-              autoRecoverErr = "UNKNOWN";
-              break;
-          default:
-              break;
-      }
-
-      switch (statusInfo.getAdapter()) {
-          case Printer.TRUE:
-              adapter = "AC ADAPTER CONNECT";
-              break;
-          case Printer.FALSE:
-              adapter = "AC ADAPTER DISCONNECT";
-              break;
-          case Printer.UNKNOWN:
-              adapter = "UNKNOWN";
-              break;
-          default:
-              break;
-      }
-
-      switch (statusInfo.getBatteryLevel()) {
-          case Printer.BATTERY_LEVEL_0:
-              batteryLevel = "BATTERY_LEVEL_0";
-              break;
-          case Printer.BATTERY_LEVEL_1:
-              batteryLevel = "BATTERY_LEVEL_1";
-              break;
-          case Printer.BATTERY_LEVEL_2:
-              batteryLevel = "BATTERY_LEVEL_2";
-              break;
-          case Printer.BATTERY_LEVEL_3:
-              batteryLevel = "BATTERY_LEVEL_3";
-              break;
-          case Printer.BATTERY_LEVEL_4:
-              batteryLevel = "BATTERY_LEVEL_4";
-              break;
-          case Printer.BATTERY_LEVEL_5:
-              batteryLevel = "BATTERY_LEVEL_5";
-              break;
-          case Printer.BATTERY_LEVEL_6:
-              batteryLevel = "BATTERY_LEVEL_6";
-              break;
-          case Printer.UNKNOWN:
-              batteryLevel = "UNKNOWN";
-              break;
-          default:
-              break;
-      }
-
-      statusMessage.putString("connection",connection);
-      statusMessage.putString("online",online);
-      statusMessage.putString("coverOpen",coverOpen);
-      statusMessage.putString("paper",paper);
-      statusMessage.putString("paperFeed",paperFeed);
-      statusMessage.putString("panelSwitch",panelSwitch);
-      statusMessage.putString("drawer",drawer);
-      statusMessage.putString("errorStatus",errorStatus);
-      statusMessage.putString("autoRecoverErr",autoRecoverErr);
-      statusMessage.putString("adapter",adapter);
-      statusMessage.putString("batteryLevel",batteryLevel);
-
-
-      return statusMessage;
+      return stringData;
   }
 
-  public static WritableMap getOfflineStatusMessage() {
-    WritableMap statusMessage = Arguments.createMap();
 
-      statusMessage.putString("connection","DISCONNECT");
-      statusMessage.putString("online","OFFLINE");
-      statusMessage.putString("coverOpen","UNKNOWN");
-      statusMessage.putString("paper","UNKNOWN");
-      statusMessage.putString("paperFeed","UNKNOWN");
-      statusMessage.putString("panelSwitch","UNKNOWN");
-      statusMessage.putString("drawer","UNKNOWN");
-      statusMessage.putString("errorStatus","UNKNOWN");
-      statusMessage.putString("autoRecoverErr","UNKNOWN");
-      statusMessage.putString("adapter","UNKNOWN");
-      statusMessage.putString("batteryLevel","UNKNOWN");
-
-
-    return statusMessage;
- }
 }

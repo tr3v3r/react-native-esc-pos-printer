@@ -99,7 +99,7 @@ public class ThePrinterWrapper extends ReactContextBaseJavaModule implements Pri
                 try {
                     ThePrinter newPrinter = new ThePrinter();
                     thePrinterManager_.add(newPrinter, target);
-                    newPrinter.setupWith(target, series, language, this);
+                    newPrinter.setupWith(target, series, language, context_);
                 } catch (Epos2Exception e) {
                     callback.onError("The printer object couldn't be created");
                 }
@@ -505,15 +505,15 @@ public class ThePrinterWrapper extends ReactContextBaseJavaModule implements Pri
     }
 
     synchronized public int getPrinterSetting(@NonNull final String printerTarget, int timeout, int type)  {
-        ThePrinter thePrinter = thePrinterManager_.getObject(printerTarget);
-        if (thePrinter == null) return Epos2Exception.ERR_MEMORY;
+        // ThePrinter thePrinter = thePrinterManager_.getObject(printerTarget);
+        // if (thePrinter == null) return Epos2Exception.ERR_MEMORY;
 
-        try {
-            thePrinter.getPrinterSetting(timeout, type);
-        } catch (Epos2Exception e) {
-            e.printStackTrace();
-            return ((Epos2Exception) e).getErrorStatus();
-        }
+        // try {
+        //     thePrinter.getPrinterSetting(timeout, type);
+        // } catch (Epos2Exception e) {
+        //     e.printStackTrace();
+        //     return ((Epos2Exception) e).getErrorStatus();
+        // }
 
         return POS_SUCCESS;
 
@@ -692,79 +692,79 @@ public class ThePrinterWrapper extends ReactContextBaseJavaModule implements Pri
     }
 
     private void handleCommand(int command, ReadableArray params, String target) throws Exception {
-        Printer printer = thePrinterManager_.getObject(target).getEpos2Printer();
-        switch (command) {
-            case PrintingCommands.COMMAND_ADD_TEXT:
-                printer.addText(params.getString(0));
-                break;
-            case PrintingCommands.COMMAND_ADD_PULSE:
-                printer.addPulse(params.getInt(0), Printer.PARAM_DEFAULT);
-                break;
-            case PrintingCommands.COMMAND_ADD_NEW_LINE:
-                printer.addFeedLine(params.getInt(0));
-                break;
-            case PrintingCommands.COMMAND_ADD_TEXT_STYLE:
-                printer.addTextStyle(Printer.FALSE, params.getInt(0), params.getInt(1), Printer.COLOR_1);
-                break;
-            case PrintingCommands.COMMAND_ADD_TEXT_SIZE:
-                printer.addTextSize(params.getInt(0), params.getInt(1));
-                break;
-            case PrintingCommands.COMMAND_ADD_ALIGN:
-                printer.addTextAlign(params.getInt(0));
-                break;
+        // Printer printer = thePrinterManager_.getObject(target).getEpos2Printer();
+        // switch (command) {
+        //     case PrintingCommands.COMMAND_ADD_TEXT:
+        //         printer.addText(params.getString(0));
+        //         break;
+        //     case PrintingCommands.COMMAND_ADD_PULSE:
+        //         printer.addPulse(params.getInt(0), Printer.PARAM_DEFAULT);
+        //         break;
+        //     case PrintingCommands.COMMAND_ADD_NEW_LINE:
+        //         printer.addFeedLine(params.getInt(0));
+        //         break;
+        //     case PrintingCommands.COMMAND_ADD_TEXT_STYLE:
+        //         printer.addTextStyle(Printer.FALSE, params.getInt(0), params.getInt(1), Printer.COLOR_1);
+        //         break;
+        //     case PrintingCommands.COMMAND_ADD_TEXT_SIZE:
+        //         printer.addTextSize(params.getInt(0), params.getInt(1));
+        //         break;
+        //     case PrintingCommands.COMMAND_ADD_ALIGN:
+        //         printer.addTextAlign(params.getInt(0));
+        //         break;
 
-            case PrintingCommands.COMMAND_ADD_IMAGE:
-                ReadableMap source = params.getMap(0);
+        //     case PrintingCommands.COMMAND_ADD_IMAGE:
+        //         ReadableMap source = params.getMap(0);
 
-                int imgWidth = params.getInt(1);
-                int color = params.getInt(2);
-                int mode = params.getInt(3);
-                int halftone = params.getInt(4);
-                double brightness = params.getDouble(5);
-                Bitmap imgBitmap = getBitmapFromSource(source);
-                handlePrintImage(imgBitmap, imgWidth, color, mode, halftone, brightness, printer);
+        //         int imgWidth = params.getInt(1);
+        //         int color = params.getInt(2);
+        //         int mode = params.getInt(3);
+        //         int halftone = params.getInt(4);
+        //         double brightness = params.getDouble(5);
+        //         Bitmap imgBitmap = getBitmapFromSource(source);
+        //         handlePrintImage(imgBitmap, imgWidth, color, mode, halftone, brightness, printer);
 
-            break;
-            case PrintingCommands.COMMAND_ADD_IMAGE_BASE_64:
-                String uriString = params.getString(0);
-                final String pureBase64Encoded = uriString.substring(uriString.indexOf(",") + 1);
-                byte[] decodedString = Base64.decode(pureBase64Encoded, Base64.DEFAULT);
-                Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
-                int inputWidth = params.getInt(1);
+        //     break;
+        //     case PrintingCommands.COMMAND_ADD_IMAGE_BASE_64:
+        //         String uriString = params.getString(0);
+        //         final String pureBase64Encoded = uriString.substring(uriString.indexOf(",") + 1);
+        //         byte[] decodedString = Base64.decode(pureBase64Encoded, Base64.DEFAULT);
+        //         Bitmap bitmap = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+        //         int inputWidth = params.getInt(1);
 
-                handlePrintImage(bitmap, inputWidth, Printer.COLOR_1, Printer.MODE_MONO, Printer.HALFTONE_DITHER, Printer.PARAM_DEFAULT, printer);
-                break;
+        //         handlePrintImage(bitmap, inputWidth, Printer.COLOR_1, Printer.MODE_MONO, Printer.HALFTONE_DITHER, Printer.PARAM_DEFAULT, printer);
+        //         break;
 
-            case PrintingCommands.COMMAND_ADD_IMAGE_ASSET:
-                String imageName = params.getString(0);
-                int width = params.getInt(1);
+        //     case PrintingCommands.COMMAND_ADD_IMAGE_ASSET:
+        //         String imageName = params.getString(0);
+        //         int width = params.getInt(1);
 
-                AssetManager assetManager = context_.getAssets();
-                InputStream inputStream = assetManager.open(params.getString(0));
-                Bitmap assetBitmap = BitmapFactory.decodeStream(inputStream);
-                inputStream.close();
-                handlePrintImage(assetBitmap, width, Printer.COLOR_1, Printer.MODE_MONO, Printer.HALFTONE_DITHER, Printer.PARAM_DEFAULT, printer);
-                break;
-            case PrintingCommands.COMMAND_ADD_CUT:
-                printer.addCut(Printer.CUT_FEED);
-                break;
-            case PrintingCommands.COMMAND_ADD_DATA:
-                String base64String = params.getString(0);
-                byte[] data = Base64.decode(base64String, Base64.DEFAULT);
-                printer.addCommand(data);
-                break;
-            case PrintingCommands.COMMAND_ADD_TEXT_SMOOTH:
-                printer.addTextSmooth(params.getInt(0));
-                break;
-            case PrintingCommands.COMMAND_ADD_BARCODE:
-                printer.addBarcode(params.getString(0), params.getInt(1), params.getInt(2), Printer.FONT_A, params.getInt(3), params.getInt(4));
-                break;
-            case PrintingCommands.COMMAND_ADD_QRCODE:
-                printer.addSymbol(params.getString(0), params.getInt(1), params.getInt(2), params.getInt(3), params.getInt(3), params.getInt(3));
-                break;
-            default:
-                throw new IllegalArgumentException("Invalid Printing Command");
-        }
+        //         AssetManager assetManager = context_.getAssets();
+        //         InputStream inputStream = assetManager.open(params.getString(0));
+        //         Bitmap assetBitmap = BitmapFactory.decodeStream(inputStream);
+        //         inputStream.close();
+        //         handlePrintImage(assetBitmap, width, Printer.COLOR_1, Printer.MODE_MONO, Printer.HALFTONE_DITHER, Printer.PARAM_DEFAULT, printer);
+        //         break;
+        //     case PrintingCommands.COMMAND_ADD_CUT:
+        //         printer.addCut(Printer.CUT_FEED);
+        //         break;
+        //     case PrintingCommands.COMMAND_ADD_DATA:
+        //         String base64String = params.getString(0);
+        //         byte[] data = Base64.decode(base64String, Base64.DEFAULT);
+        //         printer.addCommand(data);
+        //         break;
+        //     case PrintingCommands.COMMAND_ADD_TEXT_SMOOTH:
+        //         printer.addTextSmooth(params.getInt(0));
+        //         break;
+        //     case PrintingCommands.COMMAND_ADD_BARCODE:
+        //         printer.addBarcode(params.getString(0), params.getInt(1), params.getInt(2), Printer.FONT_A, params.getInt(3), params.getInt(4));
+        //         break;
+        //     case PrintingCommands.COMMAND_ADD_QRCODE:
+        //         printer.addSymbol(params.getString(0), params.getInt(1), params.getInt(2), params.getInt(3), params.getInt(3), params.getInt(3));
+        //         break;
+        //     default:
+        //         throw new IllegalArgumentException("Invalid Printing Command");
+        // }
   }
 
   private void handlePrintImage(Bitmap bitmap, int width, int color, int mode, int halftone, double brightness, Printer printer) throws Epos2Exception {

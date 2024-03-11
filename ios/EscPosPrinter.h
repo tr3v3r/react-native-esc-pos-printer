@@ -2,12 +2,10 @@
 #import <React/RCTEventEmitter.h>
 
 #import "ePOS2.h"
-#import "PrinterInfo.h"
+#import "ThePrinterManager.h"
 
 @interface EscPosPrinter : RCTEventEmitter <RCTBridgeModule>
 {
-    Epos2Printer *printer;
-    Boolean isMonitoring_;
-    NSOperationQueue* tasksQueue;
+    ThePrinterManager* objManager_;
 }
 @end

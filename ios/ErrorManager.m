@@ -222,6 +222,14 @@
     return result;
 }
 
++ (NSString *)convertDictionatyToJsonString:(NSDictionary *)dict
+{
+   NSData *nsData = [NSJSONSerialization dataWithJSONObject:dict options:NSJSONWritingPrettyPrinted error:nil];
+   NSString *jsonString = [[NSString alloc] initWithData:nsData encoding:NSUTF8StringEncoding];
+
+   return jsonString;
+}
+
 
 //convert Epos2Printer Error to text
 + (NSString *)getEposBTResultText:(int)error

@@ -20,6 +20,7 @@ import {
 } from './constants';
 
 export * from './discovery';
+export * from './printer';
 
 const { EscPosPrinter, ThePrinterWrapper } = NativeModules;
 

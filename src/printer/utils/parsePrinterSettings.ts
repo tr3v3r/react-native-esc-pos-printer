@@ -1,0 +1,30 @@
+import {
+  PrinterGetSettingsTypeMapping,
+  PrinterGetSettingsType,
+  GetPrinterSettingsPaperWidthValuesMapping,
+  GetPrinterSettingsPrintDencityValuesMapping,
+  GetPrinterSettingsPrintSpeendValuesMapping,
+} from '../constants';
+import type {
+  PrinterSettingsResponse,
+  PrinterSettingsRawResponse,
+} from '../types';
+
+export function parsePrinterSettings(
+  response: PrinterSettingsRawResponse
+): PrinterSettingsResponse {
+  let valueMapping = GetPrinterSettingsPaperWidthValuesMapping;
+
+  if (response.type === PrinterGetSettingsType.PRINTER_SETTING_PRINTDENSITY) {
+    valueMapping = GetPrinterSettingsPrintDencityValuesMapping;
+  } else if (
+    response.type === PrinterGetSettingsType.PRINTER_SETTING_PRINTSPEED
+  ) {
+    valueMapping = GetPrinterSettingsPrintSpeendValuesMapping;
+  }
+
+  return {
+    type: PrinterGetSettingsTypeMapping[response.type],
+    value: valueMapping[response.value],
+  };
+}

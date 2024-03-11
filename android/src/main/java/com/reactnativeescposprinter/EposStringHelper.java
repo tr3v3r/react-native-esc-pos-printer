@@ -15,254 +15,34 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Locale;
+import com.facebook.react.bridge.Arguments;
+import com.facebook.react.bridge.WritableMap;
 
 public class EposStringHelper {
 
-    public static JSONObject makeStatusMessage(PrinterStatusInfo statusInfo) {
 
-        String connection = "";
-        String online = "";
-        String coverOpen = "";
-        String paper = "";
-        String paperFeed = "";
-        String panelSwitch = "";
-        String drawer = "";
-        String errorStatus = "";
-        String autoRecoverErr = "";
-        String adapter = "";
-        String batteryLevel = "";
-        String paperWait = "";
+public static WritableMap convertStatusInfoToWritableMap(PrinterStatusInfo statusInfo) {
+    WritableMap statusMessage = Arguments.createMap();
 
+    statusMessage.putInt("connection",statusInfo.getConnection());
+    statusMessage.putInt("online",statusInfo.getOnline());
+    statusMessage.putInt("coverOpen",statusInfo.getCoverOpen());
+    statusMessage.putInt("paper",statusInfo.getPaper());
+    statusMessage.putInt("paperFeed",statusInfo.getPaperFeed());
+    statusMessage.putInt("panelSwitch",statusInfo.getPanelSwitch());
+    statusMessage.putInt("drawer",statusInfo.getDrawer());
+    statusMessage.putInt("errorStatus",statusInfo.getErrorStatus());
+    statusMessage.putInt("autoRecoverError",statusInfo.getAutoRecoverError());
+    statusMessage.putInt("buzzer",statusInfo.getBuzzer());
+    statusMessage.putInt("adapter",statusInfo.getAdapter());
+    statusMessage.putInt("batteryLevel", statusInfo.getBatteryLevel());
+    statusMessage.putInt("removalWaiting", statusInfo.getRemovalWaiting());
+    statusMessage.putInt("paperTakenSensor", statusInfo.getPaperTakenSensor());
+    statusMessage.putInt("unrecoverError", statusInfo.getUnrecoverError());
 
-        switch (statusInfo.getConnection()) {
-            case Printer.TRUE:
-                connection = "CONNECT";
-                break;
-            case Printer.FALSE:
-                connection = "DISCONNECT";
-                break;
-            case Printer.UNKNOWN:
-                connection = "UNKNOWN";
-                break;
-            default:
-                break;
-        }
+    return statusMessage;
+}
 
-        switch (statusInfo.getOnline()) {
-            case Printer.TRUE:
-                online = "ONLINE";
-                break;
-            case Printer.FALSE:
-                online = "OFFLINE";
-                break;
-            case Printer.UNKNOWN:
-                online = "UNKNOWN";
-                break;
-            default:
-                break;
-        }
-
-        switch (statusInfo.getCoverOpen()) {
-            case Printer.TRUE:
-                coverOpen = "COVER_OPEN";
-                break;
-            case Printer.FALSE:
-                coverOpen = "COVER_CLOSE";
-                break;
-            case Printer.UNKNOWN:
-                coverOpen = "UNKNOWN";
-                break;
-            default:
-                break;
-        }
-
-        switch (statusInfo.getPaper()) {
-            case Printer.PAPER_OK:
-                paper = "PAPER_OK";
-                break;
-            case Printer.PAPER_NEAR_END:
-                paper = "PAPER_NEAR_END";
-                break;
-            case Printer.PAPER_EMPTY:
-                paper = "PAPER_EMPTY";
-                break;
-            case Printer.UNKNOWN:
-                paper = "UNKNOWN";
-                break;
-            default:
-                break;
-        }
-
-        switch (statusInfo.getPaperFeed()) {
-            case Printer.TRUE:
-                paperFeed = "PAPER_FEED";
-                break;
-            case Printer.FALSE:
-                paperFeed = "PAPER_STOP";
-                break;
-            case Printer.UNKNOWN:
-                paperFeed = "UNKNOWN";
-                break;
-            default:
-                break;
-        }
-
-        switch (statusInfo.getPanelSwitch()) {
-            case Printer.TRUE:
-                panelSwitch = "SWITCH_ON";
-                break;
-            case Printer.FALSE:
-                panelSwitch = "SWITCH_OFF";
-                break;
-            case Printer.UNKNOWN:
-                panelSwitch = "UNKNOWN";
-                break;
-            default:
-                break;
-        }
-
-        switch (statusInfo.getDrawer()) {
-            case Printer.DRAWER_HIGH:
-                //This status depends on the drawer setting.
-                drawer = "DRAWER_HIGH(Drawer close)";
-                break;
-            case Printer.DRAWER_LOW:
-                //This status depends on the drawer setting.
-                drawer = "DRAWER_LOW(Drawer open)";
-                break;
-            case Printer.UNKNOWN:
-                drawer = "UNKNOWN";
-                break;
-            default:
-                break;
-        }
-
-        switch (statusInfo.getErrorStatus()) {
-            case Printer.NO_ERR:
-                errorStatus = "NO_ERR";
-                break;
-            case Printer.MECHANICAL_ERR:
-                errorStatus = "MECHANICAL_ERR";
-                break;
-            case Printer.AUTOCUTTER_ERR:
-                errorStatus = "AUTOCUTTER_ERR";
-                break;
-            case Printer.UNRECOVER_ERR:
-                errorStatus = "UNRECOVER_ERR";
-                break;
-            case Printer.AUTORECOVER_ERR:
-                errorStatus = "AUTOCUTTER_ERR";
-                break;
-            case Printer.UNKNOWN:
-                errorStatus = "UNKNOWN";
-                break;
-            default:
-                break;
-        }
-
-        switch (statusInfo.getAutoRecoverError()) {
-            case Printer.HEAD_OVERHEAT:
-                autoRecoverErr = "HEAD_OVERHEAT";
-                break;
-            case Printer.MOTOR_OVERHEAT:
-                autoRecoverErr = "MOTOR_OVERHEAT";
-                break;
-            case Printer.BATTERY_OVERHEAT:
-                autoRecoverErr = "BATTERY_OVERHEAT";
-                break;
-            case Printer.WRONG_PAPER:
-                autoRecoverErr = "WRONG_PAPER";
-                break;
-            case Printer.COVER_OPEN:
-                autoRecoverErr = "COVER_OPEN";
-                break;
-            case Printer.UNKNOWN:
-                autoRecoverErr = "UNKNOWN";
-                break;
-            default:
-                break;
-        }
-
-        switch (statusInfo.getAdapter()) {
-            case Printer.TRUE:
-                adapter = "AC ADAPTER CONNECT";
-                break;
-            case Printer.FALSE:
-                adapter = "AC ADAPTER DISCONNECT";
-                break;
-            case Printer.UNKNOWN:
-                adapter = "UNKNOWN";
-                break;
-            default:
-                break;
-        }
-
-        switch (statusInfo.getBatteryLevel()) {
-            case Printer.BATTERY_LEVEL_0:
-                batteryLevel = "BATTERY_LEVEL_0";
-                break;
-            case Printer.BATTERY_LEVEL_1:
-                batteryLevel = "BATTERY_LEVEL_1";
-                break;
-            case Printer.BATTERY_LEVEL_2:
-                batteryLevel = "BATTERY_LEVEL_2";
-                break;
-            case Printer.BATTERY_LEVEL_3:
-                batteryLevel = "BATTERY_LEVEL_3";
-                break;
-            case Printer.BATTERY_LEVEL_4:
-                batteryLevel = "BATTERY_LEVEL_4";
-                break;
-            case Printer.BATTERY_LEVEL_5:
-                batteryLevel = "BATTERY_LEVEL_5";
-                break;
-            case Printer.BATTERY_LEVEL_6:
-                batteryLevel = "BATTERY_LEVEL_6";
-                break;
-            case Printer.UNKNOWN:
-                batteryLevel = "UNKNOWN";
-                break;
-            default:
-                break;
-        }
-
-        switch (statusInfo.getRemovalWaiting()) {
-            case Printer.EVENT_REMOVAL_WAIT_PAPER:
-                paperWait = "WAITING_FOR_PAPER_REMOVAL";
-                break;
-            case Printer.EVENT_REMOVAL_WAIT_NONE:
-                paperWait = "NOT_WAITING_FOR_PAPER_REMOVAL";
-                break;
-            case Printer.UNKNOWN:
-                paperWait = "UNKNOWN";
-                break;
-            default:
-                break;
-        }
-
-        JSONObject jsonStatus = new JSONObject();
-        try {
-            jsonStatus.put("connection", connection);
-            jsonStatus.put("online",online);
-            jsonStatus.put("coverOpen",coverOpen);
-            jsonStatus.put("paper",paper);
-            jsonStatus.put("paperFeed",paperFeed);
-            jsonStatus.put("panelSwitch",panelSwitch);
-            jsonStatus.put("drawer",drawer);
-            jsonStatus.put("errorStatus",errorStatus);
-            jsonStatus.put("autoRecoverErr",autoRecoverErr);
-            jsonStatus.put("adapter",adapter);
-            jsonStatus.put("batteryLevel",batteryLevel);
-            jsonStatus.put("paperWait",paperWait);
-
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        return jsonStatus;
-
-    }
 
     public static String convertPrintSpeedEnum2String(int speedEnum, @NonNull Context context) {
 
@@ -699,17 +479,17 @@ public class EposStringHelper {
 
         if (deviceName == null || deviceName.isEmpty()) return Printer.TM_T88;
 
-        if (deviceName.startsWith("TM-T88VII")) return Printer.TM_T88VII;
-        if (deviceName.startsWith("TM-m30II")) return Printer.TM_M30II;
-        if (deviceName.startsWith("TM-m30")) return Printer.TM_M30;
-        if (deviceName.startsWith("TM-L90LFC")) return Printer.TM_L90LFC;
-        if (deviceName.startsWith("TM-L90")) return Printer.TM_L90;
-        if (deviceName.startsWith("TM-m50")) return Printer.TM_M50;
-        if (deviceName.startsWith("TM-L100")) return Printer.TM_L100;
         if (deviceName.startsWith("TM-m10")) return Printer.TM_M10;
+        if (deviceName.startsWith("TM-m30")) return Printer.TM_M30;
+        if (deviceName.startsWith("TM-m30III")) return Printer.TM_M30III;
+        if (deviceName.startsWith("TM-m30II")) return Printer.TM_M30II;
+        if (deviceName.startsWith("TM-m50II")) return Printer.TM_M50II;
+        if (deviceName.startsWith("TM-m50")) return Printer.TM_M50;
+        if (deviceName.startsWith("TM-P20II")) return Printer.TM_P20II;
         if (deviceName.startsWith("TM-P20")) return Printer.TM_P20;
         if (deviceName.startsWith("TM-P60II")) return Printer.TM_P60II;
         if (deviceName.startsWith("TM-P60")) return Printer.TM_P60;
+        if (deviceName.startsWith("TM-P80II")) return Printer.TM_P80II;
         if (deviceName.startsWith("TM-P80")) return Printer.TM_P80;
         if (deviceName.startsWith("TM-T20")) return Printer.TM_T20;
         if (deviceName.startsWith("TM-T60")) return Printer.TM_T60;
@@ -718,14 +498,16 @@ public class EposStringHelper {
         if (deviceName.startsWith("TM-T82")) return Printer.TM_T82;
         if (deviceName.startsWith("TM-T83III")) return Printer.TM_T83III;
         if (deviceName.startsWith("TM-T83")) return Printer.TM_T83;
+        if (deviceName.startsWith("TM-T88VII")) return Printer.TM_T88VII;
         if (deviceName.startsWith("TM-T88")) return Printer.TM_T88;
-        if (deviceName.startsWith("TM-T90KP")) return Printer.TM_T90KP;
         if (deviceName.startsWith("TM-T90")) return Printer.TM_T90;
+        if (deviceName.startsWith("TM-T100")) return Printer.TM_T100;
         if (deviceName.startsWith("TM-U220")) return Printer.TM_U220;
         if (deviceName.startsWith("TM-U330")) return Printer.TM_U330;
+        if (deviceName.startsWith("TM-L90LFC")) return Printer.TM_L90LFC;
+        if (deviceName.startsWith("TM-L90")) return Printer.TM_L90;
+        if (deviceName.startsWith("TM-L100")) return Printer.TM_L100;
         if (deviceName.startsWith("TM-H6000")) return Printer.TM_H6000;
-        if (deviceName.startsWith("TM-T100")) return Printer.TM_T100;
-        if (deviceName.startsWith("TS-100")) return Printer.TS_100;
 
         return Printer.TM_T88;
 
