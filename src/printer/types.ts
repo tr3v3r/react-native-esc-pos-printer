@@ -72,7 +72,7 @@ export type TrueFalseParam = CommonParams.TRUE | CommonParams.FALSE;
 export type PrinterStatusRawResponse = Record<PrinterStatusProperties, string>;
 export type PrinterStatusResponse = Record<
   PrinterStatusProperties,
-  { status: string; message: string }
+  { status: string; message: string; statusCode: number }
 >;
 
 export type ImageSource =
@@ -130,3 +130,12 @@ export type AddTextStyleParams = {
   em?: TrueFalseParam | DefaultOrUnspecifiedParam;
   color?: ColorType | DefaultOrUnspecifiedParam;
 };
+
+export interface SpaceBetweenParams {
+  left: string;
+  right: string;
+  textToWrap?: 'right' | 'left';
+  textToWrapWidth?: number;
+  gapSymbol?: string;
+  noTrim?: boolean;
+}

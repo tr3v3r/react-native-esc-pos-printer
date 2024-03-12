@@ -332,23 +332,12 @@
          successHandler: (void(^)(NSDictionary* data)) successHandler
          errorHandler: (void(^)(NSString* data)) errorHandler
 {
-    @synchronized (shutdownLock_) {
-        if (shutdown_) {
-
-            errorHandler(@{
-                @"data": @(EPOS2_ERR_ILLEGAL),
-                @"type": @"result"
-            });
-            return;
-        };
-    }
-
     @synchronized (self) {
         if (epos2Printer_ == nil) {
-                errorHandler(@{
-                    @"data": @(EPOS2_ERR_MEMORY),
-                    @"type": @"result"
-                });
+            errorHandler([ErrorManager convertDictionatyToJsonString:@{
+                @"data": @(EPOS2_ERR_MEMORY),
+                @"type": @"result"
+            }]);
 
               return;
         };
@@ -359,10 +348,10 @@
             onPtrRecieveSuccessHandler_ = [successHandler copy];
             onPtrRecieveErrorHandler_ = [errorHandler copy];
         } else {
-            errorHandler(@{
+            errorHandler([ErrorManager convertDictionatyToJsonString:@{
                 @"data": @(result),
                 @"type": @"result"
-            });
+            }]);
         }
 
     }
@@ -625,6 +614,15 @@
     }
 }
 
+-(int) pairBluetoothDevice
+{
+    Epos2BluetoothConnection *pairingPrinter = [[Epos2BluetoothConnection alloc] init];
+    NSMutableString *address = [[NSMutableString alloc] init];
+    int result = [pairingPrinter connectDevice: address];
+    
+    return result;
+}
+
 -(void) getPrinterSetting: (long)timeout
         type:(int)type
         successHandler: (void(^)(NSDictionary* data)) successHandler
@@ -632,10 +630,10 @@
 {
     @synchronized (self) {
         if (epos2Printer_ == nil) {
-            errorHandler(@{
-                    @"data": @(EPOS2_ERR_MEMORY),
-                    @"type": @"result"
-            });
+            errorHandler([ErrorManager convertDictionatyToJsonString:@{
+                @"data": @(EPOS2_ERR_MEMORY),
+                @"type": @"result"
+            }]);
             return;
         }
 
@@ -646,10 +644,11 @@
             onGetPrinterSettingSuccessHandler_ = [successHandler copy];
             onGetPrinterSettingErrorHandler_ = [errorHandler copy];
         } else {
-            errorHandler(@{
+            errorHandler(
+             [ErrorManager convertDictionatyToJsonString:@{
                 @"data": @(result),
                 @"type": @"result"
-            });
+             }]);
         }
     }
 }

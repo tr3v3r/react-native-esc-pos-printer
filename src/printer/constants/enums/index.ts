@@ -14,7 +14,17 @@ import {
   GetPrinterSettingsPrintSpeedValues,
 } from './settings';
 
-export * from './status';
+import {
+  PrinterPaperStatus,
+  PrinterPanelSwitchStatus,
+  PrinterDrawerStatus,
+  PrinterErrorStatus,
+  PrinterAutoRecoverErrorStatus,
+  PrinterBatteryLevelStatus,
+  PrinterRemovalWaitingStatus,
+  PrinterPaperTakenSensorStatus,
+  PrinterUnrecoverErrorStatus,
+} from './status';
 import {
   ImageCompressType,
   ImageHalftoneType,
@@ -55,7 +65,16 @@ export const PrinterConstants = {
   ...TextUnderscoreType,
   ...TextBoldType,
   ...CommonParams,
-} as const;
+  ...PrinterPaperStatus,
+  ...PrinterPanelSwitchStatus,
+  ...PrinterDrawerStatus,
+  ...PrinterErrorStatus,
+  ...PrinterAutoRecoverErrorStatus,
+  ...PrinterBatteryLevelStatus,
+  ...PrinterRemovalWaitingStatus,
+  ...PrinterPaperTakenSensorStatus,
+  ...PrinterUnrecoverErrorStatus,
+};
 
 export {
   PrinterModelLang,
@@ -82,4 +101,13 @@ export {
   TextReverseType,
   TextUnderscoreType,
   TextBoldType,
+  PrinterPaperStatus,
+  PrinterPanelSwitchStatus,
+  PrinterDrawerStatus,
+  PrinterErrorStatus,
+  PrinterAutoRecoverErrorStatus,
+  PrinterBatteryLevelStatus,
+  PrinterRemovalWaitingStatus,
+  PrinterPaperTakenSensorStatus,
+  PrinterUnrecoverErrorStatus,
 };

@@ -1,3 +1,4 @@
+import { Platform } from 'react-native';
 import { PrinterGetSettingsType, PrinterModelLang } from './constants';
 import { PrinterWrapper } from './PrinterWrapper';
 import type {
@@ -9,6 +10,7 @@ import type {
   AddTextAlignParam,
   AddTextSizeParams,
   AddTextSmoothParam,
+  AddTextStyleParams,
   PrinterParams,
 } from './types';
 import PQueue from 'p-queue/dist';
@@ -16,9 +18,10 @@ import PQueue from 'p-queue/dist';
 export class Printer {
   private static instances: Map<string, Printer> = new Map();
 
-  private deviceName: string;
+  public readonly deviceName: string;
   private lang: PrinterModelLang;
   private printerWrapper: PrinterWrapper;
+
   public queue: PQueue;
 
   constructor({
@@ -36,6 +39,10 @@ export class Printer {
     this.queue = new PQueue({ concurrency: 1 });
 
     Printer.instances.set(target, this);
+  }
+
+  get currentFontWidth() {
+    return this.printerWrapper.currentFontWidth;
   }
 
   init = () => {
@@ -102,11 +109,23 @@ export class Printer {
     return this.printerWrapper.addTextAlign(params);
   };
 
-  addTextSize = (params?: AddTextSizeParams) => {
-    return this.printerWrapper.addTextSize(params);
+  addTextSize = async (params?: AddTextSizeParams) => {
+    await this.printerWrapper.addTextSize(params);
   };
 
   addTextSmooth = (smooth?: AddTextSmoothParam) => {
     return this.printerWrapper.addTextSmooth(smooth);
+  };
+
+  addTextStyle = (params?: AddTextStyleParams) => {
+    return this.printerWrapper.addTextStyle(params);
+  };
+
+  pairBluetoothDevice = (macAddress: string) => {
+    if (Platform.OS === 'ios') {
+      return this.printerWrapper.pairBluetoothDevice(macAddress);
+    }
+
+    return Promise.resolve();
   };
 }

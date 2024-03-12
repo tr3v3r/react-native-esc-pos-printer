@@ -11,7 +11,7 @@ export function parsePrinterStatus(
     const statusCode = response[propName];
     const message = GetPrinterStatusMessageMapping[propName][statusCode];
     const status = PrinterStatusMapping[propName][statusCode];
-    acc[propName] = { status, message };
+    acc[propName] = { status, message, statusCode: Number(statusCode) };
     return acc;
   }, {} as PrinterStatusResponse);
 }

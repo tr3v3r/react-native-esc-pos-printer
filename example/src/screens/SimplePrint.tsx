@@ -1,8 +1,14 @@
-import React, { memo, useState } from 'react';
+import React, { memo, useEffect, useMemo, useState } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
-import { PrinterInfo, Button, ScreenTitle } from '../components';
+import { PrinterInfo, Button, ScreenTitle, PrinterStatus } from '../components';
 import type { RootStackParamList } from '../navigation/RootNavigator';
-import { Printer, PrinterConstants } from 'react-native-esc-pos-printer';
+import {
+  Printer,
+  PrinterConstants,
+  addTextLine,
+  monitorPrinter,
+  type PrinterStatusResponse,
+} from 'react-native-esc-pos-printer';
 import { useRoute, type RouteProp } from '@react-navigation/native';
 import { base64Image } from '../base64Image';
 
@@ -17,24 +23,38 @@ export const SimplePrint = memo(() => {
   } = useRoute<SimplePrintRouteProp>();
 
   const [printing, setPrinting] = useState(false);
+  const [status, setStatus] = useState<PrinterStatusResponse | null>(null);
 
-  const printSimpleReceipt = async () => {
-    const printerInstance = new Printer({
-      target: printer.target,
-      deviceName: printer.deviceName,
+  const printerInstance = useMemo(
+    () =>
+      new Printer({
+        target: printer.target,
+        deviceName: printer.deviceName,
+      }),
+    [printer]
+  );
+
+  useEffect(() => {
+    const stop = monitorPrinter(printerInstance, (nextStatus) => {
+      setStatus(nextStatus);
     });
 
+    return stop;
+  }, [printerInstance]);
+
+  const printSimpleReceipt = async () => {
     // const result = await launchImageLibrary({ mediaType: 'photo' });
     // console.log(result);
     try {
       setPrinting(true);
+
       const res = await printerInstance.queue.add(async () => {
         await printerInstance.connect();
 
-        await printerInstance.addImage({
-          source: { uri: base64Image },
-          width: 100,
-        });
+        // await printerInstance.addImage({
+        //   source: { uri: base64Image },
+        //   width: 100,
+        // });
 
         // await printerInstance.addImage({
         //   source: {
@@ -42,23 +62,14 @@ export const SimplePrint = memo(() => {
         //   },
         //   width: 200,
         // });
-
-        await printerInstance.addBarcode({
-          data: 'Test123',
-          type: PrinterConstants.BARCODE_CODE93,
-          width: 2,
-          height: 50,
-          hri: PrinterConstants.HRI_BELOW,
+        await printerInstance.addTextSize({ width: 2, height: 2 });
+        await printerInstance.addTextSmooth(PrinterConstants.FALSE);
+        await addTextLine(printerInstance, {
+          left: 'Chickenburger',
+          right: '1.5 EUR',
+          gapSymbol: '.',
         });
-
-        // await printerInstance.addSymbol({
-        //   type: PrinterConstants.SYMBOL_QRCODE_MODEL_2,
-        //   level: PrinterConstants.LEVEL_M,
-        //   width: 5,
-        //   height: 5,
-        //   size: 5,
-        //   data: 'Test123',
-        // });
+        await printerInstance.addFeedLine();
 
         await printerInstance.addFeedLine();
         await printerInstance.addCut();
@@ -94,6 +105,7 @@ export const SimplePrint = memo(() => {
         <ScreenTitle title={'Simple Print'} />
       </View>
       <View style={styles.contentCotainer}>
+        {status ? <PrinterStatus status={status} /> : null}
         <PrinterInfo printer={printer} />
       </View>
       <View style={styles.contentCotainer}>

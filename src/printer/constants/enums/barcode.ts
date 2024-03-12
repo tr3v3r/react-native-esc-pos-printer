@@ -1,5 +1,4 @@
 import { NativeModules } from 'react-native';
-import { CommonParams } from './common';
 
 const { EscPosPrinter } = NativeModules;
 

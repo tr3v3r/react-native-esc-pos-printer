@@ -267,6 +267,13 @@ RCT_EXPORT_MODULE()
     @"ALIGN_LEFT": @(EPOS2_ALIGN_LEFT),
     @"ALIGN_CENTER": @(EPOS2_ALIGN_CENTER),
     @"ALIGN_RIGHT": @(EPOS2_ALIGN_RIGHT),
+
+    // pair bluetooth device error
+
+    @"BT_ERR_PARAM": @(EPOS2_BT_ERR_PARAM),
+    @"BT_ERR_UNSUPPORTED": @(EPOS2_BT_ERR_UNSUPPORTED),
+    @"BT_ERR_CANCEL": @(EPOS2_BT_ERR_CANCEL),
+    @"BT_ERR_ILLEGAL_DEVICE": @(EPOS2_BT_ERR_ILLEGAL_DEVICE),
    };
 }
 
@@ -475,18 +482,6 @@ RCT_EXPORT_METHOD(addTextAlign: (nonnull NSString*) target
             reject(@"event_failure", [@(result) stringValue], nil);
         }
     }
-
-    int timeout = (int)[params[@"timeout"] integerValue] ?: EPOS2_PARAM_DEFAULT;
-
-    result = [printer sendData:timeout];
-    if (result != EPOS2_SUCCESS) {
-        [printer clearCommandBuffer];
-        [printer disconnect];
-        return result;
-    }
-
-    return result;
-
 }
 
 
@@ -609,8 +604,6 @@ RCT_EXPORT_METHOD(addImage: (nonnull NSString*) target
             reject(@"event_failure", [@(result) stringValue], nil);
         }
     }
-
-    return result;
 }
 
 
@@ -639,17 +632,6 @@ RCT_EXPORT_METHOD(addBarcode: (nonnull NSString*) target
             reject(@"event_failure", [@(result) stringValue], nil);
         }
     }
-
-    result = [self printData:params];
-    if (result != EPOS2_SUCCESS) {
-        NSString *errorString = [ErrorManager getEposErrorText: result];
-        onError(errorString);
-        return;
-    }
-
-    [self->printer clearCommandBuffer];
-    NSString *successString = [ErrorManager getEposErrorText: EPOS2_SUCCESS];
-    onSuccess(successString);
 }
 
 RCT_EXPORT_METHOD(addSymbol: (nonnull NSString*) target
@@ -725,5 +707,25 @@ RCT_EXPORT_METHOD(getPrinterSetting:(nonnull NSString*) target
         }];
     }
 }
+
+
+
+RCT_EXPORT_METHOD(pairBluetoothDevice: (NSString *) macAddress
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+{
+    @synchronized (self) {
+       Epos2BluetoothConnection *pairingPrinter = [[Epos2BluetoothConnection alloc] init];
+       NSMutableString *address = [NSMutableString stringWithString: macAddress];
+       int result = [pairingPrinter connectDevice: address];
+
+        if(result == EPOS2_BT_SUCCESS || result == EPOS2_BT_ERR_ALREADY_CONNECT) {
+            resolve(nil);
+        } else {
+            reject(@"event_failure", [@(result) stringValue], nil);
+        }
+    }
+}
+
 
 @end

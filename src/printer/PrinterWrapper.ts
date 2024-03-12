@@ -10,6 +10,7 @@ import {
   PrinterErrorStatusMapping,
   PrinterErrorCodeStatusMapping,
   PrinterConstants,
+  PrinterPairBluetoothErrorMessageMapping,
 } from './constants';
 import type {
   AddBarcodeParams,
@@ -35,6 +36,8 @@ const { EscPosPrinter } = NativeModules;
 
 export class PrinterWrapper {
   private target: string;
+  private printerPaperWidth: number = null;
+  public currentFontWidth: number = 1;
 
   constructor(target: string) {
     this.target = target;
@@ -47,6 +50,7 @@ export class PrinterWrapper {
         deviceName,
         lang
       );
+      this.currentFontWidth = 1;
     } catch (error) {
       throwProcessedError({
         methodName: 'init',
@@ -143,11 +147,22 @@ export class PrinterWrapper {
     timeout: number = 10000
   ) => {
     try {
+      const isPrinterPaperWidthRequested =
+        type === PrinterGetSettingsType.PRINTER_SETTING_PAPERWIDTH;
+
+      if (isPrinterPaperWidthRequested && this.printerPaperWidth) {
+        return parsePrinterSettings({ type, value: this.printerPaperWidth });
+      }
+
       const result = await EscPosPrinter.getPrinterSetting(
         this.target,
         timeout,
         type
       );
+
+      if (isPrinterPaperWidthRequested) {
+        this.printerPaperWidth = result.value;
+      }
 
       return parsePrinterSettings(result);
     } catch (error) {
@@ -314,6 +329,8 @@ export class PrinterWrapper {
   }: AddTextSizeParams = {}) => {
     try {
       await EscPosPrinter.addTextSize(this.target, width, height);
+
+      this.currentFontWidth = width || this.currentFontWidth;
     } catch (error) {
       throwProcessedError({
         methodName: 'addTextSize',
@@ -350,6 +367,18 @@ export class PrinterWrapper {
         methodName: 'addTextStyle',
         errorCode: error.message,
         messagesMapping: CommonOperationErrorMessageMapping,
+      });
+    }
+  };
+
+  pairBluetoothDevice = async (macAddress: string) => {
+    try {
+      await EscPosPrinter.pairBluetoothDevice(macAddress);
+    } catch (error) {
+      throwProcessedError({
+        methodName: 'pairBluetoothDevice',
+        errorCode: error.message,
+        messagesMapping: PrinterPairBluetoothErrorMessageMapping,
       });
     }
   };

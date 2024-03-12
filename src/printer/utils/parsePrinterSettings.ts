@@ -1,5 +1,4 @@
 import {
-  PrinterGetSettingsTypeMapping,
   PrinterGetSettingsType,
   GetPrinterSettingsPaperWidthValuesMapping,
   GetPrinterSettingsPrintDencityValuesMapping,
@@ -24,7 +23,7 @@ export function parsePrinterSettings(
   }
 
   return {
-    type: PrinterGetSettingsTypeMapping[response.type],
+    type: PrinterGetSettingsType[response.type],
     value: valueMapping[response.value],
   };
 }

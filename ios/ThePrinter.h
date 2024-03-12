@@ -113,6 +113,8 @@ typedef NS_ENUM(NSUInteger, ThePrinterState) {
 
 -(nonnull NSDictionary*) getStatus;
 
+-(int) pairBluetoothDevice;
+
 /**
  Returns BOOL
  Function isConnected uses getStatus to understand if it is connected or not.
@@ -174,7 +176,7 @@ typedef NS_ENUM(NSUInteger, ThePrinterState) {
  @return ePOS int result
  */
 -(void) getPrinterSetting:(long)timeout type:(int)type successHandler: (void(^_Nonnull)(NSDictionary*_Nonnull data)) successHandler
-   errorHandler: (void(^_Nonnull)(NSString* data)) errorHandler;
+   errorHandler: (void(^_Nonnull)(NSString*_Nonnull data)) errorHandler;
 /**
  Returns ePOS int result
  Function sendData see ePOS SDK

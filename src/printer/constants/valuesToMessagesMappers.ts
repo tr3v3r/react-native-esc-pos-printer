@@ -4,24 +4,28 @@ import {
   GetPrinterSettingsPaperWidthValues,
   GetPrinterSettingsDensityValues,
   GetPrinterSettingsPrintSpeedValues,
-  PrinterConnectionStatus,
-  PrinterOnlineStatus,
-  PrinterCoverStatus,
   PrinterPaperStatus,
-  PrinterPaperFeedStatus,
   PrinterPanelSwitchStatus,
   PrinterDrawerStatus,
   PrinterErrorStatus,
   PrinterAutoRecoverErrorStatus,
-  PrinterBuzzerStatus,
-  PrinterAdapterStatus,
   PrinterBatteryLevelStatus,
   PrinterRemovalWaitingStatus,
   PrinterPaperTakenSensorStatus,
   PrinterUnrecoverErrorStatus,
+  CommonParams,
 } from './enums';
 
 import type { PrinterStatusProperties } from '../types';
+
+export const PrinterPairBluetoothErrorMessageMapping = {
+  [PrinterErrorResult.BT_ERR_PARAM]: 'An invalid parameter was passed.',
+  [PrinterErrorResult.BT_ERR_CANCEL]: 'Pairing connection was canceled.',
+  [PrinterErrorResult.BT_ERR_UNSUPPORTED]:
+    'The function was executed on an unsupported OS.',
+  [PrinterErrorResult.BT_ERR_ILLEGAL_DEVICE]: 'An invalid device was selected.',
+  [PrinterErrorResult.ERR_FAILURE]: 'An unknown error occurred.',
+} as const;
 
 export const InitPrinterErrorMessageMapping = {
   [PrinterErrorResult.ERR_PARAM]: 'An invalid parameter was passed.',
@@ -172,39 +176,39 @@ export const GetPrinterStatusMessageMapping: Record<
   Record<string, string>
 > = {
   connection: {
-    [PrinterConnectionStatus.TRUE]: 'Connected',
-    [PrinterConnectionStatus.FALSE]: 'Status is unknown.',
+    [CommonParams.TRUE]: 'Connected',
+    [CommonParams.FALSE]: 'Status is unknown.',
   },
   online: {
-    [PrinterOnlineStatus.TRUE]: 'Online',
-    [PrinterOnlineStatus.FALSE]: 'Offline',
-    [PrinterOnlineStatus.UNKNOWN]: 'Status is unknown.',
+    [CommonParams.TRUE]: 'Online',
+    [CommonParams.FALSE]: 'Offline',
+    [CommonParams.UNKNOWN]: 'Status is unknown.',
   },
   coverOpen: {
-    [PrinterCoverStatus.TRUE]: 'Cover is open.',
-    [PrinterCoverStatus.FALSE]: 'Cover is closed.',
-    [PrinterCoverStatus.UNKNOWN]: 'Status is unknown.',
+    [CommonParams.TRUE]: 'Cover is open.',
+    [CommonParams.FALSE]: 'Cover is closed.',
+    [CommonParams.UNKNOWN]: 'Status is unknown.',
   },
   paper: {
     [PrinterPaperStatus.PAPER_OK]: 'Paper remains.',
     [PrinterPaperStatus.PAPER_NEAR_END]: 'Paper is running out.',
     [PrinterPaperStatus.PAPER_EMPTY]: 'Paper has run out.',
-    [PrinterPaperStatus.UNKNOWN]: 'Status is unknown.',
+    [CommonParams.UNKNOWN]: 'Status is unknown.',
   },
   paperFeed: {
-    [PrinterPaperFeedStatus.TRUE]: 'Paper feed in progress',
-    [PrinterPaperFeedStatus.FALSE]: 'Stopped',
-    [PrinterPaperFeedStatus.UNKNOWN]: 'Status is unknown.',
+    [CommonParams.TRUE]: 'Paper feed in progress',
+    [CommonParams.FALSE]: 'Stopped',
+    [CommonParams.UNKNOWN]: 'Status is unknown.',
   },
   panelSwitch: {
     [PrinterPanelSwitchStatus.SWITCH_ON]: 'Pressed',
     [PrinterPanelSwitchStatus.SWITCH_OFF]: 'Not pressed',
-    [PrinterPanelSwitchStatus.UNKNOWN]: 'Status is unknown.',
+    [CommonParams.UNKNOWN]: 'Status is unknown.',
   },
   drawer: {
     [PrinterDrawerStatus.DRAWER_HIGH]: 'High',
     [PrinterDrawerStatus.DRAWER_LOW]: 'Low',
-    [PrinterDrawerStatus.UNKNOWN]: 'Status is unknown.',
+    [CommonParams.UNKNOWN]: 'Status is unknown.',
   },
   errorStatus: {
     [PrinterErrorStatus.NO_ERR]: 'Normal',
@@ -212,7 +216,7 @@ export const GetPrinterStatusMessageMapping: Record<
     [PrinterErrorStatus.AUTOCUTTER_ERR]: 'Auto cutter error occurred.',
     [PrinterErrorStatus.UNRECOVER_ERR]: 'Unrecoverable error occurred.',
     [PrinterErrorStatus.AUTORECOVER_ERR]: 'Automatic recovery error occurred.',
-    [PrinterErrorStatus.UNKNOWN]: 'Status is unknown.',
+    [CommonParams.UNKNOWN]: 'Status is unknown.',
   },
   autoRecoverError: {
     [PrinterAutoRecoverErrorStatus.HEAD_OVERHEAT]: 'Head overheat error',
@@ -221,17 +225,17 @@ export const GetPrinterStatusMessageMapping: Record<
     [PrinterAutoRecoverErrorStatus.BATTERY_OVERHEAT]: 'Battery overheat error',
     [PrinterAutoRecoverErrorStatus.WRONG_PAPER]: 'Paper error',
     [PrinterAutoRecoverErrorStatus.COVER_OPEN]: 'Cover is open.',
-    [PrinterAutoRecoverErrorStatus.UNKNOWN]: 'Status is unknown.',
+    [CommonParams.UNKNOWN]: 'Status is unknown.',
   },
   buzzer: {
-    [PrinterBuzzerStatus.TRUE]: 'Sounding',
-    [PrinterBuzzerStatus.FALSE]: 'Stopped',
-    [PrinterBuzzerStatus.UNKNOWN]: 'Status is unknown.',
+    [CommonParams.TRUE]: 'Sounding',
+    [CommonParams.FALSE]: 'Stopped',
+    [CommonParams.UNKNOWN]: 'Status is unknown.',
   },
   adapter: {
-    [PrinterAdapterStatus.TRUE]: 'Connected',
-    [PrinterAdapterStatus.FALSE]: 'Disconnected',
-    [PrinterAdapterStatus.UNKNOWN]: 'Status is unknown.',
+    [CommonParams.TRUE]: 'Connected',
+    [CommonParams.FALSE]: 'Disconnected',
+    [CommonParams.UNKNOWN]: 'Status is unknown.',
   },
   batteryLevel: {
     [PrinterBatteryLevelStatus.EPOS2_BATTERY_LEVEL_6]:
@@ -248,13 +252,13 @@ export const GetPrinterStatusMessageMapping: Record<
       'Remaining battery capacity 1',
     [PrinterBatteryLevelStatus.EPOS2_BATTERY_LEVEL_0]:
       'Remaining battery capacity 0',
-    [PrinterBatteryLevelStatus.UNKNOWN]: 'Status is unknown.',
+    [CommonParams.UNKNOWN]: 'Status is unknown.',
   },
   removalWaiting: {
     [PrinterRemovalWaitingStatus.REMOVAL_WAIT_PAPER]:
       'Waiting for paper removal',
     [PrinterRemovalWaitingStatus.REMOVAL_WAIT_NONE]: 'Not waiting for removal.',
-    [PrinterRemovalWaitingStatus.UNKNOWN]: 'Status is unknown.',
+    [CommonParams.UNKNOWN]: 'Status is unknown.',
   },
   paperTakenSensor: {
     [PrinterPaperTakenSensorStatus.REMOVAL_DETECT_PAPER]:
@@ -263,12 +267,12 @@ export const GetPrinterStatusMessageMapping: Record<
       'The paper removal sensor is not detecting paper.',
     [PrinterPaperTakenSensorStatus.REMOVAL_DETECT_UNKNOWN]:
       'A state that is not detectable by the paper removal sensor',
-    [PrinterPaperTakenSensorStatus.UNKNOWN]: 'Status is unknown.',
+    [CommonParams.UNKNOWN]: 'Status is unknown.',
   },
   unrecoverError: {
     [PrinterUnrecoverErrorStatus.HIGH_VOLTAGE_ERR]: 'High voltage error',
     [PrinterUnrecoverErrorStatus.LOW_VOLTAGE_ERR]: 'Low voltage error',
-    [PrinterUnrecoverErrorStatus.UNKNOWN]: 'Status is unknown.',
+    [CommonParams.UNKNOWN]: 'Status is unknown.',
   },
 };
 
@@ -278,4 +282,5 @@ export type PrinterErrorMessageMapping =
   | typeof DisconnectPrinterErrorMessageMapping
   | typeof CommonOperationErrorMessageMapping
   | typeof SendDataPrinterErrorMessageMapping
-  | typeof PrintErrorCodeMessageMapping;
+  | typeof PrintErrorCodeMessageMapping
+  | typeof GetPrinterSettingsPaperWidthValuesMapping;
