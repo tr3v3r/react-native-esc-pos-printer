@@ -267,8 +267,8 @@ export class PrinterWrapper {
         data,
         type,
         level,
-        width,
-        height,
+        width || size,
+        height || size,
         size
       );
     } catch (error) {
@@ -355,11 +355,11 @@ export class PrinterWrapper {
   };
 
   addTextStyle = async ({
-    color = PrinterConstants.PARAM_UNSPECIFIED,
-    em = PrinterConstants.PARAM_UNSPECIFIED,
-    reverse = PrinterConstants.PARAM_UNSPECIFIED,
-    ul = PrinterConstants.PARAM_UNSPECIFIED,
-  }: AddTextStyleParams) => {
+    color = PrinterConstants.PARAM_DEFAULT,
+    em = PrinterConstants.PARAM_DEFAULT,
+    reverse = PrinterConstants.PARAM_DEFAULT,
+    ul = PrinterConstants.PARAM_DEFAULT,
+  }: AddTextStyleParams = {}) => {
     try {
       await EscPosPrinter.addTextStyle(this.target, reverse, ul, em, color);
     } catch (error) {

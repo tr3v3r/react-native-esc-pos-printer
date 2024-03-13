@@ -5,14 +5,15 @@ import type {
   ImageHalftoneType,
   ImageColorModeType,
   PrinterAddCutType,
-  CommonParams,
   FontType,
   BarcodeType,
   BarcodeHRI,
   PrinterAddPulseDrawerType,
   PrinterAddPulseTimeType,
   TextAlignType,
+  CommonParams,
 } from './constants';
+
 import { SymbolLevel, SymbolType } from './constants/enums/symbol';
 
 export type PrinterParams = {
@@ -102,11 +103,11 @@ export type AddBarcodeParams = {
 
 export type AddSymbolParams = {
   type: SymbolType;
-  width: number;
+  width?: number;
   data: string;
   level?: SymbolLevel | DefaultOrUnspecifiedParam;
   height?: number;
-  size?: number;
+  size: number;
 };
 
 export type AddCutTypeParam = PrinterAddCutType | DefaultOrUnspecifiedParam;

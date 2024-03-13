@@ -1,5 +1,4 @@
 import { NativeModules } from 'react-native';
-import { CommonParams } from './common';
 
 const { EscPosPrinter } = NativeModules;
 
@@ -18,25 +17,4 @@ export enum TextAlignType {
   ALIGN_LEFT = EscPosPrinterConstants.ALIGN_LEFT,
   ALIGN_CENTER = EscPosPrinterConstants.ALIGN_CENTER,
   ALIGN_RIGHT = EscPosPrinterConstants.ALIGN_RIGHT,
-}
-
-export enum TextReverseType {
-  TRUE = CommonParams.TRUE,
-  FALSE = CommonParams.FALSE,
-  PARAM_UNSPECIFIED = CommonParams.PARAM_UNSPECIFIED,
-  PARAM_DEFAULT = CommonParams.PARAM_DEFAULT,
-}
-
-export enum TextUnderscoreType {
-  TRUE = CommonParams.TRUE,
-  FALSE = CommonParams.FALSE,
-  PARAM_UNSPECIFIED = CommonParams.PARAM_UNSPECIFIED,
-  PARAM_DEFAULT = CommonParams.PARAM_DEFAULT,
-}
-
-export enum TextBoldType {
-  TRUE = CommonParams.TRUE,
-  FALSE = CommonParams.FALSE,
-  PARAM_UNSPECIFIED = CommonParams.PARAM_UNSPECIFIED,
-  PARAM_DEFAULT = CommonParams.PARAM_DEFAULT,
 }

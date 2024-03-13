@@ -33,13 +33,7 @@ import {
 
 import { BarcodeType, BarcodeHRI } from './barcode';
 import { SymbolType, SymbolLevel } from './symbol';
-import {
-  FontType,
-  TextAlignType,
-  TextReverseType,
-  TextUnderscoreType,
-  TextBoldType,
-} from './textStyle';
+import { FontType, TextAlignType } from './textStyle';
 import { PrinterAddPulseDrawerType, PrinterAddPulseTimeType } from './pulse';
 
 export const PrinterConstants = {
@@ -61,10 +55,6 @@ export const PrinterConstants = {
   ...PrinterAddPulseDrawerType,
   ...PrinterAddPulseTimeType,
   ...TextAlignType,
-  ...TextReverseType,
-  ...TextUnderscoreType,
-  ...TextBoldType,
-  ...CommonParams,
   ...PrinterPaperStatus,
   ...PrinterPanelSwitchStatus,
   ...PrinterDrawerStatus,
@@ -74,7 +64,8 @@ export const PrinterConstants = {
   ...PrinterRemovalWaitingStatus,
   ...PrinterPaperTakenSensorStatus,
   ...PrinterUnrecoverErrorStatus,
-};
+  ...CommonParams,
+} as const;
 
 export {
   PrinterModelLang,
@@ -98,9 +89,6 @@ export {
   PrinterAddPulseDrawerType,
   PrinterAddPulseTimeType,
   TextAlignType,
-  TextReverseType,
-  TextUnderscoreType,
-  TextBoldType,
   PrinterPaperStatus,
   PrinterPanelSwitchStatus,
   PrinterDrawerStatus,
