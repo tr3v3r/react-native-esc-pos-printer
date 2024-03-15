@@ -23,14 +23,15 @@ import type {
   AddTextSizeParams,
   AddTextSmoothParam,
   AddTextStyleParams,
+  AddTextLangParam,
 } from './types';
 import {
   throwProcessedError,
   parsePrinterSettings,
   processComplextError,
+  BufferHelper,
 } from './utils';
 import { parsePrinterStatus } from './utils/parsePrinterStatus';
-import { BufferHelper } from '../utils';
 
 const { EscPosPrinter } = NativeModules;
 
@@ -90,6 +91,18 @@ export class PrinterWrapper {
     } catch (error) {
       throwProcessedError({
         methodName: 'addText',
+        errorCode: error.message,
+        messagesMapping: CommonOperationErrorMessageMapping,
+      });
+    }
+  };
+
+  addTextLang = async (lang: AddTextLangParam) => {
+    try {
+      await EscPosPrinter.addTextLang(this.target, lang);
+    } catch (error) {
+      throwProcessedError({
+        methodName: 'addTextLang',
         errorCode: error.message,
         messagesMapping: CommonOperationErrorMessageMapping,
       });

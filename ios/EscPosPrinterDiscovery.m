@@ -1,5 +1,4 @@
 #import "EscPosPrinterDiscovery.h"
-#import "ErrorManager.h"
 
 #import "ePOS2.h"
 

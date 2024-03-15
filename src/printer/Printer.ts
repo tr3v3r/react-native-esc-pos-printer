@@ -8,6 +8,7 @@ import type {
   AddPulseParams,
   AddSymbolParams,
   AddTextAlignParam,
+  AddTextLangParam,
   AddTextSizeParams,
   AddTextSmoothParam,
   AddTextStyleParams,
@@ -127,5 +128,9 @@ export class Printer {
     }
 
     return Promise.resolve();
+  };
+
+  addTextLang = (lang: AddTextLangParam) => {
+    return this.printerWrapper.addTextLang(lang);
   };
 }

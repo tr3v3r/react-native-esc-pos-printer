@@ -1,9 +1,9 @@
 #import "EscPosPrinter.h"
-#import "ErrorManager.h"
 #import <React/RCTConvert.h>
 
-#import "ThePrinterWrapper.h"
+
 #import "ThePrinter.h"
+#import "ThePrinterManager.h"
 #import "EposStringHelper.h"
 
 @interface EscPosPrinter() <PrinterDelegate>
@@ -274,6 +274,17 @@ RCT_EXPORT_MODULE()
     @"BT_ERR_UNSUPPORTED": @(EPOS2_BT_ERR_UNSUPPORTED),
     @"BT_ERR_CANCEL": @(EPOS2_BT_ERR_CANCEL),
     @"BT_ERR_ILLEGAL_DEVICE": @(EPOS2_BT_ERR_ILLEGAL_DEVICE),
+
+    // text lang
+
+    @"LANG_EN": @(EPOS2_LANG_EN),
+    @"LANG_JA": @(EPOS2_LANG_JA),
+    @"LANG_ZH_CN": @(EPOS2_LANG_ZH_CN),
+    @"LANG_ZH_TW": @(EPOS2_LANG_ZH_TW),
+    @"LANG_KO": @(EPOS2_LANG_KO),
+    @"LANG_TH": @(EPOS2_LANG_TH),
+    @"LANG_VI": @(EPOS2_LANG_VI),
+    @"LANG_MULTI": @(EPOS2_LANG_MULTI),
    };
 }
 
@@ -319,7 +330,7 @@ RCT_EXPORT_METHOD(connect: (nonnull NSString*)target
         if (thePrinter == nil) {
             result = EPOS2_ERR_INIT;
         } else {
-            int result = [thePrinter connect:timeout startMonitor:false];
+            int result = [thePrinter connect:timeout];
 
             if(result == EPOS2_SUCCESS) {
                 resolve(nil);
@@ -363,6 +374,28 @@ RCT_EXPORT_METHOD(addText: (nonnull NSString*) target
             result = EPOS2_ERR_INIT;
         } else {
             result = [thePrinter addText:data];
+        }
+
+        if(result == EPOS2_SUCCESS) {
+            resolve(nil);
+        } else {
+            reject(@"event_failure", [@(result) stringValue], nil);
+        }
+    }
+}
+
+RCT_EXPORT_METHOD(addTextLang: (nonnull NSString*) target
+                  lang: (int) lang
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+{
+    int result = EPOS2_SUCCESS;
+    @synchronized (self) {
+        ThePrinter* thePrinter = [objManager_ getObject:target];
+        if (thePrinter == nil) {
+            result = EPOS2_ERR_INIT;
+        } else {
+            result = [thePrinter addTextLang:lang];
         }
 
         if(result == EPOS2_SUCCESS) {

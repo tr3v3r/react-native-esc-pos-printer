@@ -12,6 +12,7 @@ import type {
   PrinterAddPulseTimeType,
   TextAlignType,
   CommonParams,
+  TextLangType,
 } from './constants';
 
 import { SymbolLevel, SymbolType } from './constants/enums/symbol';
@@ -140,3 +141,5 @@ export interface SpaceBetweenParams {
   gapSymbol?: string;
   noTrim?: boolean;
 }
+
+export type AddTextLangParam = TextLangType | CommonParams.PARAM_DEFAULT;

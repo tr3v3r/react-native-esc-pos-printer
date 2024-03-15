@@ -1,9 +1,3 @@
-//
-//  ThePrinter.h
-//
-//
-//
-
 #ifndef ThePrinter_h
 #define ThePrinter_h
 #import "ePOS2.h"
@@ -68,10 +62,9 @@ typedef NS_ENUM(NSUInteger, ThePrinterState) {
  Returns ePOS result int
  Function connect tries to connect selected printer
  @param timeout the amount of time before giving up -- EPOS2_PARAM_DEFAULT
- @param startMonitor to Start the realtime statusMonitor
  @return int ePOS result
  */
-- (int) connect:(long)timeout startMonitor:(bool)startMonitor;
+- (int) connect:(long)timeout;
 
 /**
  Returns ePOS result int
@@ -82,6 +75,8 @@ typedef NS_ENUM(NSUInteger, ThePrinterState) {
 
 
 -(int) addText: (nonnull NSString*)data;
+
+-(int) addTextLang:(int)lang;
 
 -(int) addFeedLine: (int)line;
 

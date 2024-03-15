@@ -21,7 +21,6 @@ import com.facebook.react.bridge.Arguments;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.util.Log;
 import android.util.Base64;
 
 
@@ -30,7 +29,6 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
     private Printer epos2Printer_ = null; // Printer
     private volatile String printerTarget_ = null; // the printer target
     private boolean isConnected_ = false; // cache if printer is connected
-    private boolean didStartMonitor_ = false;  // did start transactions
     private boolean didBeginTransaction_ = false; // did start Status Monitor
     private boolean isWaitingForPrinterSettings_ = false; // Printer Settings requested
     private boolean shutdown_ = false; // removing printer object
@@ -215,9 +213,8 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
      throws Epos2Exception if there is an error
      Function connect tries to connect selected printer
      @param timeout the amount of time before giving up -- EPOS2_PARAM_DEFAULT
-     @param startMonitor to Start the realtime statusMonitor
      */
-    public void connect(final int timeout, final boolean startMonitor) throws Epos2Exception {
+    public void connect(final int timeout) throws Epos2Exception {
 
         synchronized (shutdownLock_) {
             if (shutdown_) throw new Epos2Exception(Epos2Exception.ERR_ILLEGAL);
@@ -245,16 +242,6 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
                 isConnected_ = false;
                 throw e;
             }
-
-            if (!startMonitor) return;
-
-            try {
-                startMonitor();
-            } catch ( Epos2Exception e) {
-                e.printStackTrace();
-                connectingState_ = ThePrinterState.PRINTER_IDLE;
-            }
-
         }
     }
 
@@ -273,14 +260,6 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
         if (didBeginTransaction_) {
             try {
                 endTransaction();
-            } catch (Epos2Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        if (didStartMonitor_) {
-            try {
-                stopMonitor();
             } catch (Epos2Exception e) {
                 e.printStackTrace();
             }
@@ -320,7 +299,6 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
         epos2Printer_.clearCommandBuffer();
         isConnected_ = false;
         isWaitingForPrinterSettings_ = false;
-        didStartMonitor_ = false;
         didBeginTransaction_ = false;
         connectingState_ = ThePrinterState.PRINTER_IDLE;
 
@@ -338,72 +316,6 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
         beginTransaction();
         epos2Printer_.sendData(timeout);
         printCallback_ = handler;
-    }
-
-    /**
-     throws Epos2Exception if there is an error
-     Function Start the realtime Monitor for selected printer
-     */
-    synchronized void startMonitor() throws Epos2Exception {
-
-        synchronized (shutdownLock_) {
-            if (shutdown_) throw new Epos2Exception(Epos2Exception.ERR_ILLEGAL);
-        }
-
-        if (didStartMonitor_) return;
-
-        if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
-
-        String msg = "SUCCESS";
-
-        Epos2Exception epos2Exception = null;
-
-        try {
-            epos2Printer_.setStatusChangeEventListener(this);
-            epos2Printer_.startMonitor();
-            didStartMonitor_ = true;
-        } catch (Epos2Exception e) {
-            epos2Exception = e;
-            epos2Printer_.setStatusChangeEventListener(null);
-            e.printStackTrace();
-            msg = EposStringHelper.getEposExceptionText(e.getErrorStatus());
-
-            didStartMonitor_ = false;
-        }
-
-        handleStartStatusMonitor(msg, didStartMonitor_);
-        if (epos2Exception != null) throw epos2Exception;
-
-    }
-
-    /**
-     throws Epos2Exception if there is an error
-     Function Stops the realtime Monitor for selected printer
-     */
-    synchronized void stopMonitor() throws Epos2Exception {
-
-        if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
-
-        if (!didStartMonitor_) return;
-
-        Epos2Exception epos2Exception = null;
-
-        String msg = "SUCCESS";
-
-        try {
-            epos2Printer_.setStatusChangeEventListener(null);
-            epos2Printer_.stopMonitor();
-            didStartMonitor_ = false;
-        } catch (Epos2Exception e) {
-            msg = EposStringHelper.getEposExceptionText(e.getErrorStatus());
-            epos2Exception = e;
-            e.printStackTrace();
-        }
-
-        handleStopStatusMonitor(msg, !didStartMonitor_);
-
-        if (epos2Exception != null) throw epos2Exception;
-
     }
 
     /**
@@ -453,6 +365,13 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
         if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
 
         epos2Printer_.addText(data);
+    }
+
+
+    synchronized public void addTextLang(int lang) throws Epos2Exception {
+        if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+        epos2Printer_.addTextLang(lang);
     }
 
     synchronized public void addFeedLine(int line) throws Epos2Exception {

@@ -21,6 +21,17 @@ export enum ColorType {
   COLOR_4 = EscPosPrinterConstants.COLOR_4,
 }
 
+export enum TextLangType {
+  LANG_EN = EscPosPrinterConstants.LANG_EN,
+  LANG_JA = EscPosPrinterConstants.LANG_JA,
+  LANG_ZH_CN = EscPosPrinterConstants.LANG_ZH_CN,
+  LANG_ZH_TW = EscPosPrinterConstants.LANG_ZH_TW,
+  LANG_KO = EscPosPrinterConstants.LANG_KO,
+  LANG_TH = EscPosPrinterConstants.LANG_TH,
+  LANG_VI = EscPosPrinterConstants.LANG_VI,
+  LANG_MULTI = EscPosPrinterConstants.LANG_MULTI,
+}
+
 export enum PrinterModelLang {
   MODEL_ANK = EscPosPrinterConstants.MODEL_ANK,
   MODEL_CHINESE = EscPosPrinterConstants.MODEL_CHINESE,

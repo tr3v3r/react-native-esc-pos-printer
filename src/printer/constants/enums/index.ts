@@ -5,6 +5,7 @@ import {
   PrinterModelLang,
   CommonParams,
   ColorType,
+  TextLangType,
 } from './common';
 
 import {
@@ -64,6 +65,7 @@ export const PrinterConstants = {
   ...PrinterRemovalWaitingStatus,
   ...PrinterPaperTakenSensorStatus,
   ...PrinterUnrecoverErrorStatus,
+  ...TextLangType,
   ...CommonParams,
 } as const;
 
@@ -98,4 +100,5 @@ export {
   PrinterRemovalWaitingStatus,
   PrinterPaperTakenSensorStatus,
   PrinterUnrecoverErrorStatus,
+  TextLangType,
 };

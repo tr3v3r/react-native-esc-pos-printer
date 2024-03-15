@@ -50,7 +50,9 @@ export const SimplePrint = memo(() => {
           printerInstance,
           (status) => status.online.statusCode === PrinterConstants.TRUE
         );
+
         await printerInstance.addTextAlign(PrinterConstants.ALIGN_CENTER);
+
         await printerInstance.addTextSize({ width: 3, height: 3 });
         await printerInstance.addText('DUDE!');
         await printerInstance.addFeedLine();

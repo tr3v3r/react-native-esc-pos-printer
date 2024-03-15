@@ -11,8 +11,6 @@ import com.facebook.react.bridge.ReadableArray;
 import com.facebook.react.module.annotations.ReactModule;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
 
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -21,29 +19,9 @@ import android.content.Context;
 import com.epson.epos2.printer.Printer;
 import com.epson.epos2.Epos2Exception;
 import com.epson.epos2.Epos2CallbackCode;
-import com.epson.epos2.printer.ReceiveListener;
-import com.epson.epos2.printer.PrinterStatusInfo;
-import com.epson.epos2.printer.PrinterSettingListener;
 
-import com.facebook.react.bridge.UiThreadUtil;
-
-import android.content.res.AssetManager;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.util.Base64;
-
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.Timer;
-import java.util.TimerTask;
 import com.facebook.react.bridge.WritableMap;
-import com.facebook.react.bridge.Arguments;
-
-import android.os.Handler;
-import java.util.concurrent.Callable;
-
 import com.facebook.react.bridge.ReadableMap;
-import android.util.Log;
 
 import com.reactnativeescposprinter.ThePrinterManager;
 import com.reactnativeescposprinter.ThePrinter;
@@ -315,6 +293,17 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule {
       constants.put("ALIGN_CENTER", Printer.ALIGN_CENTER);
       constants.put("ALIGN_RIGHT", Printer.ALIGN_RIGHT);
 
+      // lang
+
+      constants.put("LANG_EN", Printer.LANG_EN);
+      constants.put("LANG_JA", Printer.LANG_JA);
+      constants.put("LANG_ZH_CN", Printer.LANG_ZH_CN);
+      constants.put("LANG_ZH_TW", Printer.LANG_ZH_TW);
+      constants.put("LANG_KO", Printer.LANG_KO);
+      constants.put("LANG_TH", Printer.LANG_TH);
+      constants.put("LANG_VI", Printer.LANG_VI);
+      constants.put("LANG_MULTI", Printer.LANG_MULTI);
+
       return constants;
     }
 
@@ -349,7 +338,7 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule {
         promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, ""));
       } else {
         try {
-          thePrinter.connect(timeout, false);
+          thePrinter.connect(timeout);
           promise.resolve(null);
         } catch(Exception e) {
           processError(promise,e, "");
@@ -380,6 +369,21 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule {
       } else {
           try {
             thePrinter.addText(data);
+            promise.resolve(null);
+          } catch(Exception e) {
+            processError(promise, e, "");
+          }
+      }
+    }
+
+    @ReactMethod
+    synchronized public void addTextLang(String target, int lang, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, ""));
+      } else {
+          try {
+            thePrinter.addTextLang(lang);
             promise.resolve(null);
           } catch(Exception e) {
             processError(promise, e, "");

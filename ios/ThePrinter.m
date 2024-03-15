@@ -1,12 +1,5 @@
-//
-//  ThePrinter.m
-//
-//
-//
-
 #import <Foundation/Foundation.h>
 #import "ThePrinter.h"
-#import "NSlogHelper.h"
 #import "EposStringHelper.h"
 #import "ErrorManager.h"
 #import "ImageManager.h"
@@ -171,7 +164,7 @@
 
 
 #pragma mark - Epos2Printer objc API
-- (int) connect:(long)timeout startMonitor:(bool)startMonitor {
+- (int) connect:(long)timeout {
 
     @synchronized (shutdownLock_) {
         if (shutdown_) return EPOS2_ERR_ILLEGAL;
@@ -203,14 +196,9 @@
         // connection success
         isConnected_ = true;
         // start monitor
-        if (startMonitor) {
-            int resultMonitor = [self startMonitor];
-            if (resultMonitor != EPOS2_SUCCESS) {
-                connectingState_ = PRINTER_IDLE;
-            }
-        } else {
-            connectingState_ = PRINTER_IDLE;
-        }
+
+        connectingState_ = PRINTER_IDLE;
+
 
         [NSThread sleepForTimeInterval:0.01];
         NSLog(@"Printer - connected to: %@", printerTarget_);
@@ -242,15 +230,7 @@
         // end transaction if it was started
         [self endTransaction];
 
-        // stop monitor if it was started
-        if (didStartStatusMonitor_) {
-            [epos2Printer_ setStatusChangeEventDelegate:nil];
-            int stopmonitor = [self stopMonitor];
-            if (stopmonitor != EPOS2_SUCCESS) {
-                NSLog(@"Printer - Stopping StatusMonitor failed");
-            }
-        }
-        didStartStatusMonitor_ = false;
+
 
         int result = 1;
         bool exit_loop = false;
@@ -357,87 +337,6 @@
     }
 }
 
-- (int) startMonitor
-{
-    @synchronized (shutdownLock_) {
-        if (shutdown_) return EPOS2_ERR_ILLEGAL;
-    }
-
-    @synchronized (self) {
-
-        if (epos2Printer_ == nil) {
-            return EPOS2_ERR_MEMORY;
-        }
-
-        if (!isConnected_) {
-            // please connect printer before starting monitor
-            return EPOS2_ERR_PARAM;
-        }
-
-        NSString* msg = @"SUCCESS";
-        int monitorResult = EPOS2_SUCCESS;
-
-        if (didStartStatusMonitor_) return monitorResult;
-
-        [epos2Printer_ setStatusChangeEventDelegate:self];
-        monitorResult = [epos2Printer_ startMonitor];
-        if (monitorResult != EPOS2_SUCCESS) {
-            msg = [EposStringHelper getEposErrorText:monitorResult];
-            NSLog(@"failed to start Monitor %@", msg);
-            didStartStatusMonitor_ = false;
-            [epos2Printer_ setStatusChangeEventDelegate:nil];
-        } else {
-            didStartStatusMonitor_ = true;
-
-        }
-
-        [self handleStartStatusMonitor:msg didStart:didStartStatusMonitor_];
-
-        return monitorResult;
-    }
-
-}
-
-- (int) stopMonitor
-{
-
-    @synchronized (self) {
-
-        if (epos2Printer_ == nil) {
-            return EPOS2_ERR_MEMORY;
-        }
-
-        if (!isConnected_) {
-            // please call before disconnecting printer
-            return EPOS2_ERR_DISCONNECT;
-        }
-
-        NSString* msg = @"SUCCESS";
-
-        int result = EPOS2_SUCCESS;
-
-        if (!didStartStatusMonitor_) return result;
-
-        result = [epos2Printer_ stopMonitor];
-        if (result != EPOS2_SUCCESS) {
-            msg = [EposStringHelper getEposErrorText:result];
-            NSLog(@"failed to stop Monitor %@", msg);
-            didStartStatusMonitor_ = true;
-        } else {
-            NSLog(@"stopped Monitor");
-            didStartStatusMonitor_ = false;
-            [epos2Printer_ setStatusChangeEventDelegate:nil];
-
-        }
-
-        [self handleStopStatusMonitor:msg didStop:!didStartStatusMonitor_];
-
-
-        didStartStatusMonitor_ = false;
-
-        return result;
-    }
-}
 
 -(int) addText: (NSString*)data;
 {
@@ -445,8 +344,19 @@
         if (epos2Printer_ == nil) {
             return EPOS2_ERR_MEMORY;
         }
-
         int result = [epos2Printer_ addText: data];
+        return result;
+    }
+}
+
+-(int) addTextLang:(int)lang;
+{
+    @synchronized (self) {
+        if (epos2Printer_ == nil) {
+            return EPOS2_ERR_MEMORY;
+        }
+
+        int result = [epos2Printer_ addTextLang: lang];
         return result;
     }
 }
@@ -619,7 +529,7 @@
     Epos2BluetoothConnection *pairingPrinter = [[Epos2BluetoothConnection alloc] init];
     NSMutableString *address = [[NSMutableString alloc] init];
     int result = [pairingPrinter connectDevice: address];
-    
+
     return result;
 }
 

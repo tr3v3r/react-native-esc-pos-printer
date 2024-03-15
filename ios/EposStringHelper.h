@@ -3,16 +3,7 @@
 
 @interface EposStringHelper : NSObject
 
-+ (NSString *)getEposErrorText:(int)error;
-+ (NSString *)getEposResultText:(int)result;
-+ (NSString *)getEposBTResultText:(int)result;
 + (NSDictionary *)convertStatusInfoToDictionary:(Epos2PrinterStatusInfo *)status;
-+ (int)getEposGetWidthResult:(int)result;
-+ (NSString *)makeStatusMonitorMessage:(int)status;
-+ (NSString *)convertPrintSpeedEnum2String:(int)speedEnum;
-+ (NSString *)convertPrintDensityEnum2String:(int)dencityEnum;
-+ (NSString *)convertPaperWidthEnum2String:(int)paperWidthEnum;
-+ (NSString *)convertEpos2PrinterSettingTypeEnum2String:(int)printerSettingTypeEnum;
 + (int)getPrinterSeries:(NSString*)name;
 
 @end
