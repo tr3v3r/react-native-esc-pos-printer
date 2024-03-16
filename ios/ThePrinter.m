@@ -308,6 +308,19 @@
     }
 }
 
+
+- (int) clearCmdBuffer
+{
+    @synchronized (self) {
+        if (epos2Printer_ == nil) {
+            return EPOS2_ERR_MEMORY;
+        }
+
+        [epos2Printer_ clearCommandBuffer];
+        return EPOS2_SUCCESS;
+    }
+}
+
 - (void) sendData:(long)timeout
          successHandler: (void(^)(NSDictionary* data)) successHandler
          errorHandler: (void(^)(NSString* data)) errorHandler

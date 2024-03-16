@@ -85,6 +85,24 @@ export class PrinterWrapper {
     }
   };
 
+  /**
+   * Forcefully Clears the command buffer of the printer
+   * Caution ☢️: Only use this method if disconnecting the printer is not an option.
+   * 
+   * Disconnecting will automatically clear the command buffer.
+  */
+  clearCmdBuffer = async () => {
+    try {
+      await EscPosPrinter.clearCmdBuffer(this.target);
+    } catch (error) {
+      throwProcessedError({
+        methodName: 'clearCmdBuffer',
+        errorCode: error.message,
+        messagesMapping: CommonOperationErrorMessageMapping,
+      });
+    }
+  }
+
   addText = async (data: string) => {
     try {
       await EscPosPrinter.addText(this.target, data);
