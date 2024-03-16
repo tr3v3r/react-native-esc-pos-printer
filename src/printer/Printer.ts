@@ -133,4 +133,14 @@ export class Printer {
   addTextLang = (lang: AddTextLangParam) => {
     return this.printerWrapper.addTextLang(lang);
   };
+
+  /**
+   * Forcefully Clears the command buffer of the printer
+   * Caution ☢️: Use this method if disconnecting the printer is not an option.
+   * 
+   * Disconnecting will automatically clear the command buffer.
+  */
+  clearCmdBuffer = () => {
+    return this.printerWrapper.clearCmdBuffer();
+  }
 }

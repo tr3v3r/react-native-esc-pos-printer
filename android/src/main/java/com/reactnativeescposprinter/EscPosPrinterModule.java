@@ -362,6 +362,21 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    synchronized public void clearCmdBuffer(String target, Promise promise){
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EscPosPrinterErrorManager.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.clearCmdBuffer();
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+
+    @ReactMethod
     synchronized public void addText(String target, String data, Promise promise) {
       ThePrinter thePrinter = thePrinterManager_.getObject(target);
       if (thePrinter == null) {
