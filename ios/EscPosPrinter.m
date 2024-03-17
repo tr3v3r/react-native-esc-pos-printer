@@ -362,6 +362,27 @@ RCT_EXPORT_METHOD(disconnect: (nonnull NSString*) target
     }
 }
 
+RCT_EXPORT_METHOD(clearCommandBuffer: (nonnull NSString*) target
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+{
+    int result = EPOS2_SUCCESS;
+    @synchronized (self) {
+        ThePrinter* thePrinter = [objManager_ getObject:target];
+        if (thePrinter == nil) {
+            result = EPOS2_ERR_INIT;
+        } else {
+            result = [thePrinter clearCommandBuffer];
+        }
+
+        if(result == EPOS2_SUCCESS) {
+            resolve(nil);
+        } else {
+            reject(@"event_failure", [@(result) stringValue], nil);
+        }
+    }
+}
+
 RCT_EXPORT_METHOD(addText: (nonnull NSString*) target
                   data: (NSString*) data
                   withResolver:(RCTPromiseResolveBlock)resolve

@@ -1,20 +1,20 @@
-import { Platform } from 'react-native';
-import { PrinterGetSettingsType, PrinterModelLang } from './constants';
-import { PrinterWrapper } from './PrinterWrapper';
-import type {
-  AddBarcodeParams,
-  AddCutTypeParam,
-  AddImageParams,
-  AddPulseParams,
-  AddSymbolParams,
-  AddTextAlignParam,
-  AddTextLangParam,
-  AddTextSizeParams,
-  AddTextSmoothParam,
-  AddTextStyleParams,
-  PrinterParams,
-} from './types';
 import PQueue from 'p-queue/dist';
+import { Platform } from 'react-native';
+import { PrinterWrapper } from './PrinterWrapper';
+import { PrinterGetSettingsType, PrinterModelLang } from './constants';
+import type {
+    AddBarcodeParams,
+    AddCutTypeParam,
+    AddImageParams,
+    AddPulseParams,
+    AddSymbolParams,
+    AddTextAlignParam,
+    AddTextLangParam,
+    AddTextSizeParams,
+    AddTextSmoothParam,
+    AddTextStyleParams,
+    PrinterParams,
+} from './types';
 
 export class Printer {
   private static instances: Map<string, Printer> = new Map();
@@ -133,4 +133,14 @@ export class Printer {
   addTextLang = (lang: AddTextLangParam) => {
     return this.printerWrapper.addTextLang(lang);
   };
+
+  /**
+   * Forcefully Clears the command buffer of the printer
+   * Caution ☢️: Use this method if disconnecting the printer is not an option.
+   * 
+   * Disconnecting will automatically clear the command buffer.
+  */
+  clearCommandBuffer = () => {
+    return this.printerWrapper.clearCommandBuffer();
+  }
 }

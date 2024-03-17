@@ -1,7 +1,6 @@
+import { useRoute, type RouteProp } from '@react-navigation/native';
 import React, { memo, useEffect, useMemo, useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import { PrinterInfo, Button, ScreenTitle, PrinterStatus } from '../components';
-import type { RootStackParamList } from '../navigation/RootNavigator';
+import { StyleSheet, Text, View } from 'react-native';
 import {
   Printer,
   PrinterConstants,
@@ -10,7 +9,8 @@ import {
   tryToConnectUntil,
   type PrinterStatusResponse,
 } from 'react-native-esc-pos-printer';
-import { useRoute, type RouteProp } from '@react-navigation/native';
+import { Button, PrinterInfo, PrinterStatus, ScreenTitle } from '../components';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 
 type SimplePrintRouteProp = RouteProp<RootStackParamList, 'SimplePrint'>;
 
@@ -132,7 +132,6 @@ export const SimplePrint = memo(() => {
       }
     } catch (e) {
       await printerInstance.disconnect();
-      console.log('Print error', e);
     } finally {
       setPrinting(false);
     }
