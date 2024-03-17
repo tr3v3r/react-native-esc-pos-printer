@@ -304,7 +304,7 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
 
     }
 
-    synchronized public void clearCmdBuffer() throws Epos2Exception {
+    synchronized public void clearCommandBuffer() throws Epos2Exception {
       if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
 
       epos2Printer_.clearCommandBuffer();

@@ -73,7 +73,7 @@ typedef NS_ENUM(NSUInteger, ThePrinterState) {
  */
 - (int) disconnect;
 
--(int) clearCmdBuffer;
+-(int) clearCommandBuffer;
 
 -(int) addText: (nonnull NSString*)data;
 

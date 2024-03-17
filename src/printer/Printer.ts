@@ -1,20 +1,20 @@
-import { Platform } from 'react-native';
-import { PrinterGetSettingsType, PrinterModelLang } from './constants';
-import { PrinterWrapper } from './PrinterWrapper';
-import type {
-  AddBarcodeParams,
-  AddCutTypeParam,
-  AddImageParams,
-  AddPulseParams,
-  AddSymbolParams,
-  AddTextAlignParam,
-  AddTextLangParam,
-  AddTextSizeParams,
-  AddTextSmoothParam,
-  AddTextStyleParams,
-  PrinterParams,
-} from './types';
 import PQueue from 'p-queue/dist';
+import { Platform } from 'react-native';
+import { PrinterWrapper } from './PrinterWrapper';
+import { PrinterGetSettingsType, PrinterModelLang } from './constants';
+import type {
+    AddBarcodeParams,
+    AddCutTypeParam,
+    AddImageParams,
+    AddPulseParams,
+    AddSymbolParams,
+    AddTextAlignParam,
+    AddTextLangParam,
+    AddTextSizeParams,
+    AddTextSmoothParam,
+    AddTextStyleParams,
+    PrinterParams,
+} from './types';
 
 export class Printer {
   private static instances: Map<string, Printer> = new Map();
@@ -140,7 +140,7 @@ export class Printer {
    * 
    * Disconnecting will automatically clear the command buffer.
   */
-  clearCmdBuffer = () => {
-    return this.printerWrapper.clearCmdBuffer();
+  clearCommandBuffer = () => {
+    return this.printerWrapper.clearCommandBuffer();
   }
 }

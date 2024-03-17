@@ -362,7 +362,7 @@ RCT_EXPORT_METHOD(disconnect: (nonnull NSString*) target
     }
 }
 
-RCT_EXPORT_METHOD(clearCmdBuffer: (nonnull NSString*) target
+RCT_EXPORT_METHOD(clearCommandBuffer: (nonnull NSString*) target
                   withResolver:(RCTPromiseResolveBlock)resolve
                   withRejecter:(RCTPromiseRejectBlock)reject)
 {
@@ -372,7 +372,7 @@ RCT_EXPORT_METHOD(clearCmdBuffer: (nonnull NSString*) target
         if (thePrinter == nil) {
             result = EPOS2_ERR_INIT;
         } else {
-            result = [thePrinter clearCmdBuffer];
+            result = [thePrinter clearCommandBuffer];
         }
 
         if(result == EPOS2_SUCCESS) {

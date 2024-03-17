@@ -1,35 +1,35 @@
 import { Image, NativeModules } from 'react-native';
 import {
-  InitPrinterErrorMessageMapping,
-  ConnectPrinterErrorMessageMapping,
-  DisconnectPrinterErrorMessageMapping,
-  CommonOperationErrorMessageMapping,
-  SendDataPrinterErrorMessageMapping,
-  PrinterGetSettingsType,
-  PrintErrorCodeMessageMapping,
-  PrinterErrorStatusMapping,
-  PrinterErrorCodeStatusMapping,
-  PrinterConstants,
-  PrinterPairBluetoothErrorMessageMapping,
+    CommonOperationErrorMessageMapping,
+    ConnectPrinterErrorMessageMapping,
+    DisconnectPrinterErrorMessageMapping,
+    InitPrinterErrorMessageMapping,
+    PrintErrorCodeMessageMapping,
+    PrinterConstants,
+    PrinterErrorCodeStatusMapping,
+    PrinterErrorStatusMapping,
+    PrinterGetSettingsType,
+    PrinterPairBluetoothErrorMessageMapping,
+    SendDataPrinterErrorMessageMapping,
 } from './constants';
 import type {
-  AddBarcodeParams,
-  AddCutTypeParam,
-  AddImageParams,
-  AddSymbolParams,
-  PrinterInitParams,
-  AddPulseParams,
-  AddTextAlignParam,
-  AddTextSizeParams,
-  AddTextSmoothParam,
-  AddTextStyleParams,
-  AddTextLangParam,
+    AddBarcodeParams,
+    AddCutTypeParam,
+    AddImageParams,
+    AddPulseParams,
+    AddSymbolParams,
+    AddTextAlignParam,
+    AddTextLangParam,
+    AddTextSizeParams,
+    AddTextSmoothParam,
+    AddTextStyleParams,
+    PrinterInitParams,
 } from './types';
 import {
-  throwProcessedError,
-  parsePrinterSettings,
-  processComplextError,
-  BufferHelper,
+    BufferHelper,
+    parsePrinterSettings,
+    processComplextError,
+    throwProcessedError,
 } from './utils';
 import { parsePrinterStatus } from './utils/parsePrinterStatus';
 
@@ -91,12 +91,12 @@ export class PrinterWrapper {
    * 
    * Disconnecting will automatically clear the command buffer.
   */
-  clearCmdBuffer = async () => {
+  clearCommandBuffer = async () => {
     try {
-      await EscPosPrinter.clearCmdBuffer(this.target);
+      await EscPosPrinter.clearCommandBuffer(this.target);
     } catch (error) {
       throwProcessedError({
-        methodName: 'clearCmdBuffer',
+        methodName: 'clearCommandBuffer',
         errorCode: error.message,
         messagesMapping: CommonOperationErrorMessageMapping,
       });

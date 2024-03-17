@@ -309,7 +309,7 @@
 }
 
 
-- (int) clearCmdBuffer
+- (int) clearCommandBuffer
 {
     @synchronized (self) {
         if (epos2Printer_ == nil) {
