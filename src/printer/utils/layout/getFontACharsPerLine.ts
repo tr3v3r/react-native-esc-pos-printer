@@ -1,5 +1,4 @@
 export function getFontACharsPerLine(deviceName: string) {
-  console.log(deviceName);
   if (deviceName.startsWith('TM-m10'))
     return {
       58: 35,
