@@ -1,35 +1,35 @@
 import { Image, NativeModules } from 'react-native';
 import {
-    CommonOperationErrorMessageMapping,
-    ConnectPrinterErrorMessageMapping,
-    DisconnectPrinterErrorMessageMapping,
-    InitPrinterErrorMessageMapping,
-    PrintErrorCodeMessageMapping,
-    PrinterConstants,
-    PrinterErrorCodeStatusMapping,
-    PrinterErrorStatusMapping,
-    PrinterGetSettingsType,
-    PrinterPairBluetoothErrorMessageMapping,
-    SendDataPrinterErrorMessageMapping,
+  CommonOperationErrorMessageMapping,
+  ConnectPrinterErrorMessageMapping,
+  DisconnectPrinterErrorMessageMapping,
+  InitPrinterErrorMessageMapping,
+  PrintErrorCodeMessageMapping,
+  PrinterConstants,
+  PrinterErrorCodeStatusMapping,
+  PrinterErrorStatusMapping,
+  PrinterGetSettingsType,
+  PrinterPairBluetoothErrorMessageMapping,
+  SendDataPrinterErrorMessageMapping,
 } from './constants';
 import type {
-    AddBarcodeParams,
-    AddCutTypeParam,
-    AddImageParams,
-    AddPulseParams,
-    AddSymbolParams,
-    AddTextAlignParam,
-    AddTextLangParam,
-    AddTextSizeParams,
-    AddTextSmoothParam,
-    AddTextStyleParams,
-    PrinterInitParams,
+  AddBarcodeParams,
+  AddCutTypeParam,
+  AddImageParams,
+  AddPulseParams,
+  AddSymbolParams,
+  AddTextAlignParam,
+  AddTextLangParam,
+  AddTextSizeParams,
+  AddTextSmoothParam,
+  AddTextStyleParams,
+  PrinterInitParams,
 } from './types';
 import {
-    BufferHelper,
-    parsePrinterSettings,
-    processComplextError,
-    throwProcessedError,
+  BufferHelper,
+  parsePrinterSettings,
+  processComplextError,
+  throwProcessedError,
 } from './utils';
 import { parsePrinterStatus } from './utils/parsePrinterStatus';
 
@@ -88,9 +88,9 @@ export class PrinterWrapper {
   /**
    * Forcefully Clears the command buffer of the printer
    * Caution ☢️: Only use this method if disconnecting the printer is not an option.
-   * 
+   *
    * Disconnecting will automatically clear the command buffer.
-  */
+   */
   clearCommandBuffer = async () => {
     try {
       await EscPosPrinter.clearCommandBuffer(this.target);
@@ -101,7 +101,7 @@ export class PrinterWrapper {
         messagesMapping: CommonOperationErrorMessageMapping,
       });
     }
-  }
+  };
 
   addText = async (data: string) => {
     try {

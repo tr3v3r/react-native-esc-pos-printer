@@ -3,17 +3,17 @@ import { Platform } from 'react-native';
 import { PrinterWrapper } from './PrinterWrapper';
 import { PrinterGetSettingsType, PrinterModelLang } from './constants';
 import type {
-    AddBarcodeParams,
-    AddCutTypeParam,
-    AddImageParams,
-    AddPulseParams,
-    AddSymbolParams,
-    AddTextAlignParam,
-    AddTextLangParam,
-    AddTextSizeParams,
-    AddTextSmoothParam,
-    AddTextStyleParams,
-    PrinterParams,
+  AddBarcodeParams,
+  AddCutTypeParam,
+  AddImageParams,
+  AddPulseParams,
+  AddSymbolParams,
+  AddTextAlignParam,
+  AddTextLangParam,
+  AddTextSizeParams,
+  AddTextSmoothParam,
+  AddTextStyleParams,
+  PrinterParams,
 } from './types';
 
 export class Printer {
@@ -137,10 +137,10 @@ export class Printer {
   /**
    * Forcefully Clears the command buffer of the printer
    * Caution ☢️: Use this method if disconnecting the printer is not an option.
-   * 
+   *
    * Disconnecting will automatically clear the command buffer.
-  */
+   */
   clearCommandBuffer = () => {
     return this.printerWrapper.clearCommandBuffer();
-  }
+  };
 }
