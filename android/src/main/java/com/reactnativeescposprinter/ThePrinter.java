@@ -8,11 +8,9 @@ import com.epson.epos2.printer.ReceiveListener;
 import com.epson.epos2.printer.StatusChangeListener;
 import com.epson.epos2.Epos2CallbackCode;
 
-import com.reactnativeescposprinter.ThePrinterState;
 import com.reactnativeescposprinter.PrinterDelegate;
 import com.reactnativeescposprinter.EposStringHelper;
 import com.reactnativeescposprinter.PrinterCallback;
-import com.reactnativeescposprinter.EscPosPrinterErrorManager;
 import com.reactnativeescposprinter.ImageManager;
 
 import com.facebook.react.bridge.ReadableMap;
@@ -24,21 +22,14 @@ import android.graphics.Bitmap;
 import android.util.Base64;
 
 
-public class ThePrinter implements StatusChangeListener, PrinterSettingListener, ReceiveListener {
+public class ThePrinter implements PrinterSettingListener, ReceiveListener {
 
     private Printer epos2Printer_ = null; // Printer
     private volatile String printerTarget_ = null; // the printer target
     private boolean isConnected_ = false; // cache if printer is connected
     private boolean didBeginTransaction_ = false; // did start Status Monitor
-    private boolean isWaitingForPrinterSettings_ = false; // Printer Settings requested
-    private boolean shutdown_ = false; // removing printer object
     private static final int DISCONNECT_INTERVAL = 500;//millseconds
-    private final Object shutdownLock_ = new Object(); // removing printer object
-    final private Object delegateSync_ = new Object(); //. delegate sync
 
-    private ThePrinterState connectingState_ = ThePrinterState.PRINTER_IDLE; // state of connection
-
-    private PrinterDelegate delegate_ = null; // delegate callback
     private PrinterCallback printCallback_ = null; // callback
     private PrinterCallback getPrinterSettingCallback_ = null; // callback
 
@@ -67,9 +58,6 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
      returns void
      */
     synchronized public void setupWith(final String printerTarget, final int series, final int lang, Context context) throws Epos2Exception {
-
-        connectingState_ = ThePrinterState.PRINTER_IDLE;
-
         printerTarget_ = printerTarget;
         epos2Printer_ = new Printer(series, lang, context);
         epos2Printer_.setReceiveEventListener(this);
@@ -83,35 +71,6 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
      */
     public String getPrinterTarget() {
         return printerTarget_;
-    }
-
-    /**
-    * Returns void
-    * Function setBusy set the busy state of the printer
-    * @param busy set ThePrinterState
-    * * */
-    synchronized public void setBusy(ThePrinterState busy)
-    {
-        connectingState_ = busy;
-    }
-
-    /**
-     Returns void
-     Function removeDelegates removes all delegate callbacks.  Used when tring to remove object
-     */
-    synchronized public void removeDelegates()
-    {
-
-        synchronized (delegateSync_) {
-            delegate_ = null;
-        }
-
-        if (epos2Printer_ == null) return;
-
-        epos2Printer_.setReceiveEventListener(null);
-        epos2Printer_.setConnectionEventListener(null);
-        epos2Printer_.setStatusChangeEventListener(null);
-
     }
 
     /**
@@ -137,88 +96,11 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
     }
 
     /**
-     Returns void
-     Function shutdown disconnects printer and sets flag to shutdown.  Used when tring to remove object
-     @param closeConnection boolean set to disconnect printer
-     */
-    public void shutdown(boolean closeConnection) {
-
-        // set flag;
-        synchronized (shutdownLock_) {
-            if (shutdown_) return;
-            shutdown_ = true;
-            synchronized (delegateSync_) {
-                delegate_ = null;
-            }
-        }
-
-        synchronized (this) {
-
-            // disconnect
-            if (closeConnection && isConnected()) {
-                try {
-                    disconnect();
-                } catch (Epos2Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }
-
-    }
-
-    /**
-     Returns bool
-     Function isPrinterBusy returns if printer is busy doing a long operation
-     @return bool YES == printer is busy
-     */
-    synchronized public boolean isPrinterBusy()
-    {
-        boolean isBusy = false;
-
-        // printer not in idle state
-        if (connectingState_ != ThePrinterState.PRINTER_IDLE) isBusy = true;
-
-        // waiting for printer settings to callback
-        if (isWaitingForPrinterSettings_) isBusy = true;
-        return isBusy;
-    }
-
-    private void handleStartStatusMonitor(final String msg, final boolean didStart) {
-
-        synchronized (this) {
-            if (epos2Printer_ == null) return;
-
-            synchronized (delegateSync_) {
-                if (delegate_ != null) {
-                    delegate_.onPrinterStartStatusMonitorResult(printerTarget_, !didStart, msg);
-                }
-            }
-        }
-    }
-
-    private void handleStopStatusMonitor(final String msg, final boolean didStop) {
-
-        synchronized (this) {
-            if (epos2Printer_ == null) return;
-
-            synchronized (delegateSync_) {
-                if (delegate_ != null) {
-                    delegate_.onPrinterStopStatusMonitorResult(printerTarget_, !didStop, msg);
-                }
-            }
-        }
-    }
-
-    /**
      throws Epos2Exception if there is an error
      Function connect tries to connect selected printer
      @param timeout the amount of time before giving up -- EPOS2_PARAM_DEFAULT
      */
     public void connect(final int timeout) throws Epos2Exception {
-
-        synchronized (shutdownLock_) {
-            if (shutdown_) throw new Epos2Exception(Epos2Exception.ERR_ILLEGAL);
-        }
 
         synchronized (this) {
             if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
@@ -229,15 +111,12 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
                 return;
             }
 
-            connectingState_ = ThePrinterState.PRINTER_CONNECTING;
-
             isConnected_ = false;
 
             try {
                 epos2Printer_.connect(printerTarget_, timeout);
                 isConnected_ = true;
             } catch (Epos2Exception e) {
-                connectingState_ = ThePrinterState.PRINTER_IDLE;
                 e.printStackTrace();
                 isConnected_ = false;
                 throw e;
@@ -254,8 +133,6 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
         if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
 
         if (!isConnected_) return;
-
-        connectingState_ = ThePrinterState.PRINTER_DISCONNECTING;
 
         if (didBeginTransaction_) {
             try {
@@ -285,22 +162,13 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
                 }
             }
             if (count == 0) {
-                connectingState_ = ThePrinterState.PRINTER_IDLE;
                 throw new Epos2Exception(Epos2Exception.ERR_DISCONNECT);
-            }
-
-            synchronized (shutdownLock_) {
-                if (shutdown_) {
-                    break;
-                }
             }
         }
 
         epos2Printer_.clearCommandBuffer();
         isConnected_ = false;
-        isWaitingForPrinterSettings_ = false;
         didBeginTransaction_ = false;
-        connectingState_ = ThePrinterState.PRINTER_IDLE;
 
     }
 
@@ -313,11 +181,6 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
     synchronized public void sendData(int timeout, PrinterCallback handler) throws Epos2Exception {
         if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
 
-        synchronized (shutdownLock_) {
-            if (shutdown_) throw new Epos2Exception(Epos2Exception.ERR_ILLEGAL);
-        }
-
-
         beginTransaction();
         epos2Printer_.sendData(timeout);
         printCallback_ = handler;
@@ -328,11 +191,6 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
      Function beginTransaction see ePOS SDK
      */
     synchronized public void beginTransaction() throws Epos2Exception {
-
-        synchronized (shutdownLock_) {
-            if (shutdown_) throw new Epos2Exception(Epos2Exception.ERR_ILLEGAL);
-        }
-
         if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
 
         if (didBeginTransaction_) return;
@@ -474,11 +332,6 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
     synchronized public void getPrinterSetting(int timeout, int type, PrinterCallback handler) throws Epos2Exception {
         if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
 
-        synchronized (shutdownLock_) {
-            if (shutdown_) throw new Epos2Exception(Epos2Exception.ERR_ILLEGAL);
-        }
-
-
         beginTransaction();
         epos2Printer_.getPrinterSetting(timeout, type, this);
         getPrinterSettingCallback_ = handler;
@@ -493,32 +346,6 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
         return epos2Printer_;
     }
 
-
-    // region StatusChangeListener
-    @Override
-    public void onPtrStatusChange(Printer printer, int eventType) {
-
-        String _objID = Integer.toString(this.hashCode());
-        if (connectingState_ == ThePrinterState.PRINTER_CONNECTING)
-            connectingState_ = ThePrinterState.PRINTER_IDLE;
-
-        synchronized (shutdownLock_) {
-            if (shutdown_) return;
-        }
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                synchronized (delegateSync_) {
-                    if (delegate_ != null) delegate_.onPrinterStatusChange(_objID, eventType);
-                }
-            }
-        }).start();
-
-    }
-    // endregion
-
-    // region PrinterSettingListener
     @Override
     public void onGetPrinterSetting(int code, int type, int value) {
 
@@ -538,21 +365,13 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
 
                     getPrinterSettingCallback_.onSuccess(returnData);
                   } else {
-                    getPrinterSettingCallback_.onError(EscPosPrinterErrorManager.getErrorTextData(code, "code"));
+                    getPrinterSettingCallback_.onError(EposStringHelper.getErrorTextData(code, "code"));
                   }
                   getPrinterSettingCallback_ = null;
-                } else {
-                  connectingState_ = ThePrinterState.PRINTER_IDLE;
                 }
             }
         }).start();
     }
-
-    @Override
-    public void onSetPrinterSetting(int code) {
-
-    }
-    // endregion
 
     // region ReceiveListener
     @Override
@@ -571,16 +390,19 @@ public class ThePrinter implements StatusChangeListener, PrinterSettingListener,
                     WritableMap returnData = EposStringHelper.convertStatusInfoToWritableMap(status);
                     printCallback_.onSuccess(returnData);
                   } else {
-                    printCallback_.onError(EscPosPrinterErrorManager.getErrorTextData(code, "code"));
+                    printCallback_.onError(EposStringHelper.getErrorTextData(code, "code"));
                   }
                   printCallback_ = null;
-                } else {
-                  connectingState_ = ThePrinterState.PRINTER_IDLE;
                 }
             }
         }).start();
 
     }
 
-    // endregion
+
+    @Override
+    public void onSetPrinterSetting(int code) {
+
+    }
+
 }

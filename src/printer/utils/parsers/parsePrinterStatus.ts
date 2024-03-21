@@ -1,8 +1,11 @@
 import {
   GetPrinterStatusMessageMapping,
   PrinterStatusMapping,
-} from '../constants';
-import type { PrinterStatusRawResponse, PrinterStatusResponse } from '../types';
+} from '../../constants';
+import type {
+  PrinterStatusRawResponse,
+  PrinterStatusResponse,
+} from '../../types';
 
 export function parsePrinterStatus(
   response: PrinterStatusRawResponse

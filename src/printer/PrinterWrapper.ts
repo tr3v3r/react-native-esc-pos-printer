@@ -27,10 +27,10 @@ import type {
 import {
   BufferHelper,
   parsePrinterSettings,
+  parsePrinterStatus,
   processComplextError,
   throwProcessedError,
 } from './utils';
-import { parsePrinterStatus } from './utils/parsePrinterStatus';
 
 const { EscPosPrinter } = NativeModules;
 

@@ -1,4 +1,4 @@
 export * from './errors';
-export * from './parsePrinterSettings';
+export * from './parsers';
 export * from './layout';
 export * from './BufferHelper';

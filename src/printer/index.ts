@@ -1,3 +1,3 @@
 export { Printer } from './Printer';
-export * from './constants';
+export { PrinterConstants, DEFAULT_PAPER_WIDTH } from './constants';
 export * from './types';

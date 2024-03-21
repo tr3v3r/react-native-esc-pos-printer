@@ -3,11 +3,11 @@ import {
   GetPrinterSettingsPaperWidthValuesMapping,
   GetPrinterSettingsPrintDencityValuesMapping,
   GetPrinterSettingsPrintSpeendValuesMapping,
-} from '../constants';
+} from '../../constants';
 import type {
   PrinterSettingsResponse,
   PrinterSettingsRawResponse,
-} from '../types';
+} from '../../types';
 
 export function parsePrinterSettings(
   response: PrinterSettingsRawResponse
