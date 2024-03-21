@@ -9,7 +9,6 @@ import {
   PrinterErrorCodeStatusMapping,
   PrinterErrorStatusMapping,
   PrinterGetSettingsType,
-  PrinterPairBluetoothErrorMessageMapping,
   SendDataPrinterErrorMessageMapping,
 } from './constants';
 import type {
@@ -398,18 +397,6 @@ export class PrinterWrapper {
         methodName: 'addTextStyle',
         errorCode: error.message,
         messagesMapping: CommonOperationErrorMessageMapping,
-      });
-    }
-  };
-
-  pairBluetoothDevice = async (macAddress: string) => {
-    try {
-      await EscPosPrinter.pairBluetoothDevice(macAddress);
-    } catch (error) {
-      throwProcessedError({
-        methodName: 'pairBluetoothDevice',
-        errorCode: error.message,
-        messagesMapping: PrinterPairBluetoothErrorMessageMapping,
       });
     }
   };

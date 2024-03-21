@@ -268,13 +268,6 @@ RCT_EXPORT_MODULE()
     @"ALIGN_CENTER": @(EPOS2_ALIGN_CENTER),
     @"ALIGN_RIGHT": @(EPOS2_ALIGN_RIGHT),
 
-    // pair bluetooth device error
-
-    @"BT_ERR_PARAM": @(EPOS2_BT_ERR_PARAM),
-    @"BT_ERR_UNSUPPORTED": @(EPOS2_BT_ERR_UNSUPPORTED),
-    @"BT_ERR_CANCEL": @(EPOS2_BT_ERR_CANCEL),
-    @"BT_ERR_ILLEGAL_DEVICE": @(EPOS2_BT_ERR_ILLEGAL_DEVICE),
-
     // text lang
 
     @"LANG_EN": @(EPOS2_LANG_EN),
@@ -761,25 +754,5 @@ RCT_EXPORT_METHOD(getPrinterSetting:(nonnull NSString*) target
         }];
     }
 }
-
-
-
-RCT_EXPORT_METHOD(pairBluetoothDevice: (NSString *) macAddress
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
-{
-    @synchronized (self) {
-       Epos2BluetoothConnection *pairingPrinter = [[Epos2BluetoothConnection alloc] init];
-       NSMutableString *address = [NSMutableString stringWithString: macAddress];
-       int result = [pairingPrinter connectDevice: address];
-
-        if(result == EPOS2_BT_SUCCESS || result == EPOS2_BT_ERR_ALREADY_CONNECT) {
-            resolve(nil);
-        } else {
-            reject(@"event_failure", [@(result) stringValue], nil);
-        }
-    }
-}
-
 
 @end

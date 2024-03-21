@@ -4,9 +4,6 @@ import { StyleSheet, Text, View } from 'react-native';
 import {
   Printer,
   PrinterConstants,
-  addTextLine,
-  monitorPrinter,
-  tryToConnectUntil,
   type PrinterStatusResponse,
 } from 'react-native-esc-pos-printer';
 import { Button, PrinterInfo, PrinterStatus, ScreenTitle } from '../components';
@@ -34,7 +31,7 @@ export const SimplePrint = memo(() => {
   );
 
   useEffect(() => {
-    const stop = monitorPrinter(printerInstance, (nextStatus) => {
+    const stop = Printer.monitorPrinter(printerInstance, (nextStatus) => {
       setStatus(nextStatus);
     });
 
@@ -46,7 +43,7 @@ export const SimplePrint = memo(() => {
       setPrinting(true);
 
       const res = await printerInstance.queue.add(async () => {
-        await tryToConnectUntil(
+        await Printer.tryToConnectUntil(
           printerInstance,
           (status) => status.online.statusCode === PrinterConstants.TRUE
         );
@@ -79,21 +76,21 @@ export const SimplePrint = memo(() => {
         await printerInstance.addText('Right');
         await printerInstance.addFeedLine();
         await printerInstance.addTextSize({ width: 1, height: 1 });
-        await addTextLine(printerInstance, {
+        await Printer.addTextLine(printerInstance, {
           left: 'Cheesburger',
           right: '3 EUR',
           gapSymbol: '_',
         });
         await printerInstance.addFeedLine();
         await printerInstance.addTextSize({ width: 1, height: 1 });
-        await addTextLine(printerInstance, {
+        await Printer.addTextLine(printerInstance, {
           left: 'Chickenburger',
           right: '1.5 EUR',
           gapSymbol: '.',
         });
         await printerInstance.addFeedLine();
         await printerInstance.addTextSize({ width: 2, height: 2 });
-        await addTextLine(printerInstance, {
+        await Printer.addTextLine(printerInstance, {
           left: 'Happy Meal',
           right: '7 EUR',
           gapSymbol: '.',

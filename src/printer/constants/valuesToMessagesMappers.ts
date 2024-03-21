@@ -18,15 +18,6 @@ import {
 
 import type { PrinterStatusProperties } from '../types';
 
-export const PrinterPairBluetoothErrorMessageMapping = {
-  [PrinterErrorResult.BT_ERR_PARAM]: 'An invalid parameter was passed.',
-  [PrinterErrorResult.BT_ERR_CANCEL]: 'Pairing connection was canceled.',
-  [PrinterErrorResult.BT_ERR_UNSUPPORTED]:
-    'The function was executed on an unsupported OS.',
-  [PrinterErrorResult.BT_ERR_ILLEGAL_DEVICE]: 'An invalid device was selected.',
-  [PrinterErrorResult.ERR_FAILURE]: 'An unknown error occurred.',
-} as const;
-
 export const InitPrinterErrorMessageMapping = {
   [PrinterErrorResult.ERR_PARAM]: 'An invalid parameter was passed.',
   [PrinterErrorResult.ERR_MEMORY]:

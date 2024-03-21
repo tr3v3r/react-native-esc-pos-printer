@@ -1,7 +1,7 @@
 import PQueue from 'p-queue/dist';
-import { Platform } from 'react-native';
 import { PrinterWrapper } from './PrinterWrapper';
 import { PrinterGetSettingsType, PrinterModelLang } from './constants';
+import { addTextLine, monitorPrinter, tryToConnectUntil } from './printHelpers';
 import type {
   AddBarcodeParams,
   AddCutTypeParam,
@@ -41,6 +41,10 @@ export class Printer {
 
     Printer.instances.set(target, this);
   }
+
+  static addTextLine = addTextLine;
+  static monitorPrinter = monitorPrinter;
+  static tryToConnectUntil = tryToConnectUntil;
 
   get currentFontWidth() {
     return this.printerWrapper.currentFontWidth;
@@ -120,14 +124,6 @@ export class Printer {
 
   addTextStyle = (params?: AddTextStyleParams) => {
     return this.printerWrapper.addTextStyle(params);
-  };
-
-  pairBluetoothDevice = (macAddress: string) => {
-    if (Platform.OS === 'ios') {
-      return this.printerWrapper.pairBluetoothDevice(macAddress);
-    }
-
-    return Promise.resolve();
   };
 
   addTextLang = (lang: AddTextLangParam) => {

@@ -37,6 +37,13 @@ RCT_EXPORT_MODULE()
           @"ERR_MEMORY": @(EPOS2_ERR_MEMORY),
           @"ERR_FAILURE": @(EPOS2_ERR_FAILURE),
           @"ERR_PROCESSING": @(EPOS2_ERR_PROCESSING),
+              // pair bluetooth device error
+          @"BT_ERR_PARAM": @(EPOS2_BT_ERR_PARAM),
+          @"BT_ERR_UNSUPPORTED": @(EPOS2_BT_ERR_UNSUPPORTED),
+          @"BT_ERR_CANCEL": @(EPOS2_BT_ERR_CANCEL),
+          @"BT_ERR_ILLEGAL_DEVICE": @(EPOS2_BT_ERR_ILLEGAL_DEVICE),
+
+
  };
 }
 
@@ -75,6 +82,22 @@ RCT_REMAP_METHOD(stopDiscovery,
     }
 }
 
+RCT_EXPORT_METHOD(pairBluetoothDevice: (NSString *) macAddress
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+{
+    @synchronized (self) {
+       Epos2BluetoothConnection *pairingPrinter = [[Epos2BluetoothConnection alloc] init];
+       NSMutableString *address = [NSMutableString stringWithString: macAddress];
+       int result = [pairingPrinter connectDevice: address];
+
+        if(result == EPOS2_BT_SUCCESS || result == EPOS2_BT_ERR_ALREADY_CONNECT) {
+            resolve(nil);
+        } else {
+            reject(@"event_failure", [@(result) stringValue], nil);
+        }
+    }
+}
 
 - (Epos2FilterOption*) getFilterOptionsFromParams: (NSDictionary *)params {
     Epos2FilterOption *filterOption = [[Epos2FilterOption alloc] init];
@@ -120,5 +143,7 @@ RCT_REMAP_METHOD(stopDiscovery,
 
     [self sendEventWithName:@"onDiscovery" body:_printerList];
 }
+
+
 
 @end

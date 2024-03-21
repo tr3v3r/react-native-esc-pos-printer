@@ -65,10 +65,6 @@ export enum PrinterErrorResult {
   ERR_RECOVERY_FAILURE = EscPosPrinterConstants.ERR_RECOVERY_FAILURE,
   ERR_DISCONNECT = EscPosPrinterConstants.ERR_DISCONNECT,
   ERR_INIT = EscPosPrinterConstants.ERR_INIT,
-  BT_ERR_PARAM = EscPosPrinterConstants.BT_ERR_PARAM,
-  BT_ERR_UNSUPPORTED = EscPosPrinterConstants.BT_ERR_UNSUPPORTED,
-  BT_ERR_CANCEL = EscPosPrinterConstants.BT_ERR_CANCEL,
-  BT_ERR_ILLEGAL_DEVICE = EscPosPrinterConstants.BT_ERR_ILLEGAL_DEVICE,
 }
 export enum PrinterErrorCodeResult {
   CODE_ERR_AUTORECOVER = EscPosPrinterConstants.CODE_ERR_AUTORECOVER,
