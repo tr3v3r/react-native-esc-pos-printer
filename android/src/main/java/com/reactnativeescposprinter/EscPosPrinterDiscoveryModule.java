@@ -6,7 +6,6 @@ import android.content.Intent;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.facebook.react.bridge.Promise;
 import com.facebook.react.bridge.ReactApplicationContext;
 import com.facebook.react.bridge.ReactContextBaseJavaModule;
 import com.facebook.react.bridge.ReactMethod;
@@ -40,6 +39,9 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.ConnectionResult;
 
+import com.reactnativeescposprinter.EposStringHelper;
+
+
 
 @ReactModule(name = EscPosPrinterDiscoveryModule.NAME)
 public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule implements ActivityEventListener {
@@ -56,39 +58,10 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
     reactContext.addActivityEventListener(this);
   }
 
-    @Override
-    public Map<String, Object> getConstants() {
-      final Map<String, Object> constants = new HashMap<>();
-      // filter options
-      constants.put("PORTTYPE_ALL", Discovery.PORTTYPE_ALL);
-      constants.put("PORTTYPE_TCP", Discovery.PORTTYPE_TCP);
-      constants.put("PORTTYPE_BLUETOOTH", Discovery.PORTTYPE_BLUETOOTH);
-      constants.put("PORTTYPE_USB", Discovery.PORTTYPE_USB);
-      constants.put("MODEL_ALL", Discovery.MODEL_ALL);
-      constants.put("TYPE_ALL", Discovery.TYPE_ALL);
-      constants.put("TYPE_PRINTER", Discovery.TYPE_PRINTER);
-      constants.put("TYPE_HYBRID_PRINTER", Discovery.TYPE_HYBRID_PRINTER);
-      constants.put("TYPE_DISPLAY", Discovery.TYPE_DISPLAY);
-      constants.put("TYPE_KEYBOARD", Discovery.TYPE_KEYBOARD);
-      constants.put("TYPE_SCANNER", Discovery.TYPE_SCANNER);
-      constants.put("TYPE_SERIAL", Discovery.TYPE_SERIAL);
-      constants.put("TYPE_POS_KEYBOARD", Discovery.TYPE_POS_KEYBOARD);
-      constants.put("TYPE_MSR", Discovery.TYPE_MSR);
-      constants.put("TYPE_GFE", Discovery.TYPE_GFE);
-      constants.put("TYPE_OTHER_PERIPHERAL", Discovery.TYPE_OTHER_PERIPHERAL);
-      constants.put("FILTER_NAME", Discovery.FILTER_NAME);
-      constants.put("FILTER_NONE", Discovery.FILTER_NONE);
-      constants.put("TRUE", Discovery.TRUE);
-      constants.put("FALSE", Discovery.FALSE);
-      // return values
-      constants.put("ERR_PARAM", Epos2Exception.ERR_PARAM);
-      constants.put("ERR_ILLEGAL", Epos2Exception.ERR_ILLEGAL);
-      constants.put("ERR_MEMORY", Epos2Exception.ERR_MEMORY);
-      constants.put("ERR_FAILURE", Epos2Exception.ERR_FAILURE);
-      constants.put("ERR_PROCESSING", Epos2Exception.ERR_PROCESSING);
-
-      return constants;
-    }
+  @Override
+  public Map<String, Object> getConstants() {
+    return EposStringHelper.getDiscoveryConstants();
+  }
 
   @Override
   @NonNull
