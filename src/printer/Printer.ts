@@ -1,4 +1,4 @@
-import PQueue from 'p-queue/dist';
+import type PQueueType from 'p-queue/dist';
 import { PrinterWrapper } from './PrinterWrapper';
 import { PrinterGetSettingsType, PrinterModelLang } from './constants';
 import { addTextLine, monitorPrinter, tryToConnectUntil } from './printHelpers';
@@ -23,7 +23,7 @@ export class Printer {
   private lang: PrinterModelLang;
   private printerWrapper: PrinterWrapper;
 
-  public queue: PQueue;
+  public queue: unknown;
 
   constructor({
     target,
@@ -37,9 +37,21 @@ export class Printer {
     this.deviceName = deviceName;
     this.lang = lang;
     this.printerWrapper = new PrinterWrapper(target);
-    this.queue = new PQueue({ concurrency: 1 });
+
+    this.initQueue();
 
     Printer.instances.set(target, this);
+  }
+
+  initQueue() {
+    const PQueue = require('p-queue/dist').default;
+    this.queue = new PQueue({ concurrency: 1 });
+  }
+
+  addQueueTask<TaskResultType>(
+    task: () => Promise<TaskResultType>
+  ): Promise<TaskResultType | void> {
+    return (this.queue as PQueueType).add(task);
   }
 
   static addTextLine = addTextLine;
@@ -130,12 +142,6 @@ export class Printer {
     return this.printerWrapper.addTextLang(lang);
   };
 
-  /**
-   * Forcefully Clears the command buffer of the printer
-   * Caution ☢️: Use this method if disconnecting the printer is not an option.
-   *
-   * Disconnecting will automatically clear the command buffer.
-   */
   clearCommandBuffer = () => {
     return this.printerWrapper.clearCommandBuffer();
   };

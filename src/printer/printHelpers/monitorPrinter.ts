@@ -15,7 +15,7 @@ export function monitorPrinter(
   let isMonitoring = true;
 
   async function performMonitor() {
-    await printer.queue.add(async () => {
+    await printer.addQueueTask(async () => {
       try {
         await printer.connect(1500);
       } catch (error) {}

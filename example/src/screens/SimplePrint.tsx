@@ -42,7 +42,7 @@ export const SimplePrint = memo(() => {
     try {
       setPrinting(true);
 
-      const res = await printerInstance.queue.add(async () => {
+      const res = await printerInstance.addQueueTask(async () => {
         await Printer.tryToConnectUntil(
           printerInstance,
           (status) => status.online.statusCode === PrinterConstants.TRUE
