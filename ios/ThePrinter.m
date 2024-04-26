@@ -224,6 +224,7 @@
             onPtrRecieveSuccessHandler_ = [successHandler copy];
             onPtrRecieveErrorHandler_ = [errorHandler copy];
         } else {
+            [self endTransaction];
             errorHandler([EposStringHelper convertDictionatyToJsonString:@{
                 @"data": @(result),
                 @"type": @"result"
@@ -441,6 +442,7 @@
             onGetPrinterSettingSuccessHandler_ = [successHandler copy];
             onGetPrinterSettingErrorHandler_ = [errorHandler copy];
         } else {
+            [self endTransaction];
             errorHandler(
              [EposStringHelper convertDictionatyToJsonString:@{
                 @"data": @(result),

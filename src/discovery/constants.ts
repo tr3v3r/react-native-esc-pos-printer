@@ -3,7 +3,7 @@ import { remapConstants } from '../core/utils';
 
 const { EscPosPrinterDiscovery } = NativeModules;
 
-export const DEFAULT_DISCOVERY_TIMEOUT = 5000;
+export const DEFAULT_DISCOVERY_TIMEOUT = Platform.OS === 'ios' ? 5000 : 10000;
 
 const DiscoveryModuleConstants: Record<string, number> =
   EscPosPrinterDiscovery.getConstants();

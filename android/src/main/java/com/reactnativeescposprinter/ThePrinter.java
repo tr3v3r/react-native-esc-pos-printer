@@ -21,7 +21,6 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.Base64;
 
-
 public class ThePrinter implements PrinterSettingListener, ReceiveListener {
 
     private Printer epos2Printer_ = null; // Printer
@@ -182,8 +181,14 @@ public class ThePrinter implements PrinterSettingListener, ReceiveListener {
         if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
 
         beginTransaction();
-        epos2Printer_.sendData(timeout);
-        printCallback_ = handler;
+        try {
+           epos2Printer_.sendData(timeout);
+           printCallback_ = handler;
+        } catch (Epos2Exception e) {
+           endTransaction();
+           throw e;
+        }
+
     }
 
     /**
@@ -333,8 +338,13 @@ public class ThePrinter implements PrinterSettingListener, ReceiveListener {
         if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
 
         beginTransaction();
-        epos2Printer_.getPrinterSetting(timeout, type, this);
-        getPrinterSettingCallback_ = handler;
+        try {
+            epos2Printer_.getPrinterSetting(timeout, type, this);
+            getPrinterSettingCallback_ = handler;
+        } catch (Epos2Exception e) {
+            endTransaction();
+            throw e;
+        }
     }
 
     /**

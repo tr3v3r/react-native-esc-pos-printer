@@ -17,7 +17,7 @@ export function monitorPrinter(
   async function performMonitor() {
     await printer.addQueueTask(async () => {
       try {
-        await printer.connect(1500);
+        await printer.connect();
       } catch (error) {}
       const status = await printer.getStatus();
       listener(status);

@@ -79,32 +79,42 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     synchronized public void connect(String target, int timeout, Promise promise) {
-      ThePrinter thePrinter = thePrinterManager_.getObject(target);
-      if (thePrinter == null) {
-        promise.reject(EposStringHelper.getErrorTextData(ERR_INIT, ""));
-      } else {
-        try {
-          thePrinter.connect(timeout);
-          promise.resolve(null);
-        } catch(Exception e) {
-          processError(promise,e, "");
-        }
-      }
+       new Thread(new Runnable() {
+            @Override
+            synchronized public void run() {
+                ThePrinter thePrinter = thePrinterManager_.getObject(target);
+                if (thePrinter == null) {
+                  promise.reject(EposStringHelper.getErrorTextData(ERR_INIT, ""));
+                } else {
+                  try {
+                    thePrinter.connect(timeout);
+                    promise.resolve(null);
+                  } catch(Exception e) {
+                    processError(promise,e, "");
+                  }
+                }
+            }
+        }).start();
     }
 
    @ReactMethod
     synchronized public void disconnect(String target, Promise promise) {
-      ThePrinter thePrinter = thePrinterManager_.getObject(target);
-      if (thePrinter == null) {
-        promise.reject(EposStringHelper.getErrorTextData(ERR_INIT, ""));
-      } else {
-        try {
-          thePrinter.disconnect();
-          promise.resolve(null);
-        } catch(Exception e) {
-          processError(promise,e, "");
+      new Thread(new Runnable() {
+        @Override
+        synchronized public void run() {
+          ThePrinter thePrinter = thePrinterManager_.getObject(target);
+          if (thePrinter == null) {
+            promise.reject(EposStringHelper.getErrorTextData(ERR_INIT, ""));
+          } else {
+            try {
+              thePrinter.disconnect();
+              promise.resolve(null);
+            } catch(Exception e) {
+              processError(promise,e, "");
+            }
+          }
         }
-      }
+      }).start();
     }
 
     @ReactMethod
@@ -321,17 +331,22 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     synchronized public void getStatus(String target, Promise promise) {
-      ThePrinter thePrinter = thePrinterManager_.getObject(target);
-      if (thePrinter == null) {
-        promise.reject(EposStringHelper.getErrorTextData(ERR_INIT, ""));
-      } else {
-        try {
-          WritableMap data = thePrinter.getStatus();
-          promise.resolve(data);
-        } catch(Exception e) {
-          processError(promise, e, "");
+      new Thread(new Runnable() {
+          @Override
+          synchronized public void run() {
+            ThePrinter thePrinter = thePrinterManager_.getObject(target);
+            if (thePrinter == null) {
+              promise.reject(EposStringHelper.getErrorTextData(ERR_INIT, ""));
+            } else {
+              try {
+                WritableMap data = thePrinter.getStatus();
+                promise.resolve(data);
+              } catch(Exception e) {
+                processError(promise, e, "");
+              }
+            }
         }
-      }
+      }).start();
     }
 
     @ReactMethod
@@ -360,26 +375,31 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule {
 
     @ReactMethod
     synchronized public void getPrinterSetting(String target, int timeout, int type, Promise promise) {
-      ThePrinter thePrinter = thePrinterManager_.getObject(target);
-      if (thePrinter == null) {
-        promise.reject(EposStringHelper.getErrorTextData(ERR_INIT, "result"));
-      } else {
-          try {
-            thePrinter.getPrinterSetting(timeout, type, new PrinterCallback() {
-            @Override
-            public void onSuccess(WritableMap returnData) {
-              promise.resolve(returnData);
-            }
+        new Thread(new Runnable() {
+      @Override
+      synchronized public void run() {
+          ThePrinter thePrinter = thePrinterManager_.getObject(target);
+          if (thePrinter == null) {
+            promise.reject(EposStringHelper.getErrorTextData(ERR_INIT, "result"));
+          } else {
+              try {
+                thePrinter.getPrinterSetting(timeout, type, new PrinterCallback() {
+                @Override
+                public void onSuccess(WritableMap returnData) {
+                  promise.resolve(returnData);
+                }
 
-            @Override
-            public void onError(String errorData) {
-              promise.reject(errorData);
+                @Override
+                public void onError(String errorData) {
+                  promise.reject(errorData);
+                }
+              });
+            } catch(Exception e) {
+                processError(promise, e, "result");
             }
-          });
-        } catch(Exception e) {
-            processError(promise, e, "result");
-        }
+          }
       }
+        }).start();
     }
 
     private void  processError(Promise promise, Exception e, String errorType) {
