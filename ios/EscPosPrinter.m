@@ -98,7 +98,7 @@ RCT_EXPORT_METHOD(disconnect: (nonnull NSString*) target
             result = [thePrinter disconnect];
         }
 
-        if(result == EPOS2_SUCCESS) {
+        if(result == EPOS2_SUCCESS || result == EPOS2_ERR_ILLEGAL) {
             resolve(nil);
         } else {
             reject(@"event_failure", [@(result) stringValue], nil);
