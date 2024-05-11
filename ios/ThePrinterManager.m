@@ -1,5 +1,4 @@
 #import "ThePrinterManager.h"
-#import "NSlogHelper.h"
 
 @interface ThePrinterManager()
                                         // objectid  thePrinter
@@ -40,7 +39,7 @@ static ThePrinterManager *sharedData_ = nil;
 - (NSString *)add:(ThePrinter*)thePrinterObj {
     @synchronized (self) {
         NSString *printerTarget = [thePrinterObj getPrinterTarget];
-    
+
         for (NSString *aKey in [_objectDict allKeys] )
         {
             NSLog(@"Here is the key: %@", aKey);
