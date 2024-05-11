@@ -149,7 +149,7 @@ RCT_EXPORT_METHOD(connect:(NSString *)target
         } else {
             [thePrinter setBusy:PRINTER_CONNECTING];
              NSLog(@"connecting to printer %@", objid);
-            const connectResult = [thePrinter connect:EPOS2_PARAM_DEFAULT startMonitor:true];
+            int const connectResult = [thePrinter connect:EPOS2_PARAM_DEFAULT startMonitor:true];
             if (connectResult == EPOS2_SUCCESS) {
                 onSuccess([NSString stringWithFormat:@"%d", connectResult]);
             } else {
@@ -166,9 +166,9 @@ RCT_EXPORT_METHOD(disconnectAndDeallocate:(NSString *)target
                 withResolver:(RCTPromiseResolveBlock)resolve
                 withRejecter:(RCTPromiseRejectBlock)reject)
 {
-    const disconnectResult = [self disconnectPrinter:target];
+    int const disconnectResult = [self disconnectPrinter:target];
     if (disconnectResult == EPOS2_SUCCESS) {
-        const diallocResult = [self deallocPrinter:target];
+        int const diallocResult = [self deallocPrinter:target];
         if (diallocResult == EPOS2_SUCCESS) {
             resolve([NSString stringWithFormat:@"%d", diallocResult]);
         } else {
