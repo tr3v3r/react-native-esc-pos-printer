@@ -57,3 +57,15 @@ Adds a paper-feed-by-line command to the command buffer.
 ```typescript
 await printerInstance.addFeedLine(3);
 ```
+
+---
+### [sendData(`timeout?: number`): `Promise<PrinterStatusResponse>`](./sendData.md)
+
+Sends the print command.
+
+#### Example
+
+```typescript
+const printerStatus = await printerInstance.sendData();
+```
+---
