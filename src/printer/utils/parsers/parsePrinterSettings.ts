@@ -23,6 +23,7 @@ export function parsePrinterSettings(
   }
 
   return {
+    typeCode: response.type,
     type: PrinterGetSettingsType[response.type],
     value: valueMapping[response.value],
   };

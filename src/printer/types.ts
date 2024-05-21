@@ -34,6 +34,7 @@ export type PrinterSettingsRawResponse = {
 };
 
 export type PrinterSettingsResponse = {
+  typeCode: number;
   type: string;
   value: number;
 };
@@ -111,7 +112,7 @@ export type AddSymbolParams = {
   size: number;
 };
 
-export type AddCutTypeParam = PrinterAddCutType | DefaultOrUnspecifiedParam;
+export type AddCutTypeParam = PrinterAddCutType | CommonParams.PARAM_DEFAULT;
 
 export interface AddPulseParams {
   drawer?: PrinterAddPulseDrawerType | CommonParams.PARAM_DEFAULT;

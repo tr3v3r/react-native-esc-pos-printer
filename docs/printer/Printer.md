@@ -69,3 +69,27 @@ Sends the print command.
 const printerStatus = await printerInstance.sendData();
 ```
 ---
+
+### [addCut(`type?: AddCutTypeParam`): `Promise<void>`](./addCut.md)
+
+Adds a sheet cut command to the command buffer.
+Sets how to cut paper.
+
+#### Example
+
+```typescript
+await printerInstance.addCut(PrinterConstants.CUT_NO_FEED);
+```
+
+___
+### [getPrinterSetting(`type: PrinterGetSettingsType, timeout?: number`): `Promise<PrinterSettingsResponse>`](./getPrinterSetting.md)
+
+Acquires the set value of the printer setting.
+The value acquired by this API is notified to the listener method specified in the listener parameter.
+
+#### Example
+
+```typescript
+
+const printerSetting = await printerInstance.getPrinterSetting(PrinterConstants.PRINTER_SETTING_PAPERWIDTH);
+```
