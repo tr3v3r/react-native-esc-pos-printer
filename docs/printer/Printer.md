@@ -93,3 +93,17 @@ The value acquired by this API is notified to the listener method specified in t
 
 const printerSetting = await printerInstance.getPrinterSetting(PrinterConstants.PRINTER_SETTING_PAPERWIDTH);
 ```
+
+___
+### [getStatus(): `Promise<PrinterStatusResponse>`](./getStatus.md)
+
+Acquires the current status information.
+
+#### Example
+
+```typescript
+const printerStatus = await printerInstance.getStatus();
+```
+
+
+
