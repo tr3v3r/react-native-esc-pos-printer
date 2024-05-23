@@ -104,6 +104,17 @@ Acquires the current status information.
 ```typescript
 const printerStatus = await printerInstance.getStatus();
 ```
+---
 
+### [addImage(params: AddImageParams): `Promise<void>`](./addImage.md)
 
+Adds a raster image print command to the command buffer.
 
+#### Example
+
+```typescript
+await printerInstance.addImage({
+  source: require('../store.png'),
+  width: 100,
+});
+```

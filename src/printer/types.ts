@@ -87,11 +87,11 @@ export type ImageSource =
 export type AddImageParams = {
   source: ImageSource;
   width: number;
-  color?: ColorType | DefaultOrUnspecifiedParam;
-  mode?: ImageColorModeType | DefaultOrUnspecifiedParam;
-  halftone?: ImageHalftoneType | DefaultOrUnspecifiedParam;
-  brightness?: number | DefaultOrUnspecifiedParam;
-  compress?: ImageCompressType | DefaultOrUnspecifiedParam;
+  color?: ColorType | CommonParams.PARAM_DEFAULT;
+  mode?: ImageColorModeType | CommonParams.PARAM_DEFAULT;
+  halftone?: ImageHalftoneType | CommonParams.PARAM_DEFAULT;
+  brightness?: number | CommonParams.PARAM_DEFAULT;
+  compress?: ImageCompressType | CommonParams.PARAM_DEFAULT;
 };
 
 export type AddBarcodeParams = {
