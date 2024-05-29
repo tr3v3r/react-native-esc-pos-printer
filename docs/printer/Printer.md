@@ -118,3 +118,20 @@ await printerInstance.addImage({
   width: 100,
 });
 ```
+
+
+### [addBarcode(params: AddBarcodeParams): `Promise<void>`](./addBarcode.md)
+
+Adds a barcode print command to the command buffer.
+
+#### Example
+
+```typescript
+ await printerInstance.addBarcode({
+  data: 'Test123',
+  type: PrinterConstants.BARCODE_CODE93,
+  hri: PrinterConstants.HRI_BELOW,
+  width: 2,
+  height: 50,
+});
+```
