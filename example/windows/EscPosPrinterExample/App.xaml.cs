@@ -18,7 +18,7 @@ namespace EscPosPrinterExample
 #endif
 
 #if DEBUG
-            InstanceSettings.UseDirectDebugger = false;
+            InstanceSettings.UseDirectDebugger = true;
             InstanceSettings.UseDeveloperSupport = true;
 #else
             InstanceSettings.UseDirectDebugger = false;

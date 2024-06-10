@@ -4,13 +4,13 @@ namespace ReactNativeEscPosPrinter
 {
   internal class RawDeviceInfo
   {
-    private int deviceType;
-    private string target;
-    private string deviceName;
-    private string ipAddress;
-    private string macAddress;
-    private string bdAddress;
-
+    public int deviceType {get;set;}
+    public string target {get;set;}
+    public string deviceName {get;set;}
+    public string ipAddress {get;set;}
+    public string macAddress {get;set;}
+    public string bdAddress { get; set; }
+    
     public RawDeviceInfo(DeviceInfo discoveredDevice)
     {
       deviceName = discoveredDevice.DeviceName;

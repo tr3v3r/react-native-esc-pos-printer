@@ -100,10 +100,10 @@ namespace ReactNativeEscPosPrinter
     private void Discovery_Discovered(DiscoveredEventArgs args)
     {
       RawDeviceInfo printerData = new RawDeviceInfo(args.DiscoveredDevice);
-      onDiscovery(new List<RawDeviceInfo> { printerData });
+      OnDiscovery.Invoke(new List<RawDeviceInfo> { printerData });
     }
 
-    [ReactEvent]
-    public Action<List<RawDeviceInfo>> onDiscovery { get; set; }
+    [ReactEvent("onDiscovery")]
+    public Action<List<RawDeviceInfo>> OnDiscovery { get; set; }
   }
 }

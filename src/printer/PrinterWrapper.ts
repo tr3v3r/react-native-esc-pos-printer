@@ -1,4 +1,4 @@
-import { Image, NativeModules } from 'react-native';
+import { Image, NativeModules, Platform } from 'react-native';
 import {
   CommonOperationErrorMessageMapping,
   ConnectPrinterErrorMessageMapping,
@@ -229,24 +229,36 @@ export class PrinterWrapper {
   addImage = async ({
     source,
     width,
-    color = PrinterConstants.PARAM_DEFAULT,
-    mode = PrinterConstants.PARAM_DEFAULT,
-    halftone = PrinterConstants.PARAM_DEFAULT,
+    color = PrinterConstants.COLOR_1,
+    mode = PrinterConstants.MODE_MONO,
+    halftone = PrinterConstants.HALFTONE_DITHER,
     brightness = PrinterConstants.PARAM_DEFAULT,
-    compress = PrinterConstants.PARAM_DEFAULT,
+    compress = PrinterConstants.COMPRESS_DEFLATE,
   }: AddImageParams) => {
     try {
       const resolvedSource = Image.resolveAssetSource(source);
-      await EscPosPrinter.addImage(
-        this.target,
-        resolvedSource,
-        width,
-        color,
-        mode,
-        halftone,
-        brightness,
-        compress
-      );
+      if (Platform.OS === 'windows') {
+        await EscPosPrinter.addImageWindows(this.target, {
+          resolvedSource,
+          width,
+          color,
+          mode,
+          halftone,
+          brightness,
+          compress,
+        });
+      } else {
+        await EscPosPrinter.addImage(
+          this.target,
+          resolvedSource,
+          width,
+          color,
+          mode,
+          halftone,
+          brightness,
+          compress
+        );
+      }
     } catch (error) {
       throwProcessedError({
         methodName: 'addImage',

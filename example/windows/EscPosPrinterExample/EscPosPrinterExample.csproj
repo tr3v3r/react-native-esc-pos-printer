@@ -140,6 +140,10 @@
     <Import Project="$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.Uwp.CSharpApp.props" Condition="Exists('$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.Uwp.CSharpApp.props')" />
   </ImportGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\windows\ReactNativeEscPosPrinter\ReactNativeEscPosPrinter.csproj">
+      <Project>{70d2e2c4-e0d2-43f4-a6b7-0d4f9f0ddcdb}</Project>
+      <Name>ReactNativeEscPosPrinter</Name>
+    </ProjectReference>
   </ItemGroup>
   <ImportGroup Label="ReactNativeWindowsTargets">
     <Import Project="$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.Uwp.CSharpApp.targets" Condition="Exists('$(ReactNativeWindowsDir)\PropertySheets\External\Microsoft.ReactNative.Uwp.CSharpApp.targets')" />

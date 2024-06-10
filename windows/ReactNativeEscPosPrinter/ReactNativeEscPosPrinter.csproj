@@ -105,7 +105,9 @@
     <Compile Include="EscPosPrinterDiscoveryModule.cs" />
     <Compile Include="EscPosPrinterModule.cs" />
     <Compile Include="ImageManager.cs" />
-    <Compile Include="IPrinterCallback.cs" />
+    <Compile Include="ImageSource.cs" />
+    <Compile Include="PrinterCallback.cs" />
+    <Compile Include="printerStatusStruct.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RawDeviceInfo.cs" />
     <Compile Include="ReactNativeModule.cs" />
