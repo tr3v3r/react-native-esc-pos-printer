@@ -191,7 +191,7 @@ namespace ReactNativeEscPosPrinter
         decoder = await ImageManager.GetBitmapFromSource(source, context);
         if (brightness == 0) { brightness = Printer.PARAM_DEFAULT; }
         double aspectRatio = (double)decoder.PixelHeight / (double)decoder.PixelWidth;
-        int height = (int)Math.Round(width / aspectRatio);
+        int height = (int)Math.Round(width * aspectRatio);
         InMemoryRandomAccessStream ras = new InMemoryRandomAccessStream();
         BitmapEncoder enc = await BitmapEncoder.CreateForTranscodingAsync(ras, decoder);
         enc.BitmapTransform.ScaledWidth = (uint)width;
