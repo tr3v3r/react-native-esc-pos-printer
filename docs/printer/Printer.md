@@ -135,3 +135,18 @@ Adds a barcode print command to the command buffer.
   height: 50,
 });
 ```
+
+### [addSymbol(params: AddSymbolParams): `Promise<void>`](./addSymbol.md)
+
+Adds a 2D symbol print command to the command buffer.
+
+#### Example
+
+```typescript
+ await printerInstance.addSymbol({
+  type: PrinterConstants.SYMBOL_QRCODE_MODEL_2,
+  level: PrinterConstants.LEVEL_M,
+  size: 5,
+  data: 'Test123',
+});
+```
