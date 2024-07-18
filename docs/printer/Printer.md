@@ -150,3 +150,49 @@ Adds a 2D symbol print command to the command buffer.
   data: 'Test123',
 });
 ```
+
+  <!-- addCommand = (uint8Array: Uint8Array) => {
+    return this.printerWrapper.addCommand(uint8Array);
+  }; -->
+
+
+### [addCommand(`data: Uint8Array`): `Promise<void>`](./addCommand.md)
+
+Adds a command to the command buffer. Sends the ESC/POS command.
+
+#### Example
+
+```typescript
+import EscPosEncoder from 'esc-pos-encoder';
+
+let encoder = new EscPosEncoder();
+
+let result = encoder
+    .initialize()
+    .text('The quick brown fox jumps over the lazy dog')
+    .newline()
+    .qrcode('https://nielsleenheer.com')
+    .encode(); // or any other way to get the Uint8Array
+
+await printerInstance.addCommand(result);
+```
+
+### [addPulse(`params?: AddPulseParams`): `Promise<void>`](./addPulse.md)
+
+Adds a drawer kick command to the command buffer. Sets the drawer kick.
+
+#### Example
+
+```typescript
+await printerInstance.addPulse();
+```
+
+### [addTextAlign(`params?: AddTextAlignParam`): `Promise<void>`](./addTextAlign.md)
+
+Adds a text alignment command to the command buffer.
+
+#### Example
+
+```typescript
+await printerInstance.addTextAlign(PrinterConstants.ALIGN_CENTER);
+```

@@ -43,7 +43,7 @@ Promise<[PrinterSettingsResponse](../interfaces/printerSettings.md)>
 | CODE_ERR_MECHANICAL | Mechanical error occurred. |
 | CODE_ERR_EMPTY | No paper is left in the roll paper end detector. |
 | CODE_ERR_PARAM | An invalid parameter was passed. |
-| CODE_ERR_MEMORY |emory necessary for processing could not be allocated. |
+| CODE_ERR_MEMORY | Memory necessary for processing could not be allocated. |
 | CODE_ERR_TIMEOUT | Print timeout occurred. |
 | CODE_ERR_PROCESSING | Could not run the process. |
 | CODE_ERR_ILLEGAL | This API was called while no communication had been started. |
