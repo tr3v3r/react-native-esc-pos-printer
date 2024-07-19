@@ -151,11 +151,6 @@ Adds a 2D symbol print command to the command buffer.
 });
 ```
 
-  <!-- addCommand = (uint8Array: Uint8Array) => {
-    return this.printerWrapper.addCommand(uint8Array);
-  }; -->
-
-
 ### [addCommand(`data: Uint8Array`): `Promise<void>`](./addCommand.md)
 
 Adds a command to the command buffer. Sends the ESC/POS command.
@@ -195,4 +190,62 @@ Adds a text alignment command to the command buffer.
 
 ```typescript
 await printerInstance.addTextAlign(PrinterConstants.ALIGN_CENTER);
+```
+
+### [addTextSize(`params?: AddTextSizeParams`): `Promise<void>`](./addTextSize.md)
+
+Adds character scaling factor setting to the command buffer.
+
+#### Example
+
+```typescript
+await printerInstance.addTextSize({
+  width: 2,
+  height: 2,
+});
+```
+
+### [addTextSmooth(`params?: AddTextSmoothParam`): `Promise<void>`](./addTextSmooth.md)
+
+Adds smoothing setting to the command buffer.
+
+#### Example
+
+```typescript
+await printerInstance.addTextSmooth(PrinterConstants.TRUE);
+```
+
+### [addTextStyle(`params?: AddTextStyleParams`): `Promise<void>`](./addTextStyle.md)
+
+Adds character style setting to the command buffer.
+
+#### Example
+
+```typescript
+await printerInstance.addTextStyle({
+  em: PrinterConstants.TRUE,
+  ul: PrinterConstants.TRUE,
+  color: PrinterConstants.PARAM_UNSPECIFIED,
+} as const);
+```
+
+### [addTextLang(`lang: AddTextLangParam`): `Promise<void>`](./addTextLang.md)
+
+Adds language setting to the command buffer.
+A text string specified by the [addText](./addText.md) API is encoded according to the language specified by this API.
+
+#### Example
+
+```typescript
+await printerInstance.addTextLang(PrinterConstants.LANG_JA);
+```
+
+### clearCommandBuffer(): `Promise<void>`
+
+Clears the command buffer.
+
+#### Example
+
+```typescript
+await printerInstance.clearCommandBuffer();
 ```
