@@ -249,3 +249,21 @@ Clears the command buffer.
 ```typescript
 await printerInstance.clearCommandBuffer();
 ```
+
+## Static Methods
+
+### [Printer.addTextLine(`printerInstance: Printer, params: AddTextLineParams`)](./addTextLine.md)
+
+Prints text line with left and right parts
+
+#### Example
+
+```typescript
+await Printer.addTextLine(printerInstance, {
+  left: 'Cheesburger',
+  right: '3 EUR',
+  gapSymbol: '_',
+});
+```
+
+Find more examples [here](../../src/printer/utils/layout/__tests__/spaceBetween.test.tsx)
