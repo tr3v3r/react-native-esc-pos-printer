@@ -1,13 +1,44 @@
-# HOW TO RUN WITH EXPO GO
+# Installation
 
-Expo Go doesn't contain this library out of the box. But likely Expo SDK 42 brought us Custom Development Clients and you can run any custom native library in the expo project without ejection. With EAS cloud builds you can do it even on Windows-based machines!
+```sh
+npx expo install react-native-mmkv
+npx expo prebuild
+```
 
-Since all steps to run react-native-esc-pos-printer with expo don't require any additional configurations for lib itself, please follow the official Expo documentation.
+Modify `app.json`:
 
-### Here is a short video explaining how it works:
-https://www.youtube.com/watch?v=Iw8FAUftJFU
+### Android
+```JSON
+{
+  "android": {
+    "permissions": [
+     "android.permission.INTERNET",
+     "android.permission.BLUETOOTH_SCAN",
+     "android.permission.BLUETOOTH_CONNECT",
+     "android.permission.BLUETOOTH",
+     "android.permission.BLUETOOTH_ADMIN",
+     "android.permission.ACCESS_FINE_LOCATION",
+     "android.permission.ACCESS_COARSE_LOCATION",
+     "android.permission.WRITE_EXTERNAL_STORAGE",
+     "android.permission.READ_EXTERNAL_STORAGE"
+     ]
+  }
+}
+```
 
-### Videos with examples of usage of other custom native RN libraries with expo:
-https://www.youtube.com/watch?v=id0Im72UN6w
-https://www.youtube.com/watch?v=sHRgQjxNj5E&t=307s
-https://www.youtube.com/watch?v=YjJ0NG9MFkg
+See explanation of permissions [here](./androidPermissions.md)
+
+### iOS
+
+```JSON
+{
+  "ios": {
+    "infoPlist": {
+      // Set the item in the Information Property List.
+      "NSBluetoothAlwaysUsageDescription": "Use this to communicate with the printer.",
+      // When the Bluetooth or USB is used, set the protocol name. Set the protocol name according to the following procedure:
+      "UISupportedExternalAccessoryProtocols": ["com.epson.escpos"]
+    }
+  }
+}
+```

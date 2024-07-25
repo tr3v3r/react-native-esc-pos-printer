@@ -29,3 +29,5 @@ If the text part is too long, it will be wrapped to the next line. Default: `"le
 *textToWrapWidth?*: `number`
 
 Width of the text to wrap from 0 to 1 depending on the charsPerLine. If not specified, it will be calculated automatically based on the text length.
+
+

@@ -252,7 +252,7 @@ await printerInstance.clearCommandBuffer();
 
 ## Static Methods
 
-### [Printer.addTextLine(`printerInstance: Printer, params: AddTextLineParams`)](./addTextLine.md)
+### [Printer.addTextLine(`printerInstance: Printer, params: AddTextLineParams`): `Promose<void>`](./addTextLine.md)
 
 Prints text line with left and right parts
 
@@ -267,3 +267,34 @@ await Printer.addTextLine(printerInstance, {
 ```
 
 Find more examples [here](../../src/printer/utils/layout/__tests__/spaceBetween.test.tsx)
+
+
+
+### [Printer.monitorPrinter(`printerInstance: Printer, listener: Listener, interval: number`): () => void](./monitorPrinter.md)
+
+Starts monitoring the printer status.
+
+#### Example
+
+```typescript
+ const stop = Printer.monitorPrinter(printerInstance, (status) => {
+     console.log(status)
+ });
+
+ // call stop() to stop monitoring
+```
+
+
+### [Printer.tryToConnectUntil(`printerInstance: Printer, condition: (status: PrinterStatusResponse) => boolean`): `Promise<void>`](./tryToConnectUntil.md)
+
+
+Tries to connect to the printer until the condition is met.
+
+#### Example
+
+```typescript
+await Printer.tryToConnectUntil(
+  printerInstance,
+  (status) => status.online.statusCode === PrinterConstants.TRUE
+)
+```
