@@ -13,11 +13,12 @@ import type {
 } from './types';
 import {
   DEFAULT_DISCOVERY_TIMEOUT,
-  DiscoveryErrorMessageMapping,
-  DiscoveryErrorStatusMapping,
   DiscoveryErrorResult,
   DiscoveryDeviceTypeMapping,
+  PrinterPairBluetoothErrorMessageMapping,
+  PrinterPairBluetoothErrorStatusMapping,
 } from './constants';
+import { getProcessedError } from './utils';
 
 const { EscPosPrinterDiscovery } = NativeModules;
 const discoveryEventEmmiter = new NativeEventEmitter(EscPosPrinterDiscovery);
@@ -56,7 +57,7 @@ class PrintersDiscoveryClass {
       }
     } catch (error) {
       this.setStatus('inactive');
-      this.triggerError('PrintersDiscovery.start', error as Error);
+      this.triggerError('start', error as Error);
     }
   };
 
@@ -69,7 +70,7 @@ class PrintersDiscoveryClass {
 
       this.setStatus('inactive');
     } catch (error) {
-      this.triggerError('PrintersDiscovery.stop', error as Error);
+      this.triggerError('stop', error as Error);
     }
   };
 
@@ -125,20 +126,30 @@ class PrintersDiscoveryClass {
     };
   };
 
+  pairBluetoothDevice = async (macAddress?: string) => {
+    if (Platform.OS === 'ios') {
+      try {
+        await EscPosPrinterDiscovery.pairBluetoothDevice(macAddress || '');
+      } catch (error) {
+        throw getProcessedError({
+          methodName: 'pairBluetoothDevice',
+          errorCode: error.message,
+          messagesMapping: PrinterPairBluetoothErrorMessageMapping,
+          statusMapping: PrinterPairBluetoothErrorStatusMapping,
+        });
+      }
+    } else {
+      return Promise.resolve();
+    }
+  };
+
   private triggerError = (methodName: string, error: Error) => {
-    const result = !isNaN(Number(error.message))
-      ? error.message
-      : DiscoveryErrorResult.ERR_FAILURE;
-
-    const message = DiscoveryErrorMessageMapping[result];
-    const status = DiscoveryErrorStatusMapping[result]!;
-
-    const discoveryError = new PrinterDiscoveryError({
-      status: status,
-      message: message,
+    const processedError = getProcessedError({
       methodName,
+      errorCode: error.message,
     });
-    this.errorListeners.forEach((listener) => listener(discoveryError));
+
+    this.errorListeners.forEach((listener) => listener(processedError));
   };
 
   private triggerStatusChange = (status: DiscoveryStatus) => {

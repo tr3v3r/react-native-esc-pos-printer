@@ -11,7 +11,7 @@ export const PrinterInfo = ({ printer }: PrinterInfoProps) => {
   const renderPrinterInfo = () => {
     return Object.keys(printer).map((key) => {
       return (
-        <Text style={styles.text}>
+        <Text key={key} style={styles.text}>
           <Text style={[styles.text, styles.bold]}>{key}</Text>: {printer[key]}
         </Text>
       );

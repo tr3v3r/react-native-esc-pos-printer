@@ -1,748 +1,337 @@
 #import "EposStringHelper.h"
-#import "NSlogHelper.h"
+
+int EPOS2_ERR_INIT = -1;
 
 @implementation EposStringHelper: NSObject
 
-//convert Epos2Printer Error to text
-+ (NSString *)getEposErrorText:(int)error
++ (NSDictionary *)convertStatusInfoToDictionary:(Epos2PrinterStatusInfo *)info
 {
-    NSString *errText = @"";
-    switch (error) {
-        case EPOS2_SUCCESS:
-            errText = @"SUCCESS";
-            break;
-        case EPOS2_ERR_PARAM:
-            errText = @"ERR_PARAM";
-            break;
-        case EPOS2_ERR_CONNECT:
-            errText = @"ERR_CONNECT";
-            break;
-        case EPOS2_ERR_TIMEOUT:
-            errText = @"ERR_TIMEOUT";
-            break;
-        case EPOS2_ERR_MEMORY:
-            errText = @"ERR_MEMORY";
-            break;
-        case EPOS2_ERR_ILLEGAL:
-            errText = @"ERR_ILLEGAL";
-            break;
-        case EPOS2_ERR_PROCESSING:
-            errText = @"ERR_PROCESSING";
-            break;
-        case EPOS2_ERR_NOT_FOUND:
-            errText = @"ERR_NOT_FOUND";
-            break;
-        case EPOS2_ERR_IN_USE:
-            errText = @"ERR_IN_USE";
-            break;
-        case EPOS2_ERR_TYPE_INVALID:
-            errText = @"ERR_TYPE_INVALID";
-            break;
-        case EPOS2_ERR_DISCONNECT:
-            errText = @"ERR_DISCONNECT";
-            break;
-        case EPOS2_ERR_ALREADY_OPENED:
-            errText = @"ERR_ALREADY_OPENED";
-            break;
-        case EPOS2_ERR_ALREADY_USED:
-            errText = @"ERR_ALREADY_USED";
-            break;
-        case EPOS2_ERR_BOX_COUNT_OVER:
-            errText = @"ERR_BOX_COUNT_OVER";
-            break;
-        case EPOS2_ERR_BOX_CLIENT_OVER:
-            errText = @"ERR_BOXT_CLIENT_OVER";
-            break;
-        case EPOS2_ERR_UNSUPPORTED:
-            errText = @"ERR_UNSUPPORTED";
-            break;
-        case EPOS2_ERR_FAILURE:
-            errText = @"ERR_FAILURE";
-            break;
-        case EPOS2_ERR_RECOVERY_FAILURE:
-            errText = @"ERR_RECOVERY_FAILURE";
-            break;
-        default:
-            errText = [NSString stringWithFormat:@"%d", error];
-            break;
-    }
-    return errText;
-}
-
-+ (NSString *)getEposResultText:(int)resultCode
-{
-    NSString *result = @"";
-    switch (resultCode) {
-        case EPOS2_CODE_SUCCESS:
-            result = @"PRINT_SUCCESS";
-            break;
-        case EPOS2_CODE_PRINTING:
-            result = @"PRINTING";
-            break;
-        case EPOS2_CODE_ERR_AUTORECOVER:
-            result = @"ERR_AUTORECOVER";
-            break;
-        case EPOS2_CODE_ERR_COVER_OPEN:
-            result = @"ERR_COVER_OPEN";
-            break;
-        case EPOS2_CODE_ERR_CUTTER:
-            result = @"ERR_CUTTER";
-            break;
-        case EPOS2_CODE_ERR_MECHANICAL:
-            result = @"ERR_MECHANICAL";
-            break;
-        case EPOS2_CODE_ERR_EMPTY:
-            result = @"ERR_EMPTY";
-            break;
-        case EPOS2_CODE_ERR_UNRECOVERABLE:
-            result = @"ERR_UNRECOVERABLE";
-            break;
-        case EPOS2_CODE_ERR_FAILURE:
-            result = @"ERR_FAILURE";
-            break;
-        case EPOS2_CODE_ERR_NOT_FOUND:
-            result = @"ERR_NOT_FOUND";
-            break;
-        case EPOS2_CODE_ERR_SYSTEM:
-            result = @"ERR_SYSTEM";
-            break;
-        case EPOS2_CODE_ERR_PORT:
-            result = @"ERR_PORT";
-            break;
-        case EPOS2_CODE_ERR_TIMEOUT:
-            result = @"ERR_TIMEOUT";
-            break;
-        case EPOS2_CODE_ERR_JOB_NOT_FOUND:
-            result = @"ERR_JOB_NOT_FOUND";
-            break;
-        case EPOS2_CODE_ERR_SPOOLER:
-            result = @"ERR_SPOOLER";
-            break;
-        case EPOS2_CODE_ERR_BATTERY_LOW:
-            result = @"ERR_BATTERY_LOW";
-            break;
-        case EPOS2_CODE_ERR_TOO_MANY_REQUESTS:
-            result = @"ERR_TOO_MANY_REQUESTS";
-            break;
-        case EPOS2_CODE_ERR_REQUEST_ENTITY_TOO_LARGE:
-            result = @"ERR_REQUEST_ENTITY_TOO_LARGE";
-            break;
-        case EPOS2_CODE_ERR_INVALID_WINDOW:
-            result = @"ERR_INVALID_WINDOW";
-            break;
-        case EPOS2_CODE_CANCELED:
-            result = @"CODE_CANCELED";
-            break;
-        case EPOS2_CODE_ERR_RECOGNITION:
-            result = @"ERR_RECOGNITION";
-            break;
-        case EPOS2_CODE_ERR_READ:
-            result = @"ERR_READ";
-            break;
-        case EPOS2_CODE_ERR_PAPER_JAM:
-            result = @"ERR_PAPER_JAM";
-            break;
-        case EPOS2_CODE_ERR_PAPER_PULLED_OUT:
-            result = @"ERR_PAPER_PULLED_OUT";
-            break;
-        case EPOS2_CODE_ERR_CANCEL_FAILED:
-            result = @"ERR_CANCEL_FAILED";
-            break;
-        case EPOS2_CODE_ERR_PAPER_TYPE:
-            result = @"ERR_PAPER_TYPE";
-            break;
-        case EPOS2_CODE_ERR_WAIT_INSERTION:
-            result = @"ERR_WAIT_INSERTION";
-            break;
-        case EPOS2_CODE_ERR_ILLEGAL:
-            result = @"ERR_ILLEGAL";
-            break;
-        case EPOS2_CODE_ERR_INSERTED:
-            result = @"ERR_INSERTED";
-            break;
-        case EPOS2_CODE_ERR_WAIT_REMOVAL:
-            result = @"ERR_WAIT_REMOVAL";
-            break;
-        case EPOS2_CODE_ERR_DEVICE_BUSY:
-            result = @"ERR_DEVICE_BUSY";
-            break;
-        case EPOS2_CODE_ERR_IN_USE:
-            result = @"ERR_IN_USE";
-            break;
-        case EPOS2_CODE_ERR_CONNECT:
-            result = @"ERR_CONNECT";
-            break;
-        case EPOS2_CODE_ERR_DISCONNECT:
-            result = @"ERR_DISCONNECT";
-            break;
-        case EPOS2_CODE_ERR_MEMORY:
-            result = @"ERR_MEMORY";
-            break;
-        case EPOS2_CODE_ERR_PROCESSING:
-            result = @"ERR_PROCESSING";
-            break;
-        case EPOS2_CODE_ERR_PARAM:
-            result = @"ERR_PARAM";
-            break;
-        case EPOS2_CODE_RETRY:
-            result = @"RETRY";
-            break;
-        case EPOS2_CODE_ERR_DIFFERENT_MODEL:
-            result = @"ERR_DIFFERENT_MODEL";
-            break;
-        case EPOS2_CODE_ERR_DIFFERENT_VERSION:
-            result = @"ERR_DIFFERENT_VERSION";
-            break;
-        case EPOS2_CODE_ERR_DATA_CORRUPTED:
-            result = @"ERR_DATA_CORRUPTED";
-            break;
-        default:
-            result = [NSString stringWithFormat:@"%d", resultCode];
-            break;
-    }
-
-    return result;
-}
-
-+ (NSString *)makeStatusMonitorMessage:(int)status
-{
-    
-    NSMutableString *stringStatus = [[NSMutableString alloc] initWithString:@""];
-    if(stringStatus == nil){
-        return nil;
-    }
-    
-    switch (status) {
-        case EPOS2_EVENT_ONLINE:
-            [stringStatus appendString:@"ONLINE"];
-            break;
-        case EPOS2_EVENT_OFFLINE:
-            [stringStatus appendString:@"OFFLINE"];
-            break;
-        case EPOS2_EVENT_POWER_OFF:
-            [stringStatus appendString:@"POWER_OFF"];
-            break;
-        case EPOS2_EVENT_COVER_CLOSE:
-            [stringStatus appendString:@"COVER_CLOSE"];
-            break;
-        case EPOS2_EVENT_COVER_OPEN:
-            [stringStatus appendString:@"COVER_OPEN"];
-            break;
-        case EPOS2_EVENT_PAPER_OK:
-            [stringStatus appendString:@"PAPER_OK"];
-            break;
-        case EPOS2_EVENT_PAPER_NEAR_END:
-            [stringStatus appendString:@"PAPER_NEAR_END"];
-            break;
-        case EPOS2_EVENT_PAPER_EMPTY:
-            [stringStatus appendString:@"PAPER_EMPTY"];
-            break;
-        case EPOS2_EVENT_DRAWER_HIGH:
-            //This status depends on the drawer setting.
-            [stringStatus appendString:@"DRAWER_HIGH(Drawer close)"];
-            break;
-        case EPOS2_EVENT_DRAWER_LOW:
-            //This status depends on the drawer setting.
-            [stringStatus appendString:@"DRAWER_LOW(Drawer open)"];
-            break;
-        case EPOS2_EVENT_BATTERY_ENOUGH:
-            [stringStatus appendString:@"BATTERY_ENOUGH"];
-            break;
-        case EPOS2_EVENT_BATTERY_EMPTY:
-            [stringStatus appendString:@"BATTERY_EMPTY"];
-            break;
-        case EPOS2_EVENT_REMOVAL_WAIT_PAPER:
-            [stringStatus appendString:@"WAITING_FOR_PAPER_REMOVAL"];
-            break;
-        case EPOS2_EVENT_REMOVAL_WAIT_NONE:
-            [stringStatus appendString:@"NOT_WAITING_FOR_PAPER_REMOVAL"];
-            break;
-        case EPOS2_EVENT_AUTO_RECOVER_ERROR:
-            [stringStatus appendString:@"AUTO_RECOVER_ERROR"];
-            break;
-        case EPOS2_EVENT_AUTO_RECOVER_OK:
-            [stringStatus appendString:@"AUTO_RECOVER_OK"];
-            break;
-        case EPOS2_EVENT_UNRECOVERABLE_ERROR:
-            [stringStatus appendString:@"UNRECOVERABLE_ERROR"];
-            break;
-        default:
-            break;
-    }
-    
-    [stringStatus appendString:@"\n"];
-    return stringStatus;
-}
-
-
-+ (int)getEposGetWidthResult:(int)resultCode
-{
-    int result = 0;
-    switch (resultCode) {
-        case EPOS2_PRINTER_SETTING_PAPERWIDTH_58_0:
-            result = 58;
-            break;
-        case EPOS2_PRINTER_SETTING_PAPERWIDTH_60_0:
-            result = 60;
-            break;
-        case EPOS2_PRINTER_SETTING_PAPERWIDTH_80_0:
-            result = 80;
-            break;
-        default:
-            result = 0;
-            break;
-    }
-
-    return result;
-}
-
-
-//convert Epos2Printer Error to text
-+ (NSString *)getEposBTResultText:(int)error
-{
-    NSString *errText = @"";
-    switch (error) {
-        case EPOS2_BT_SUCCESS:
-            errText = @"BT_SUCCESS";
-            break;
-        case EPOS2_BT_ERR_PARAM:
-            errText = @"BT_ERR_PARAM";
-            break;
-        case EPOS2_BT_ERR_UNSUPPORTED:
-            errText = @"BT_ERR_UNSUPPORTED";
-            break;
-        case EPOS2_BT_ERR_CANCEL:
-            errText = @"BT_ERR_CANCEL";
-            break;
-        case EPOS2_BT_ERR_ALREADY_CONNECT:
-            errText = @"BT_ERR_ALREADY_CONNECT";
-            break;
-        case EPOS2_BT_ERR_ILLEGAL_DEVICE:
-            errText = @"BT_ERR_ILLEGAL_DEVICE";
-            break;
-        case EPOS2_BT_ERR_FAILURE:
-            errText = @"BT_ERR_FAILURE";
-            break;
-        default:
-            errText = [NSString stringWithFormat:@"%d", error];
-            break;
-    }
-    return errText;
-}
-
-
-+ (NSDictionary *)makeStatusMessage:(Epos2PrinterStatusInfo *)status
-{
-    NSString *connection = @"";
-    NSString *online = @"";
-    NSString *coverOpen = @"";
-    NSString *paper = @"";
-    NSString *paperFeed = @"";
-    NSString *panelSwitch = @"";
-    NSString *drawer = @"";
-    NSString *errorStatus = @"";
-    NSString *autoRecoverErr = @"";
-    NSString *adapter = @"";
-    NSString *batteryLevel = @"";
-
-    switch(status.connection){
-        case EPOS2_TRUE:
-            connection = @"CONNECT";
-            break;
-        case EPOS2_FALSE:
-            connection = @"DISCONNECT";
-            break;
-        case EPOS2_UNKNOWN:
-            connection = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.online){
-        case EPOS2_TRUE:
-            online = @"ONLINE";
-            break;
-        case EPOS2_FALSE:
-            online = @"OFFLINE";
-            break;
-        case EPOS2_UNKNOWN:
-            online = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.coverOpen){
-        case EPOS2_TRUE:
-            coverOpen = @"COVER_OPEN";
-            break;
-        case EPOS2_FALSE:
-            coverOpen = @"COVER_CLOSE";
-            break;
-        case EPOS2_UNKNOWN:
-            coverOpen = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.paper){
-        case EPOS2_PAPER_OK:
-            paper = @"PAPER_OK";
-            break;
-        case EPOS2_PAPER_NEAR_END:
-            paper = @"PAPER_NEAR_END";
-            break;
-        case EPOS2_PAPER_EMPTY:
-            paper = @"PAPER_EMPTY";
-            break;
-        case EPOS2_UNKNOWN:
-            paper = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.paperFeed){
-        case EPOS2_TRUE:
-            paperFeed = @"PAPER_FEED";
-            break;
-        case EPOS2_FALSE:
-            paperFeed = @"PAPER_STOP";
-            break;
-        case EPOS2_UNKNOWN:
-            paperFeed = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.panelSwitch){
-        case EPOS2_TRUE:
-            panelSwitch = @"SWITCH_ON";
-            break;
-        case EPOS2_FALSE:
-            panelSwitch = @"SWITCH_OFF";
-            break;
-        case EPOS2_UNKNOWN:
-            panelSwitch = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.drawer){
-        case EPOS2_DRAWER_HIGH:
-            //This status depends on the drawer setting.
-            drawer = @"DRAWER_HIGH(Drawer close)";
-            break;
-        case EPOS2_DRAWER_LOW:
-            //This status depends on the drawer setting.
-            drawer = @"DRAWER_LOW(Drawer open)";
-            break;
-        case EPOS2_UNKNOWN:
-            drawer = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.errorStatus){
-        case EPOS2_NO_ERR:
-            errorStatus = @"NO_ERR";
-            break;
-        case EPOS2_MECHANICAL_ERR:
-            errorStatus = @"MECHANICAL_ERR";
-            break;
-        case EPOS2_AUTOCUTTER_ERR:
-            errorStatus = @"AUTOCUTTER_ERR";
-            break;
-        case EPOS2_UNRECOVER_ERR:
-            errorStatus = @"UNRECOVER_ERR";
-            break;
-        case EPOS2_AUTORECOVER_ERR:
-            errorStatus = @"AUTORECOVER_ERR";
-            break;
-        case EPOS2_UNKNOWN:
-            errorStatus = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.autoRecoverError){
-        case EPOS2_HEAD_OVERHEAT:
-            autoRecoverErr = @"HEAD_OVERHEAT";
-            break;
-        case EPOS2_MOTOR_OVERHEAT:
-            autoRecoverErr = @"MOTOR_OVERHEAT";
-            break;
-        case EPOS2_BATTERY_OVERHEAT:
-            autoRecoverErr = @"BATTERY_OVERHEAT";
-            break;
-        case EPOS2_WRONG_PAPER:
-            autoRecoverErr = @"WRONG_PAPER";
-            break;
-        case EPOS2_COVER_OPEN:
-            autoRecoverErr = @"COVER_OPEN";
-            break;
-        case EPOS2_UNKNOWN:
-            autoRecoverErr = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.adapter){
-        case EPOS2_TRUE:
-            adapter = @"AC ADAPTER CONNECT";
-            break;
-        case EPOS2_FALSE:
-            adapter = @"AC ADAPTER DISCONNECT";
-            break;
-        case EPOS2_UNKNOWN:
-            adapter = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    switch(status.batteryLevel){
-        case EPOS2_BATTERY_LEVEL_0:
-           batteryLevel = @"BATTERY_LEVEL_0";
-            break;
-        case EPOS2_BATTERY_LEVEL_1:
-           batteryLevel = @"BATTERY_LEVEL_1";
-            break;
-        case EPOS2_BATTERY_LEVEL_2:
-           batteryLevel = @"BATTERY_LEVEL_2";
-            break;
-        case EPOS2_BATTERY_LEVEL_3:
-           batteryLevel = @"BATTERY_LEVEL_3";
-            break;
-        case EPOS2_BATTERY_LEVEL_4:
-           batteryLevel = @"BATTERY_LEVEL_4";
-            break;
-        case EPOS2_BATTERY_LEVEL_5:
-           batteryLevel = @"BATTERY_LEVEL_5";
-            break;
-        case EPOS2_BATTERY_LEVEL_6:
-           batteryLevel = @"BATTERY_LEVEL_6";
-            break;
-        case EPOS2_UNKNOWN:
-           batteryLevel = @"UNKNOWN";
-            break;
-        default:
-            break;
-    }
-
-    return @{
-      @"connection": connection,
-      @"online": online,
-      @"coverOpen": coverOpen,
-      @"paper": paper,
-      @"paperFeed": paperFeed,
-      @"panelSwitch": panelSwitch,
-      @"drawer": drawer,
-      @"errorStatus": errorStatus,
-      @"autoRecoverErr": autoRecoverErr,
-      @"adapter": adapter,
-      @"batteryLevel": batteryLevel
-    };
-}
-
-+ (NSDictionary *)getOfflineStatusMessage {
    return @{
-      @"connection": @"DISCONNECT",
-      @"online": @"OFFLINE",
-      @"coverOpen": @"UNKNOWN",
-      @"paper": @"UNKNOWN",
-      @"paperFeed": @"UNKNOWN",
-      @"panelSwitch": @"UNKNOWN",
-      @"drawer": @"UNKNOWN",
-      @"errorStatus": @"UNKNOWN",
-      @"autoRecoverErr": @"UNKNOWN",
-      @"adapter": @"UNKNOWN",
-      @"batteryLevel": @"UNKNOWN"
+      @"connection": [@(info.connection) stringValue],
+      @"online": [@(info.online) stringValue],
+      @"coverOpen": [@(info.coverOpen) stringValue],
+      @"paper": [@(info.paper) stringValue],
+      @"paperFeed": [@(info.paperFeed) stringValue],
+      @"panelSwitch": [@(info.panelSwitch) stringValue],
+      @"drawer": [@(info.drawer) stringValue],
+      @"errorStatus": [@(info.errorStatus) stringValue],
+      @"autoRecoverError": [@(info.autoRecoverError) stringValue],
+      @"buzzer": [@(info.buzzer) stringValue],
+      @"adapter": [@(info.adapter) stringValue],
+      @"batteryLevel": [@(info.batteryLevel) stringValue],
+      @"removalWaiting": [@(info.removalWaiting) stringValue],
+      @"paperTakenSensor": [@(info.paperTakenSensor) stringValue],
+      @"unrecoverError": [@(info.unrecoverError) stringValue],
     };
 }
 
-+(NSString *)convertPrintSpeedEnum2String:(int)speedEnum {
-    NSString *speedStr = @"invalid";
-    switch (speedEnum) {
-        case EPOS2_PRINTER_SETTING_PRINTSPEED_1:
-            speedStr = NSLocalizedString(@"printspeed_1", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTSPEED_2:
-            speedStr = NSLocalizedString(@"printspeed_2", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTSPEED_3:
-            speedStr = NSLocalizedString(@"printspeed_3", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTSPEED_4:
-            speedStr = NSLocalizedString(@"printspeed_4", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTSPEED_5:
-            speedStr = NSLocalizedString(@"printspeed_5", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTSPEED_6:
-            speedStr = NSLocalizedString(@"printspeed_6", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTSPEED_7:
-            speedStr = NSLocalizedString(@"printspeed_7", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTSPEED_8:
-            speedStr = NSLocalizedString(@"printspeed_8", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTSPEED_9:
-            speedStr = NSLocalizedString(@"printspeed_9", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTSPEED_10:
-            speedStr = NSLocalizedString(@"printspeed_10", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTSPEED_11:
-            speedStr = NSLocalizedString(@"printspeed_11", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTSPEED_12:
-            speedStr = NSLocalizedString(@"printspeed_12", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTSPEED_13:
-            speedStr = NSLocalizedString(@"printspeed_13", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTSPEED_14:
-            speedStr = NSLocalizedString(@"printspeed_14", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTSPEED_15:
-            speedStr = NSLocalizedString(@"printspeed_15", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTSPEED_16:
-            speedStr = NSLocalizedString(@"printspeed_16", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTSPEED_17:
-            speedStr = NSLocalizedString(@"printspeed_17", @"");
-            break;
-        default:
-            break;
-    }
-    
-    return speedStr;
++ (NSDictionary *) getDiscoveryConstants
+{
+  return @{
+           // filter options
+          @"PORTTYPE_ALL": @(EPOS2_PORTTYPE_ALL),
+          @"PORTTYPE_TCP": @(EPOS2_PORTTYPE_TCP),
+          @"PORTTYPE_BLUETOOTH": @(EPOS2_PORTTYPE_BLUETOOTH),
+          @"PORTTYPE_USB": @(EPOS2_PORTTYPE_USB),
+          @"PORTTYPE_BLUETOOTH_LE": @(EPOS2_PORTTYPE_BLUETOOTH_LE),
+          @"MODEL_ALL": @(EPOS2_MODEL_ALL),
+          @"TYPE_ALL": @(EPOS2_TYPE_ALL),
+          @"TYPE_PRINTER": @(EPOS2_TYPE_PRINTER),
+          @"TYPE_HYBRID_PRINTER": @(EPOS2_TYPE_HYBRID_PRINTER),
+          @"TYPE_DISPLAY": @(EPOS2_TYPE_DISPLAY),
+          @"TYPE_KEYBOARD": @(EPOS2_TYPE_KEYBOARD),
+          @"TYPE_SCANNER": @(EPOS2_TYPE_SCANNER),
+          @"TYPE_SERIAL": @(EPOS2_TYPE_SERIAL),
+          @"TYPE_POS_KEYBOARD": @(EPOS2_TYPE_POS_KEYBOARD),
+          @"TYPE_MSR": @(EPOS2_TYPE_MSR),
+          @"TYPE_GFE": @(EPOS2_TYPE_GFE),
+          @"TYPE_OTHER_PERIPHERAL": @(EPOS2_TYPE_OTHER_PERIPHERAL),
+          // return value
+          @"ERR_PARAM": @(EPOS2_ERR_PARAM),
+          @"ERR_ILLEGAL": @(EPOS2_ERR_ILLEGAL),
+          @"ERR_MEMORY": @(EPOS2_ERR_MEMORY),
+          @"ERR_FAILURE": @(EPOS2_ERR_FAILURE),
+          @"ERR_PROCESSING": @(EPOS2_ERR_PROCESSING),
+              // pair bluetooth device error
+          @"BT_ERR_PARAM": @(EPOS2_BT_ERR_PARAM),
+          @"BT_ERR_UNSUPPORTED": @(EPOS2_BT_ERR_UNSUPPORTED),
+          @"BT_ERR_CANCEL": @(EPOS2_BT_ERR_CANCEL),
+          @"BT_ERR_ILLEGAL_DEVICE": @(EPOS2_BT_ERR_ILLEGAL_DEVICE),
+    };
 }
 
-+ (NSString *)convertPrintDensityEnum2String:(int)dencityEnum {
-    NSString *deinsityStr = @"invalid";
-    switch (dencityEnum) {
-        case EPOS2_PRINTER_SETTING_PRINTDENSITY_DIP:
-            deinsityStr = NSLocalizedString(@"printdensity_DIP", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTDENSITY_70:
-            deinsityStr = NSLocalizedString(@"printdensity_70", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTDENSITY_75:
-            deinsityStr = NSLocalizedString(@"printdensity_75", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTDENSITY_80:
-            deinsityStr = NSLocalizedString(@"printdensity_80", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTDENSITY_85:
-            deinsityStr = NSLocalizedString(@"printdensity_85", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTDENSITY_90:
-            deinsityStr = NSLocalizedString(@"printdensity_90", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTDENSITY_95:
-            deinsityStr = NSLocalizedString(@"printdensity_95", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTDENSITY_100:
-            deinsityStr = NSLocalizedString(@"printdensity_100", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTDENSITY_105:
-            deinsityStr = NSLocalizedString(@"printdensity_105", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTDENSITY_110:
-            deinsityStr = NSLocalizedString(@"printdensity_110", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTDENSITY_115:
-            deinsityStr = NSLocalizedString(@"printdensity_115", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTDENSITY_120:
-            deinsityStr = NSLocalizedString(@"printdensity_120", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTDENSITY_125:
-            deinsityStr = NSLocalizedString(@"printdensity_125", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTDENSITY_130:
-            deinsityStr = NSLocalizedString(@"printdensity_130", @"");
-            break;
-        default:
-            break;
-    }
-    
-    return deinsityStr;
++ (int) getInitErrorResultCode
+{
+  return EPOS2_ERR_INIT;
 }
 
-+ (NSString *)convertPaperWidthEnum2String:(int)paperWidthEnum {
-    NSString *paperWidthStr = @"invalid";
-    switch (paperWidthEnum) {
-        case EPOS2_PRINTER_SETTING_PAPERWIDTH_58_0:
-            paperWidthStr = NSLocalizedString(@"paperwidth_58", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PAPERWIDTH_60_0:
-            paperWidthStr = NSLocalizedString(@"paperwidth_60", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PAPERWIDTH_70_0:
-            paperWidthStr = NSLocalizedString(@"paperwidth_70", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PAPERWIDTH_76_0:
-            paperWidthStr = NSLocalizedString(@"paperwidth_76", @"");
-            break;
-        case EPOS2_PRINTER_SETTING_PAPERWIDTH_80_0:
-            paperWidthStr = NSLocalizedString(@"paperwidth_80", @"");
-            break;
-        default:
-            break;
-    }
-    
-    return paperWidthStr;
-}
++ (NSDictionary *) getPrinterConstants
+{
+  return @{
+    // init models lang
+    @"MODEL_ANK": @(EPOS2_MODEL_ANK),
+    @"MODEL_CHINESE": @(EPOS2_MODEL_CHINESE),
+    @"MODEL_TAIWAN": @(EPOS2_MODEL_TAIWAN),
+    @"MODEL_KOREAN": @(EPOS2_MODEL_KOREAN),
+    @"MODEL_THAI": @(EPOS2_MODEL_THAI),
+    @"MODEL_SOUTHASIA": @(EPOS2_MODEL_SOUTHASIA),
 
-+ (NSString *)convertEpos2PrinterSettingTypeEnum2String:(int)printerSettingTypeEnum {
-    
-    NSString *printerSettingTypeStr = @"invalid";
-    switch (printerSettingTypeEnum) {
-        case EPOS2_PRINTER_SETTING_PAPERWIDTH:
-            printerSettingTypeStr = @"PRINTER_SETTING_PAPERWIDTH";
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTDENSITY:
-            printerSettingTypeStr = @"PRINTER_SETTING_PRINTDENSITY";
-            break;
-        case EPOS2_PRINTER_SETTING_PRINTSPEED:
-            printerSettingTypeStr = @"PRINTER_SETTING_PRINTSPEED";
-            break;
-        default:
-            break;
-    }
-    
-    return printerSettingTypeStr;
-    
+
+    // cut types
+    @"CUT_FEED": @(EPOS2_CUT_FEED),
+    @"CUT_NO_FEED": @(EPOS2_CUT_NO_FEED),
+    @"CUT_RESERVE": @(EPOS2_CUT_RESERVE),
+    @"FULL_CUT_FEED": @(EPOS2_FULL_CUT_FEED),
+    @"FULL_CUT_NO_FEED": @(EPOS2_FULL_CUT_NO_FEED),
+    @"FULL_CUT_RESERVE": @(EPOS2_FULL_CUT_RESERVE),
+    @"PARAM_DEFAULT": @(EPOS2_PARAM_DEFAULT),
+    @"PARAM_UNSPECIFIED": @(EPOS2_PARAM_UNSPECIFIED),
+
+    // errors
+    @"ERR_PARAM": @(EPOS2_ERR_PARAM),
+    @"ERR_MEMORY": @(EPOS2_ERR_MEMORY),
+    @"ERR_UNSUPPORTED": @(EPOS2_ERR_UNSUPPORTED),
+    @"ERR_FAILURE": @(EPOS2_ERR_FAILURE),
+    @"ERR_PROCESSING": @(EPOS2_ERR_PROCESSING),
+    @"ERR_CONNECT": @(EPOS2_ERR_CONNECT),
+    @"ERR_TIMEOUT": @(EPOS2_ERR_TIMEOUT),
+    @"ERR_ILLEGAL": @(EPOS2_ERR_ILLEGAL),
+    @"ERR_NOT_FOUND": @(EPOS2_ERR_NOT_FOUND),
+    @"ERR_IN_USE": @(EPOS2_ERR_IN_USE),
+    @"ERR_TYPE_INVALID": @(EPOS2_ERR_TYPE_INVALID),
+    @"ERR_RECOVERY_FAILURE": @(EPOS2_ERR_RECOVERY_FAILURE),
+    @"ERR_DISCONNECT": @(EPOS2_ERR_DISCONNECT),
+    @"ERR_INIT": @(EPOS2_ERR_INIT),
+
+    // code errors
+    @"CODE_ERR_AUTORECOVER": @(EPOS2_CODE_ERR_AUTORECOVER),
+    @"CODE_ERR_COVER_OPEN": @(EPOS2_CODE_ERR_COVER_OPEN),
+    @"CODE_ERR_CUTTER": @(EPOS2_CODE_ERR_CUTTER),
+    @"CODE_ERR_MECHANICAL": @(EPOS2_CODE_ERR_MECHANICAL),
+    @"CODE_ERR_EMPTY": @(EPOS2_CODE_ERR_EMPTY),
+    @"CODE_ERR_UNRECOVERABLE": @(EPOS2_CODE_ERR_UNRECOVERABLE),
+    @"CODE_ERR_FAILURE": @(EPOS2_CODE_ERR_FAILURE),
+    @"CODE_ERR_NOT_FOUND": @(EPOS2_CODE_ERR_NOT_FOUND),
+    @"CODE_ERR_SYSTEM": @(EPOS2_CODE_ERR_SYSTEM),
+    @"CODE_ERR_PORT": @(EPOS2_CODE_ERR_PORT),
+    @"CODE_ERR_TIMEOUT": @(EPOS2_CODE_ERR_TIMEOUT),
+    @"CODE_ERR_JOB_NOT_FOUND": @(EPOS2_CODE_ERR_JOB_NOT_FOUND),
+    @"CODE_ERR_SPOOLER": @(EPOS2_CODE_ERR_SPOOLER),
+    @"CODE_ERR_BATTERY_LOW": @(EPOS2_CODE_ERR_BATTERY_LOW),
+    @"CODE_ERR_TOO_MANY_REQUESTS": @(EPOS2_CODE_ERR_TOO_MANY_REQUESTS),
+    @"CODE_ERR_REQUEST_ENTITY_TOO_LARGE": @(EPOS2_CODE_ERR_REQUEST_ENTITY_TOO_LARGE),
+    @"CODE_ERR_WAIT_REMOVAL": @(EPOS2_CODE_ERR_WAIT_REMOVAL),
+    @"CODE_PRINTING": @(EPOS2_CODE_PRINTING),
+    @"CODE_ERR_PARAM": @(EPOS2_CODE_ERR_PARAM),
+    @"CODE_ERR_MEMORY": @(EPOS2_CODE_ERR_MEMORY),
+    @"CODE_ERR_PROCESSING": @(EPOS2_CODE_ERR_PROCESSING),
+    @"CODE_ERR_ILLEGAL": @(EPOS2_CODE_ERR_ILLEGAL),
+    @"CODE_ERR_DEVICE_BUSY": @(EPOS2_CODE_ERR_DEVICE_BUSY),
+
+    // get printer settings
+    @"PRINTER_SETTING_PAPERWIDTH": @(EPOS2_PRINTER_SETTING_PAPERWIDTH),
+    @"PRINTER_SETTING_PRINTDENSITY": @(EPOS2_PRINTER_SETTING_PRINTDENSITY),
+    @"PRINTER_SETTING_PRINTSPEED": @(EPOS2_PRINTER_SETTING_PRINTSPEED),
+
+    @"PRINTER_SETTING_PAPERWIDTH58_0": @(EPOS2_PRINTER_SETTING_PAPERWIDTH_58_0),
+    @"PRINTER_SETTING_PAPERWIDTH60_0": @(EPOS2_PRINTER_SETTING_PAPERWIDTH_60_0),
+    @"PRINTER_SETTING_PAPERWIDTH70_0": @(EPOS2_PRINTER_SETTING_PAPERWIDTH_70_0),
+    @"PRINTER_SETTING_PAPERWIDTH76_0": @(EPOS2_PRINTER_SETTING_PAPERWIDTH_76_0),
+    @"PRINTER_SETTING_PAPERWIDTH80_0": @(EPOS2_PRINTER_SETTING_PAPERWIDTH_80_0),
+    @"PRINTER_SETTING_PRINTDENSITYDIP": @(EPOS2_PRINTER_SETTING_PRINTDENSITY_DIP),
+    @"PRINTER_SETTING_PRINTDENSITY70": @(EPOS2_PRINTER_SETTING_PRINTDENSITY_70),
+    @"PRINTER_SETTING_PRINTDENSITY75": @(EPOS2_PRINTER_SETTING_PRINTDENSITY_75),
+    @"PRINTER_SETTING_PRINTDENSITY80": @(EPOS2_PRINTER_SETTING_PRINTDENSITY_80),
+    @"PRINTER_SETTING_PRINTDENSITY85": @(EPOS2_PRINTER_SETTING_PRINTDENSITY_85),
+    @"PRINTER_SETTING_PRINTDENSITY90": @(EPOS2_PRINTER_SETTING_PRINTDENSITY_90),
+    @"PRINTER_SETTING_PRINTDENSITY95": @(EPOS2_PRINTER_SETTING_PRINTDENSITY_95),
+    @"PRINTER_SETTING_PRINTDENSITY100": @(EPOS2_PRINTER_SETTING_PRINTDENSITY_100),
+    @"PRINTER_SETTING_PRINTDENSITY105": @(EPOS2_PRINTER_SETTING_PRINTDENSITY_105),
+    @"PRINTER_SETTING_PRINTDENSITY110": @(EPOS2_PRINTER_SETTING_PRINTDENSITY_110),
+    @"PRINTER_SETTING_PRINTDENSITY115": @(EPOS2_PRINTER_SETTING_PRINTDENSITY_115),
+    @"PRINTER_SETTING_PRINTDENSITY120": @(EPOS2_PRINTER_SETTING_PRINTDENSITY_120),
+    @"PRINTER_SETTING_PRINTDENSITY125": @(EPOS2_PRINTER_SETTING_PRINTDENSITY_125),
+    @"PRINTER_SETTING_PRINTDENSITY130": @(EPOS2_PRINTER_SETTING_PRINTDENSITY_130),
+    @"PRINTER_SETTING_PRINTSPEED1": @(EPOS2_PRINTER_SETTING_PRINTSPEED_1),
+    @"PRINTER_SETTING_PRINTSPEED2": @(EPOS2_PRINTER_SETTING_PRINTSPEED_2),
+    @"PRINTER_SETTING_PRINTSPEED3": @(EPOS2_PRINTER_SETTING_PRINTSPEED_3),
+    @"PRINTER_SETTING_PRINTSPEED4": @(EPOS2_PRINTER_SETTING_PRINTSPEED_4),
+    @"PRINTER_SETTING_PRINTSPEED5": @(EPOS2_PRINTER_SETTING_PRINTSPEED_5),
+    @"PRINTER_SETTING_PRINTSPEED6": @(EPOS2_PRINTER_SETTING_PRINTSPEED_6),
+    @"PRINTER_SETTING_PRINTSPEED7": @(EPOS2_PRINTER_SETTING_PRINTSPEED_7),
+    @"PRINTER_SETTING_PRINTSPEED8": @(EPOS2_PRINTER_SETTING_PRINTSPEED_8),
+    @"PRINTER_SETTING_PRINTSPEED9": @(EPOS2_PRINTER_SETTING_PRINTSPEED_9),
+    @"PRINTER_SETTING_PRINTSPEED10": @(EPOS2_PRINTER_SETTING_PRINTSPEED_10),
+    @"PRINTER_SETTING_PRINTSPEED11": @(EPOS2_PRINTER_SETTING_PRINTSPEED_11),
+    @"PRINTER_SETTING_PRINTSPEED12": @(EPOS2_PRINTER_SETTING_PRINTSPEED_12),
+    @"PRINTER_SETTING_PRINTSPEED13": @(EPOS2_PRINTER_SETTING_PRINTSPEED_13),
+    @"PRINTER_SETTING_PRINTSPEED14": @(EPOS2_PRINTER_SETTING_PRINTSPEED_14),
+    @"PRINTER_SETTING_PRINTSPEED15": @(EPOS2_PRINTER_SETTING_PRINTSPEED_15),
+    @"PRINTER_SETTING_PRINTSPEED16": @(EPOS2_PRINTER_SETTING_PRINTSPEED_16),
+    @"PRINTER_SETTING_PRINTSPEED17": @(EPOS2_PRINTER_SETTING_PRINTSPEED_17),
+
+    // printer status
+    @"TRUE": @(EPOS2_TRUE),
+    @"FALSE": @(EPOS2_FALSE),
+    @"UNKNOWN": @(EPOS2_UNKNOWN),
+    @"PAPER_OK": @(EPOS2_PAPER_OK),
+    @"PAPER_NEAR_END": @(EPOS2_PAPER_NEAR_END),
+    @"PAPER_EMPTY": @(EPOS2_PAPER_EMPTY),
+    @"SWITCH_ON": @(EPOS2_SWITCH_ON),
+    @"SWITCH_OFF": @(EPOS2_SWITCH_OFF),
+    @"DRAWER_HIGH": @(EPOS2_DRAWER_HIGH),
+    @"DRAWER_LOW": @(EPOS2_DRAWER_LOW),
+    @"NO_ERR": @(EPOS2_NO_ERR),
+    @"MECHANICAL_ERR": @(EPOS2_MECHANICAL_ERR),
+    @"AUTOCUTTER_ERR": @(EPOS2_AUTOCUTTER_ERR),
+    @"UNRECOVER_ERR": @(EPOS2_UNRECOVER_ERR),
+    @"AUTORECOVER_ERR": @(EPOS2_AUTORECOVER_ERR),
+    @"HEAD_OVERHEAT": @(EPOS2_HEAD_OVERHEAT),
+    @"MOTOR_OVERHEAT": @(EPOS2_MOTOR_OVERHEAT),
+    @"BATTERY_OVERHEAT": @(EPOS2_BATTERY_OVERHEAT),
+    @"WRONG_PAPER": @(EPOS2_WRONG_PAPER),
+    @"COVER_OPEN": @(EPOS2_COVER_OPEN),
+    @"EPOS2_BATTERY_LEVEL_6": @(EPOS2_BATTERY_LEVEL_6),
+    @"EPOS2_BATTERY_LEVEL_5": @(EPOS2_BATTERY_LEVEL_5),
+    @"EPOS2_BATTERY_LEVEL_4": @(EPOS2_BATTERY_LEVEL_4),
+    @"EPOS2_BATTERY_LEVEL_3": @(EPOS2_BATTERY_LEVEL_3),
+    @"EPOS2_BATTERY_LEVEL_2": @(EPOS2_BATTERY_LEVEL_2),
+    @"EPOS2_BATTERY_LEVEL_1": @(EPOS2_BATTERY_LEVEL_1),
+    @"EPOS2_BATTERY_LEVEL_0": @(EPOS2_BATTERY_LEVEL_0),
+    @"REMOVAL_WAIT_PAPER": @(EPOS2_REMOVAL_WAIT_PAPER),
+    @"REMOVAL_WAIT_NONE": @(EPOS2_REMOVAL_WAIT_NONE),
+    @"REMOVAL_DETECT_PAPER": @(EPOS2_REMOVAL_DETECT_PAPER),
+    @"REMOVAL_DETECT_PAPER_NONE": @(EPOS2_REMOVAL_DETECT_PAPER_NONE),
+    @"REMOVAL_DETECT_UNKNOWN": @(EPOS2_REMOVAL_DETECT_UNKNOWN),
+    @"HIGH_VOLTAGE_ERR": @(EPOS2_HIGH_VOLTAGE_ERR),
+    @"LOW_VOLTAGE_ERR": @(EPOS2_LOW_VOLTAGE_ERR),
+
+    // image
+    @"COLOR_NONE": @(EPOS2_COLOR_NONE),
+    @"COLOR_1": @(EPOS2_COLOR_1),
+    @"COLOR_2": @(EPOS2_COLOR_2),
+    @"COLOR_3": @(EPOS2_COLOR_3),
+    @"COLOR_4": @(EPOS2_COLOR_4),
+    @"MODE_MONO": @(EPOS2_MODE_MONO),
+    @"MODE_GRAY16": @(EPOS2_MODE_GRAY16),
+    @"MODE_MONO_HIGH_DENSITY": @(EPOS2_MODE_MONO_HIGH_DENSITY),
+    @"HALFTONE_DITHER": @(EPOS2_HALFTONE_DITHER),
+    @"HALFTONE_ERROR_DIFFUSION": @(EPOS2_HALFTONE_ERROR_DIFFUSION),
+    @"HALFTONE_THRESHOLD": @(EPOS2_HALFTONE_THRESHOLD),
+    @"COMPRESS_DEFLATE": @(EPOS2_COMPRESS_DEFLATE),
+    @"COMPRESS_NONE": @(EPOS2_COMPRESS_NONE),
+    @"COMPRESS_AUTO": @(EPOS2_COMPRESS_AUTO),
+
+    // barcode
+    @"BARCODE_UPC_A": @(EPOS2_BARCODE_UPC_A),
+    @"BARCODE_UPC_E": @(EPOS2_BARCODE_UPC_E),
+    @"BARCODE_EAN13": @(EPOS2_BARCODE_EAN13),
+    @"BARCODE_JAN13": @(EPOS2_BARCODE_JAN13),
+    @"BARCODE_EAN8": @(EPOS2_BARCODE_EAN8),
+    @"BARCODE_JAN8": @(EPOS2_BARCODE_JAN8),
+    @"BARCODE_CODE39": @(EPOS2_BARCODE_CODE39),
+    @"BARCODE_ITF": @(EPOS2_BARCODE_ITF),
+    @"BARCODE_CODABAR": @(EPOS2_BARCODE_CODABAR),
+    @"BARCODE_CODE93": @(EPOS2_BARCODE_CODE93),
+    @"BARCODE_CODE128": @(EPOS2_BARCODE_CODE128),
+    @"BARCODE_CODE128_AUTO": @(EPOS2_BARCODE_CODE128_AUTO),
+    @"BARCODE_GS1_128": @(EPOS2_BARCODE_GS1_128),
+    @"BARCODE_GS1_DATABAR_OMNIDIRECTIONAL": @(EPOS2_BARCODE_GS1_DATABAR_OMNIDIRECTIONAL),
+    @"BARCODE_GS1_DATABAR_TRUNCATED": @(EPOS2_BARCODE_GS1_DATABAR_TRUNCATED),
+    @"BARCODE_GS1_DATABAR_LIMITED": @(EPOS2_BARCODE_GS1_DATABAR_LIMITED),
+    @"BARCODE_GS1_DATABAR_EXPANDED": @(EPOS2_BARCODE_GS1_DATABAR_EXPANDED),
+    @"HRI_NONE": @(EPOS2_HRI_NONE),
+    @"HRI_ABOVE": @(EPOS2_HRI_ABOVE),
+    @"HRI_BELOW": @(EPOS2_HRI_BELOW),
+    @"HRI_BOTH": @(EPOS2_HRI_BOTH),
+
+    // font
+    @"FONT_A": @(EPOS2_FONT_A),
+    @"FONT_B": @(EPOS2_FONT_B),
+    @"FONT_C": @(EPOS2_FONT_C),
+    @"FONT_D": @(EPOS2_FONT_D),
+    @"FONT_E": @(EPOS2_FONT_E),
+
+    // symbol
+
+    @"SYMBOL_PDF417_STANDARD": @(EPOS2_SYMBOL_PDF417_STANDARD),
+    @"SYMBOL_PDF417_TRUNCATED": @(EPOS2_SYMBOL_PDF417_TRUNCATED),
+    @"SYMBOL_QRCODE_MODEL_1": @(EPOS2_SYMBOL_QRCODE_MODEL_1),
+    @"SYMBOL_QRCODE_MODEL_2": @(EPOS2_SYMBOL_QRCODE_MODEL_2),
+    @"SYMBOL_QRCODE_MICRO": @(EPOS2_SYMBOL_QRCODE_MICRO),
+    @"SYMBOL_MAXICODE_MODE_2": @(EPOS2_SYMBOL_MAXICODE_MODE_2),
+    @"SYMBOL_MAXICODE_MODE_3": @(EPOS2_SYMBOL_MAXICODE_MODE_3),
+    @"SYMBOL_MAXICODE_MODE_4": @(EPOS2_SYMBOL_MAXICODE_MODE_4),
+    @"SYMBOL_MAXICODE_MODE_5": @(EPOS2_SYMBOL_MAXICODE_MODE_5),
+    @"SYMBOL_MAXICODE_MODE_6": @(EPOS2_SYMBOL_MAXICODE_MODE_6),
+    @"SYMBOL_GS1_DATABAR_STACKED": @(EPOS2_SYMBOL_GS1_DATABAR_STACKED),
+    @"SYMBOL_GS1_DATABAR_STACKED_OMNIDIRECTIONAL": @(EPOS2_SYMBOL_GS1_DATABAR_STACKED_OMNIDIRECTIONAL),
+    @"SYMBOL_GS1_DATABAR_EXPANDED_STACKED": @(EPOS2_SYMBOL_GS1_DATABAR_EXPANDED_STACKED),
+    @"SYMBOL_AZTECCODE_FULLRANGE": @(EPOS2_SYMBOL_AZTECCODE_FULLRANGE),
+    @"SYMBOL_AZTECCODE_COMPACT": @(EPOS2_SYMBOL_AZTECCODE_COMPACT),
+    @"SYMBOL_DATAMATRIX_SQUARE": @(EPOS2_SYMBOL_DATAMATRIX_SQUARE),
+    @"SYMBOL_DATAMATRIX_RECTANGLE_8": @(EPOS2_SYMBOL_DATAMATRIX_RECTANGLE_8),
+    @"SYMBOL_DATAMATRIX_RECTANGLE_12": @(EPOS2_SYMBOL_DATAMATRIX_RECTANGLE_12),
+    @"SYMBOL_DATAMATRIX_RECTANGLE_16": @(EPOS2_SYMBOL_DATAMATRIX_RECTANGLE_16),
+    @"LEVEL_0": @(EPOS2_LEVEL_0),
+    @"LEVEL_1": @(EPOS2_LEVEL_1),
+    @"LEVEL_2": @(EPOS2_LEVEL_2),
+    @"LEVEL_3": @(EPOS2_LEVEL_3),
+    @"LEVEL_4": @(EPOS2_LEVEL_4),
+    @"LEVEL_5": @(EPOS2_LEVEL_5),
+    @"LEVEL_6": @(EPOS2_LEVEL_6),
+    @"LEVEL_7": @(EPOS2_LEVEL_7),
+    @"LEVEL_8": @(EPOS2_LEVEL_8),
+    @"LEVEL_L": @(EPOS2_LEVEL_L),
+    @"LEVEL_M": @(EPOS2_LEVEL_M),
+    @"LEVEL_Q": @(EPOS2_LEVEL_Q),
+    @"LEVEL_H": @(EPOS2_LEVEL_H),
+
+
+    // add pulse
+
+    @"DRAWER_2PIN": @(EPOS2_DRAWER_2PIN),
+    @"DRAWER_5PIN": @(EPOS2_DRAWER_5PIN),
+    @"PULSE_100": @(EPOS2_PULSE_100),
+    @"PULSE_200": @(EPOS2_PULSE_200),
+    @"PULSE_300": @(EPOS2_PULSE_300),
+    @"PULSE_400": @(EPOS2_PULSE_400),
+    @"PULSE_500": @(EPOS2_PULSE_500),
+
+    // text align
+
+    @"ALIGN_LEFT": @(EPOS2_ALIGN_LEFT),
+    @"ALIGN_CENTER": @(EPOS2_ALIGN_CENTER),
+    @"ALIGN_RIGHT": @(EPOS2_ALIGN_RIGHT),
+
+    // text lang
+
+    @"LANG_EN": @(EPOS2_LANG_EN),
+    @"LANG_JA": @(EPOS2_LANG_JA),
+    @"LANG_ZH_CN": @(EPOS2_LANG_ZH_CN),
+    @"LANG_ZH_TW": @(EPOS2_LANG_ZH_TW),
+    @"LANG_KO": @(EPOS2_LANG_KO),
+    @"LANG_TH": @(EPOS2_LANG_TH),
+    @"LANG_VI": @(EPOS2_LANG_VI),
+    @"LANG_MULTI": @(EPOS2_LANG_MULTI),
+   };
 }
 
 + (int)getPrinterSeries:(NSString*)name
 {
-    
     if (name == nil || [name isEqualToString:@""]) return EPOS2_TM_T88;
 
-    if ([name hasPrefix:@"TM-T88VII"]) return EPOS2_TM_T88VII;
-    if ([name hasPrefix:@"TM-m30II"]) return EPOS2_TM_M30II;
-    if ([name hasPrefix:@"TM-m30"]) return EPOS2_TM_M30;
-    if ([name hasPrefix:@"TM-L90LFC"]) return EPOS2_TM_L90LFC;
-    if ([name hasPrefix:@"TM-L90"]) return EPOS2_TM_L90;
-    if ([name hasPrefix:@"TM-m50"]) return EPOS2_TM_M50;
-    if ([name hasPrefix:@"TM-L100"]) return EPOS2_TM_L100;
     if ([name hasPrefix:@"TM-m10"]) return EPOS2_TM_M10;
+    if ([name hasPrefix:@"TM-m30"]) return EPOS2_TM_M30;
+    if ([name hasPrefix:@"TM-m30III"]) return EPOS2_TM_M30III;
+    if ([name hasPrefix:@"TM-m30II"]) return EPOS2_TM_M30II;
+    if ([name hasPrefix:@"TM-m50II"]) return EPOS2_TM_M50II;
+    if ([name hasPrefix:@"TM-m50"]) return EPOS2_TM_M50;
+    if ([name hasPrefix:@"TM-P20II"]) return EPOS2_TM_P20II;
     if ([name hasPrefix:@"TM-P20"]) return EPOS2_TM_P20;
     if ([name hasPrefix:@"TM-P60II"]) return EPOS2_TM_P60II;
     if ([name hasPrefix:@"TM-P60"]) return EPOS2_TM_P60;
+    if ([name hasPrefix:@"TM-P80II"]) return EPOS2_TM_P80II;
     if ([name hasPrefix:@"TM-P80"]) return EPOS2_TM_P80;
     if ([name hasPrefix:@"TM-T20"]) return EPOS2_TM_T20;
     if ([name hasPrefix:@"TM-T60"]) return EPOS2_TM_T60;
@@ -751,19 +340,26 @@
     if ([name hasPrefix:@"TM-T82"]) return EPOS2_TM_T82;
     if ([name hasPrefix:@"TM-T83III"]) return EPOS2_TM_T83III;
     if ([name hasPrefix:@"TM-T83"]) return EPOS2_TM_T83;
+    if ([name hasPrefix:@"TM-T88VII"]) return EPOS2_TM_T88VII;
     if ([name hasPrefix:@"TM-T88"]) return EPOS2_TM_T88;
-    if ([name hasPrefix:@"TM-T90KP"]) return EPOS2_TM_T90KP;
     if ([name hasPrefix:@"TM-T90"]) return EPOS2_TM_T90;
+    if ([name hasPrefix:@"TM-T100"]) return EPOS2_TM_T100;
     if ([name hasPrefix:@"TM-U220"]) return EPOS2_TM_U220;
     if ([name hasPrefix:@"TM-U330"]) return EPOS2_TM_U330;
+    if ([name hasPrefix:@"TM-L90LFC"]) return EPOS2_TM_L90LFC;
+    if ([name hasPrefix:@"TM-L90"]) return EPOS2_TM_L90;
+    if ([name hasPrefix:@"TM-L100"]) return EPOS2_TM_L100;
     if ([name hasPrefix:@"TM-H6000"]) return EPOS2_TM_H6000;
-    if ([name hasPrefix:@"TM-T100"]) return EPOS2_TM_T100;
-    if ([name hasPrefix:@"TS-100"]) return EPOS2_TS_100;
-    if ([name hasPrefix:@"TM_T88VII"]) return EPOS2_TM_T88VII;
-    if ([name hasPrefix:@"TM_L90LFC"]) return EPOS2_TM_L90LFC;
-    if ([name hasPrefix:@"TM_L100"]) return EPOS2_TM_L100;
-    
+
     return EPOS2_TM_T88;
+}
+
++ (NSString *)convertDictionatyToJsonString:(NSDictionary *)dict
+{
+   NSData *nsData = [NSJSONSerialization dataWithJSONObject:dict options:NSJSONWritingPrettyPrinted error:nil];
+   NSString *jsonString = [[NSString alloc] initWithData:nsData encoding:NSUTF8StringEncoding];
+
+   return jsonString;
 }
 
 

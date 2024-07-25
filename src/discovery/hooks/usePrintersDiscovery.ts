@@ -54,11 +54,16 @@ export function usePrintersDiscovery() {
     PrintersDiscovery.stop();
   }, []);
 
+  const pairBluetoothDevice = useCallback(async (macAddress?: string) => {
+    await PrintersDiscovery.pairBluetoothDevice(macAddress);
+  }, []);
+
   return {
     printers,
     isDiscovering,
     printerError,
     start,
     stop,
+    pairBluetoothDevice,
   };
 }

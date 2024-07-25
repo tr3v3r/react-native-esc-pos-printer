@@ -1,6 +1,6 @@
 {
   "name": "react-native-esc-pos-printer",
-  "version": "3.1.1",
+  "version": "4.0.0-beta.6",
   "description": "test",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
@@ -54,6 +54,7 @@
   },
   "dependencies": {
     "buffer": "6.0.3",
+    "p-queue": "^7.4.1",
     "react-native-esc-pos-printer-sdk": "2.27.1",
     "wordwrapjs": "^5.1.0"
   },

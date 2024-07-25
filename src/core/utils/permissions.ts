@@ -1,8 +1,8 @@
 import {
-  Platform,
-  PermissionsAndroid,
-  NativeModules,
   NativeEventEmitter,
+  NativeModules,
+  PermissionsAndroid,
+  Platform,
 } from 'react-native';
 
 import type { EmitterSubscription, Permission } from 'react-native';
@@ -50,8 +50,7 @@ export async function requestAndroidPermissions(): Promise<boolean> {
 
   if (permissions.length > 0) {
     const status = await PermissionsAndroid.requestMultiple(permissions);
-    console.log(permissions, status);
-    return Object.keys(status).every(
+    return Object.keys(status ?? {}).every(
       (key) => status[key as Permission] === PermissionsAndroid.RESULTS.GRANTED
     );
   }

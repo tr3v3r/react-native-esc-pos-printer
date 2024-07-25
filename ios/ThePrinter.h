@@ -1,20 +1,7 @@
-//
-//  ThePrinter.h
-//
-//
-//
-
 #ifndef ThePrinter_h
 #define ThePrinter_h
 #import "ePOS2.h"
 
-typedef NS_ENUM(NSUInteger, ThePrinterState) {
-    PRINTER_IDLE = 0,
-    PRINTER_CONNECTING,
-    PRINTER_DISCONNECTING,
-    PRINTER_PRINTING,
-    PRINTER_REMOVING
-};
 
 /**
  Delegate callbacks
@@ -23,36 +10,24 @@ typedef NS_ENUM(NSUInteger, ThePrinterState) {
 @protocol PrinterDelegate <NSObject>
 
 @optional
-- (void) onPrinterStartStatusMonitorResult:(NSString* _Nonnull)objectid hasError:(bool)hasError error:(NSString* _Nullable)error;
-- (void) onPrinterStopStatusMonitorResult:(NSString* _Nonnull)objectid hasError:(bool)hasError error:(NSString* _Nullable)error;
-- (void) onPrinterFailedCreateObject:(NSString* _Nonnull)printerTarget;
-- (void) onPrinterStatusChange:(NSString* _Nonnull)objectid status:(int)status;
 - (void) onGetPrinterSetting:(NSString* _Nonnull)objectid code:(int)code type:(int)type value:(int)value;
 - (void) onPtrReceive:(NSString* _Nonnull)objectid data:(NSDictionary* _Nonnull)data;
 @end
 
 
 @interface ThePrinter : NSObject {
-    
+
 @private
     NSString*        printerTarget_; // the printer target
     Epos2Printer*    epos2Printer_;  // eposPrinter
     bool             isConnected_;   // cache if printer is connected
     bool             didBeginTransaction_; // did start transactions
-    bool             didStartStatusMonitor_; // did start Status Monitor
-    NSObject*        shutdownLock_;  // removing printer object
-    bool             shutdown_;      // removing printer objecy
-    bool             isWaitingForPrinterSettings_; // Printer Settings requested
-    //int              copyNumber_; // current copy number
-    ThePrinterState  connectingState_; // state of connection
-
 }
 
 /**
  ThePrinter Delegate callbacks
  */
 @property (nonatomic, assign) id<PrinterDelegate> _Nullable Delegate;
-
 
 /**
  Returns ThePrinter
@@ -68,10 +43,9 @@ typedef NS_ENUM(NSUInteger, ThePrinterState) {
  Returns ePOS result int
  Function connect tries to connect selected printer
  @param timeout the amount of time before giving up -- EPOS2_PARAM_DEFAULT
- @param startMonitor to Start the realtime statusMonitor
  @return int ePOS result
  */
-- (int) connect:(long)timeout startMonitor:(bool)startMonitor;
+- (int) connect:(long)timeout;
 
 /**
  Returns ePOS result int
@@ -80,19 +54,48 @@ typedef NS_ENUM(NSUInteger, ThePrinterState) {
  */
 - (int) disconnect;
 
+-(int) clearCommandBuffer;
+
+-(int) addText: (nonnull NSString*)data;
+
+-(int) addTextLang:(int)lang;
+
+-(int) addFeedLine: (int)line;
+
+-(int) addCut: (int)type;
+
+-(int) addCommand: (nonnull NSString* )base64string;
+
+-(int) addPulse:(int)drawer time:(int)time;
+
+-(int) addTextAlign:(int)align;
+
+-(int) addTextSize:(long)width height:(long)height;
+
+-(int) addTextSmooth:(int)smooth;
+
+-(int) addTextStyle:(int)reverse ul:(int)ul em:(int)em color:(int)color;
+
+-(int) addImage: (nonnull NSDictionary*)source
+      width:(long)width
+      color:(int)color
+      mode:(int)mode
+      halftone:(int)halftone
+      brightness:(double)brightness
+      compress:(int)compress;
+
+-(int) addBarcode: (nonnull NSString *)data type:(int)type hri:(int)hri font:(int)font width:(long)width height:(long)height;
+
+-(int) addSymbol:(nonnull NSString *)data type:(int)type level:(int)level width:(long)width height:(long)height size:(long)size;
+
+-(nonnull NSDictionary*) getStatus;
+
 /**
  Returns BOOL
  Function isConnected uses getStatus to understand if it is connected or not.
  @return bool -- returns true if connected
  */
 - (bool) isConnected;
-
-/**
- Returns bool
- Function isPrinterBusy returns if printer is busy doing a long operation
- @return bool YES == printer is busy
- */
-- (bool) isPrinterBusy;
 
 /**
  Returns String
@@ -110,45 +113,22 @@ typedef NS_ENUM(NSUInteger, ThePrinterState) {
 
 
 /**
- Returns void
- Function shutdown disconnects printer and sets flag to shutdown.  Used when tring to remove object
- @param bool closeConnection set to yest to disconnect printer
- @return void
- */
--(void) shutdown:(bool)closeConnection;
-
-
-/**
- Returns void
- Function removeDelegates removes all delegate callbacks.  Used when tring to remove object
- @return void
- */
--(void) removeDelegates;
-
-/**
- Returns void
- Function setBusy set the busy state of the printer
- @param ThePrinterState
- @return void
- */
--(void) setBusy:(ThePrinterState)busy;
-
-/**
  Returns ePOS int result
  Function getPrinterSettings see ePOS SDK
  @param long timeout -- how long to wait before timing out EPOS2_PARAM_DEFAULT
  @param int type of Printer settings to get ie, EPOS2_PRINTER_SETTING_PAPERWIDTH
  @return ePOS int result
  */
--(int) getPrinterSettings:(long)timeout type:(int)type;
-
+-(void) getPrinterSetting:(long)timeout type:(int)type successHandler: (void(^_Nonnull)(NSDictionary*_Nonnull data)) successHandler
+   errorHandler: (void(^_Nonnull)(NSString*_Nonnull data)) errorHandler;
 /**
  Returns ePOS int result
  Function sendData see ePOS SDK
  @param long timeout -- how long to wait before timing out EPOS2_PARAM_DEFAULT
  @return  ePOS int result
  */
--(int) sendData:(long)timeout;
+-(void) sendData:(long)timeout successHandler: (void(^_Nonnull)(NSDictionary*_Nonnull data)) successHandler
+   errorHandler: (void(^_Nonnull)(NSString* data)) errorHandler;
 
 /**
  Returns ePOS int result

@@ -12,36 +12,31 @@ _An unofficial React Native library for printing on an EPSON TM printer with the
 |  [![npm version](https://badge.fury.io/js/react-native-esc-pos-printer.svg)](https://badge.fury.io/js/react-native-esc-pos-printer)  |
 |---|
 
-
-
-
-
 1. [Installation](./docs/INSTALLATION.md)
-2. [Quick Print Example](./docs/QUICK_START.md)
 3. [API](./docs/API.md)
-4. [SDK information (v2.27.0)](./docs/SDK.md)
-5. [List of supported printers for Android](./docs/and2270.pdf)
-5. [List of supported printers for iOS](./docs/and2270.pdf)
-6. [Expo](./docs/EXPO.md)
+4. [Expo](./docs/EXPO.md)
+5. [SDK information (v2.27.0)](./docs/SDK.md)
+6. [List of supported printers for Android](./docs/and2270.pdf)
+7. [List of supported printers for iOS](./docs/and2270.pdf)
+8. [Examples](./docs/QUICK_START.md)
 
 ## Sponsoring
-I have only one device (with LAN interface), that means that I can't check any issues connected with multiple printing devices, Bluetooth, USB, etc. So it will be reasonable to buy some additional devices for testing purposes. Please contact me via email if you want to help me with that.
+I'm working on the lib at my free time. If you like the lib and want to support me, you can [buy me a cofee](https://buymeacoffee.com/tr3v3r
+). Thanks!
 
-Or you can just send any amount to my [BTC acc](bc1qkarm3y9f5pa5frey2na6e830cqyuzlxtwyme4j).
 
-
-## Troubleshooting
+## Known issues
 
 1. For now it's not possible to print and discover on Android simulator. But you can always use real device.
 
 2. If you have an issue with using Flipper on iOS real device, please [try this](./docs/flipperWorkaround.md) workaround.
 
 ## Roadmap
-- [ ] Add expo example
+- [x] Add expo example
 - [ ] Add print from react View example
 - [x] Reimplement discovering to have implementation close to native SDK
-- [ ] Reimplement printing to have implementation close to native SDK
-- [ ] Add queue mechanism for quick print
+- [x] Reimplement printing to have implementation close to native SDK
+- [x] Add queue mechanism for quick print
 
 ## License
 

@@ -101,3 +101,28 @@ const { printerError, start } = usePrintersDiscovery()
 start()
 console.log(printerError)  // will be update if an error occurred during the search process
 ```
+
+
+### pairBluetoothDevice *(iOS only)*
+
+*pairBluetoothDevice(`macAddress?: string`): `void`*
+
+Controls pairing connection with a Bluetooth device. If macAddress is not provided, a list of available devices will be shown in native dialog.
+
+##### Parameters
+
+| **Name** | **Type** | **Description** |
+| --- | --- | --- |
+| macAddress | string | The BD address of the printer newly paired is returned. Format: BT:00:11:22:33:44:55 |
+
+##### Returns
+
+`void`
+
+#### Example
+
+```typescript
+const { pairBluetoothDevice } = usePrintersDiscovery()
+
+pairBluetoothDevice();
+```

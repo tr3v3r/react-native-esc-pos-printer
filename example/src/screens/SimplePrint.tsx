@@ -1,115 +1,134 @@
-import React, { memo, useState } from 'react';
-import { View, StyleSheet, Text } from 'react-native';
-import { PrinterInfo, Button, ScreenTitle } from '../components';
-import type { RootStackParamList } from '../navigation/RootNavigator';
-import EscPosPrinter, {
-  getPrinterSeriesByName,
-} from 'react-native-esc-pos-printer';
 import { useRoute, type RouteProp } from '@react-navigation/native';
-import { base64Image } from '../base64Image';
+import React, { memo, useEffect, useMemo, useState } from 'react';
+import { StyleSheet, Text, View } from 'react-native';
+import {
+  Printer,
+  PrinterConstants,
+  type PrinterStatusResponse,
+} from 'react-native-esc-pos-printer';
+import { Button, PrinterInfo, PrinterStatus, ScreenTitle } from '../components';
+import type { RootStackParamList } from '../navigation/RootNavigator';
 
 type SimplePrintRouteProp = RouteProp<RootStackParamList, 'SimplePrint'>;
-
-async function print() {
-  const printing = new EscPosPrinter.printing();
-
-  await printing
-    .initialize()
-    .align('center')
-    .size(3, 3)
-    .line('DUDE!')
-    .smooth(true)
-    .line('DUDE!')
-    .smooth(false)
-    .size(1, 1)
-    .text('is that a ')
-    .bold()
-    .underline()
-    .text('printer?')
-    .newline()
-    .bold()
-    .underline()
-    .align('left')
-    .text('Left')
-    .newline()
-    .align('right')
-    .text('Right')
-    .newline()
-    .size(1, 1)
-    .textLine(48, {
-      left: 'Cheesburger',
-      right: '3 EUR',
-      gapSymbol: '_',
-    })
-    .newline()
-    .textLine(48, {
-      left: 'Chickenburger',
-      right: '1.5 EUR',
-      gapSymbol: '.',
-    })
-    .newline()
-    .size(2, 2)
-    .textLine(48, { left: 'Happy Meal', right: '7 EUR' })
-    .newline()
-    .align('left')
-    .text('Left')
-    .newline()
-
-    .align('right')
-    .text('Right')
-    .newline()
-
-    .align('center')
-    .image(require('../store.png'), {
-      width: 75,
-      halftone: 'EPOS2_HALFTONE_THRESHOLD',
-    })
-
-    .image({ uri: base64Image }, { width: 75 })
-    .image(
-      {
-        uri: 'https://raw.githubusercontent.com/tr3v3r/react-native-esc-pos-printer/main/ios/store.png',
-      },
-      { width: 75 }
-    )
-    .barcode({
-      value: 'Test123',
-      type: 'EPOS2_BARCODE_CODE93',
-      width: 2,
-      height: 50,
-      hri: 'EPOS2_HRI_BELOW',
-    })
-    .qrcode({
-      value: 'Test123',
-      level: 'EPOS2_LEVEL_M',
-      width: 5,
-    })
-    .cut()
-    .send();
-}
 
 export const SimplePrint = memo(() => {
   const {
     params: { printer },
   } = useRoute<SimplePrintRouteProp>();
 
-  const [init, setInit] = useState(false);
   const [printing, setPrinting] = useState(false);
+  const [currentStatus, setStatus] = useState<PrinterStatusResponse | null>(
+    null
+  );
+
+  const printerInstance = useMemo(
+    () =>
+      new Printer({
+        target: printer.target,
+        deviceName: printer.deviceName,
+      }),
+    [printer]
+  );
+
+  useEffect(() => {
+    const stop = Printer.monitorPrinter(printerInstance, (nextStatus) => {
+      setStatus(nextStatus);
+    });
+
+    return stop;
+  }, [printerInstance]);
 
   const printSimpleReceipt = async () => {
-    if (!init) {
-      await EscPosPrinter.init({
-        target: printer.target,
-        seriesName: getPrinterSeriesByName(printer.deviceName),
-        language: 'EPOS2_LANG_EN',
-      });
-      setInit(true);
-    }
     try {
       setPrinting(true);
-      await print();
+
+      const res = await printerInstance.addQueueTask(async () => {
+        await Printer.tryToConnectUntil(
+          printerInstance,
+          (status) => status.online.statusCode === PrinterConstants.TRUE
+        );
+
+        await printerInstance.addTextAlign(PrinterConstants.ALIGN_CENTER);
+
+        await printerInstance.addTextSize({ width: 3, height: 3 });
+        await printerInstance.addText('DUDE!');
+        await printerInstance.addFeedLine();
+        await printerInstance.addTextSmooth(PrinterConstants.TRUE);
+        await printerInstance.addText('DUDE!');
+        await printerInstance.addFeedLine();
+        await printerInstance.addTextSmooth(PrinterConstants.FALSE);
+        await printerInstance.addTextSize({ width: 1, height: 1 });
+        await printerInstance.addText('is that a ');
+        await printerInstance.addFeedLine();
+        await printerInstance.addTextStyle({
+          em: PrinterConstants.TRUE,
+          ul: PrinterConstants.TRUE,
+          color: PrinterConstants.PARAM_UNSPECIFIED,
+        } as const);
+
+        await printerInstance.addText('printer?');
+        await printerInstance.addFeedLine();
+        await printerInstance.addTextStyle(); // reset styles
+        await printerInstance.addTextAlign(PrinterConstants.ALIGN_LEFT);
+        await printerInstance.addText('Left');
+        await printerInstance.addFeedLine();
+        await printerInstance.addTextAlign(PrinterConstants.ALIGN_RIGHT);
+        await printerInstance.addText('Right');
+        await printerInstance.addFeedLine();
+        await printerInstance.addTextSize({ width: 1, height: 1 });
+        await Printer.addTextLine(printerInstance, {
+          left: 'Cheesburger',
+          right: '3 EUR',
+          gapSymbol: '_',
+        });
+        await printerInstance.addFeedLine();
+        await printerInstance.addTextSize({ width: 1, height: 1 });
+        await Printer.addTextLine(printerInstance, {
+          left: 'Chickenburger',
+          right: '1.5 EUR',
+          gapSymbol: '.',
+        });
+        await printerInstance.addFeedLine();
+        await printerInstance.addTextSize({ width: 2, height: 2 });
+        await Printer.addTextLine(printerInstance, {
+          left: 'Happy Meal',
+          right: '7 EUR',
+          gapSymbol: '.',
+        });
+        await printerInstance.addFeedLine();
+        await printerInstance.addTextAlign(PrinterConstants.ALIGN_CENTER);
+        await printerInstance.addImage({
+          source: require('../store.png'),
+          width: 100,
+        });
+        await printerInstance.addFeedLine();
+        await printerInstance.addBarcode({
+          data: 'Test123',
+          type: PrinterConstants.BARCODE_CODE93,
+          hri: PrinterConstants.HRI_BELOW,
+          width: 2,
+          height: 50,
+        });
+
+        await printerInstance.addSymbol({
+          type: PrinterConstants.SYMBOL_QRCODE_MODEL_2,
+          level: PrinterConstants.LEVEL_M,
+          size: 5,
+          data: 'Test123',
+        });
+
+        await printerInstance.addCut();
+
+        const result = await printerInstance.sendData();
+
+        await printerInstance.disconnect();
+        return result;
+      });
+      if (res) {
+        setStatus(res);
+      }
     } catch (e) {
-      console.log('Print error', e);
+      await printerInstance.disconnect();
     } finally {
       setPrinting(false);
     }
@@ -121,6 +140,7 @@ export const SimplePrint = memo(() => {
         <ScreenTitle title={'Simple Print'} />
       </View>
       <View style={styles.contentCotainer}>
+        {currentStatus ? <PrinterStatus status={currentStatus} /> : null}
         <PrinterInfo printer={printer} />
       </View>
       <View style={styles.contentCotainer}>

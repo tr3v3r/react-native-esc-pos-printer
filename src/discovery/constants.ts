@@ -3,7 +3,7 @@ import { remapConstants } from '../core/utils';
 
 const { EscPosPrinterDiscovery } = NativeModules;
 
-export const DEFAULT_DISCOVERY_TIMEOUT = 5000;
+export const DEFAULT_DISCOVERY_TIMEOUT = Platform.OS === 'ios' ? 5000 : 10000;
 
 const DiscoveryModuleConstants: Record<string, number> =
   EscPosPrinterDiscovery.getConstants();
@@ -44,6 +44,14 @@ export enum DiscoveryBooleanParams { // Android only
   FALSE = DiscoveryModuleConstants.FALSE,
 }
 
+export enum PrinterPairBluetoothError {
+  BT_ERR_PARAM = DiscoveryModuleConstants.BT_ERR_PARAM,
+  BT_ERR_UNSUPPORTED = DiscoveryModuleConstants.BT_ERR_UNSUPPORTED,
+  BT_ERR_CANCEL = DiscoveryModuleConstants.BT_ERR_CANCEL,
+  BT_ERR_ILLEGAL_DEVICE = DiscoveryModuleConstants.BT_ERR_ILLEGAL_DEVICE,
+  ERR_FAILURE = DiscoveryModuleConstants.ERR_FAILURE,
+}
+
 export const DiscoveryFilterOption = {
   ...DiscoveryDeviceType,
   ...DiscoveryFilterType,
@@ -72,8 +80,23 @@ export const DiscoveryErrorMessageMapping = {
     'Memory necessary for processing could not be allo- cated.',
   [DiscoveryErrorResult.ERR_FAILURE]: 'An unknown error occurred.',
   [DiscoveryErrorResult.ERR_PROCESSING]: 'Could not run the process.',
+
   [DiscoveryErrorResult.PERMISSION_ERROR]: 'Permission error',
 };
 
+export const PrinterPairBluetoothErrorMessageMapping = {
+  [PrinterPairBluetoothError.BT_ERR_CANCEL]: 'Pairing connection was canceled.',
+  [PrinterPairBluetoothError.BT_ERR_PARAM]: 'An invalid parameter was passed.',
+  [PrinterPairBluetoothError.BT_ERR_UNSUPPORTED]:
+    'The function was executed on an unsupported OS.',
+  [PrinterPairBluetoothError.BT_ERR_ILLEGAL_DEVICE]:
+    'An invalid device was selected.',
+  [DiscoveryErrorResult.ERR_FAILURE]: 'An unknown error occurred.',
+};
+
 export const DiscoveryErrorStatusMapping = remapConstants(DiscoveryErrorResult);
+export const PrinterPairBluetoothErrorStatusMapping = remapConstants(
+  PrinterPairBluetoothError
+);
+
 export const DiscoveryDeviceTypeMapping = remapConstants(DiscoveryDeviceType);
