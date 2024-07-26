@@ -32,6 +32,7 @@ I'm working on the lib at my free time. If you like the lib and want to support 
 2. If you have an issue with using Flipper on iOS real device, please [try this](./docs/flipperWorkaround.md) workaround.
 
 ## Roadmap
+- [ ] Add new architecture support
 - [x] Add expo example
 - [ ] Add print from react View example
 - [x] Reimplement discovering to have implementation close to native SDK
