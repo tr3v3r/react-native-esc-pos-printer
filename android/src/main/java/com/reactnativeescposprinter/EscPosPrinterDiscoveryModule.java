@@ -47,6 +47,7 @@ import com.reactnativeescposprinter.EposStringHelper;
 public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule implements ActivityEventListener {
 
   private Context mContext;
+  private WritableArray mPrinterList = null;
   private final ReactApplicationContext reactContext;
 
   public static final String NAME = "EscPosPrinterDiscovery";
@@ -154,6 +155,7 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
   @ReactMethod
   private void startDiscovery(final ReadableMap paramsMap, Promise promise) {
     FilterOption mFilterOption = getFilterOptionsFromParams(paramsMap);
+    mPrinterList = Arguments.createArray();
 
     try {
       Discovery.start(mContext, mFilterOption, mDiscoveryListener);
@@ -217,7 +219,6 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
       UiThreadUtil.runOnUiThread(new Runnable() {
         @Override
         public synchronized void run() {
-          WritableArray mPrinterList = Arguments.createArray();
           WritableMap printerData = Arguments.createMap();
 
 
