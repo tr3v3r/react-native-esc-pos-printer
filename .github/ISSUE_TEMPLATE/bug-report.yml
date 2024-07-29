@@ -52,7 +52,7 @@ body:
     id: platforms
     attributes:
       label: Platforms
-      Description: On what platform is your application running?
+      description: On what platform is your application running?
       multiple: true
       options:
         - Android
