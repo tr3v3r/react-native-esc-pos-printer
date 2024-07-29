@@ -1,64 +1,126 @@
-name: Bug Report
-description: File a bug report.
-title: "[Bug]: "
-labels: ["bug", "triage"]
-projects: ["octo-org/1", "octo-org/44"]
-assignees:
-  - octocat
+name: Bug report
+description: Report an issue related to react-native-esc-pos-printer here.
 body:
   - type: markdown
     attributes:
       value: |
-        Thanks for taking the time to fill out this bug report!
-  - type: input
-    id: contact
+        Before you start:
+        - Make sure to check whether there are similar issues in the repository
+  - type: markdown
     attributes:
-      label: Contact Details
-      description: How can we get in touch with you if we need more info?
-      placeholder: ex. email@example.com
-    validations:
-      required: false
+      value: |
+        ## Required information
   - type: textarea
-    id: what-happened
+    id: description
     attributes:
-      label: What happened?
-      description: Also tell us, what did you expect to happen?
-      placeholder: Tell us what you see!
-      value: "A bug happened!"
+      label: Description
+      description: Please provide a clear, concise and descriptive explanation of what the bug is. Include screenshots or a video if needed. Tell us what were you expecting to happen instead of what is happening now.
     validations:
       required: true
-  - type: dropdown
-    id: version
+
+  - type: textarea
+    id: steps-to-reproduce
     attributes:
-      label: Version
-      description: What version of our software are you running?
-      options:
-        - 1.0.2 (Default)
-        - 1.0.3 (Edge)
-      default: 0
+      label: Steps to reproduce
+      description: Provide a detailed list of steps that reproduce the issue.
+      placeholder: |
+        1.
+        2.
+        3.
     validations:
       required: true
-  - type: dropdown
-    id: browsers
+
+  - type: input
+    id: lib-version
     attributes:
-      label: What browsers are you seeing the problem on?
+      label: react-native-esc-pos-printer version
+      description: What version of react-native-reanimated are you using?
+      placeholder: 3.6.1
+    validations:
+      required: true
+
+  - type: input
+    id: react-native-version
+    attributes:
+      label: React Native version
+      description: What version of react-native are you using?
+      placeholder: 0.73.1
+    validations:
+      required: true
+
+  - type: dropdown
+    id: platforms
+    attributes:
+      label: Platforms
+      description: On what platform your application is running on?
       multiple: true
       options:
-        - Firefox
-        - Chrome
-        - Safari
-        - Microsoft Edge
-  - type: textarea
-    id: logs
+        - Android
+        - iOS
+    validations:
+      required: true
+
+  - type: markdown
     attributes:
-      label: Relevant log output
-      description: Please copy and paste any relevant log output. This will be automatically formatted into code, so no need for backticks.
-      render: shell
-  - type: checkboxes
-    id: terms
+      value: |
+        ## Additonal information
+
+        Providing as much information as possible greatly helps us with reproducting the issues.
+
+  - type: dropdown
+    id: workflow
     attributes:
-      label: Code of Conduct
-      description: By submitting this issue, you agree to follow our [Code of Conduct](https://example.com). 
+      label: Workflow
+      description: How is your application managed?
       options:
-        - label: I agree to follow this project's Code of Conduct
-          required: true
+        - React Native
+        - Expo Go
+        - Expo Dev Client
+
+  - type: dropdown
+    id: architecture
+    attributes:
+      label: Architecture
+      description: What React Native architecture your application is running on? Currently, the default architecture on React Native is Paper so if you haven't changed it in your application select this option.
+      options:
+        - Paper (Old Architecture)
+        - Fabric (New Architecture)
+
+  - type: dropdown
+    id: build-type
+    attributes:
+      label: Build type
+      description: What is the build configuration/variant of your native app and JavaScript bundle mode?
+      options:
+        - Debug app & dev bundle
+        - Release app & production bundle
+        - Debug app & production bundle
+        - Release app & dev bundle
+        - Other (please specify)
+
+  - type: dropdown
+    id: emulator
+    attributes:
+      label: Device
+      description: How are you running your application?
+      options:
+        - iOS simulator
+        - Android emulator
+        - Real device
+
+  - type: input
+    id: device-model
+    attributes:
+      label: Device model
+      description: What device you are experiencing this problem on? Specify full device name along with the version of the operating system it's running.
+      placeholder: ex. Samsung Galaxy A22 (Android 12)
+
+  - type: dropdown
+    id: acknowledgements
+    attributes:
+      label: Acknowledgements
+      description: I searched for similar issues in the repository.
+      options:
+        - 'Yes'
+    validations:
+      required: true
