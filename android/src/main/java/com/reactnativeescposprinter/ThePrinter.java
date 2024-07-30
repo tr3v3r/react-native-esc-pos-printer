@@ -250,6 +250,12 @@ public class ThePrinter implements PrinterSettingListener, ReceiveListener {
       epos2Printer_.addFeedLine(line);
     }
 
+    synchronized public void addLineSpace(int linespc) throws Epos2Exception {
+      if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+      epos2Printer_.addLineSpace(linespc);
+    }
+
     synchronized public void addCut(int type) throws Epos2Exception {
       if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
 

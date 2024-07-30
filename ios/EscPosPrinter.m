@@ -193,6 +193,28 @@ RCT_EXPORT_METHOD(addFeedLine: (nonnull NSString*) target
     }
 }
 
+RCT_EXPORT_METHOD(addLineSpace: (nonnull NSString*) target
+                  linespc: (int) linespc
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+{
+    int result = EPOS2_SUCCESS;
+    @synchronized (self) {
+        ThePrinter* thePrinter = [objManager_ getObject:target];
+        if (thePrinter == nil) {
+            result = [EposStringHelper getInitErrorResultCode];
+        } else {
+            result = [thePrinter addLineSpace:linespc];
+        }
+
+        if(result == EPOS2_SUCCESS) {
+            resolve(nil);
+        } else {
+            reject(@"event_failure", [@(result) stringValue], nil);
+        }
+    }
+}
+
 RCT_EXPORT_METHOD(addCut: (nonnull NSString*) target
                   type: (int)type
                   withResolver:(RCTPromiseResolveBlock)resolve
