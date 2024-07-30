@@ -178,6 +178,21 @@ public class EscPosPrinterModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
+    synchronized public void addLineSpace(String target, int linespc, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EposStringHelper.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.addLineSpace(linespc);
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+
+    @ReactMethod
     synchronized public void addCut(String target, int type, Promise promise) {
       ThePrinter thePrinter = thePrinterManager_.getObject(target);
       if (thePrinter == null) {

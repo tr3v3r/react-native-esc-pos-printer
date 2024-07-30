@@ -138,6 +138,18 @@ export class PrinterWrapper {
     }
   };
 
+  addLineSpace = async (linespc: number) => {
+    try {
+      await EscPosPrinter.addLineSpace(this.target, linespc);
+    } catch (error) {
+      throwProcessedError({
+        methodName: 'addLineSpace',
+        errorCode: error.message,
+        messagesMapping: CommonOperationErrorMessageMapping,
+      });
+    }
+  };
+
   addCut = async (type: AddCutTypeParam = PrinterConstants.PARAM_DEFAULT) => {
     try {
       await EscPosPrinter.addCut(this.target, type);

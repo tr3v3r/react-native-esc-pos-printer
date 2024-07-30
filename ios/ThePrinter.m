@@ -270,6 +270,18 @@
     }
 }
 
+-(int) addLineSpace: (int)linespc;
+{
+    @synchronized (self) {
+        if (epos2Printer_ == nil) {
+            return EPOS2_ERR_MEMORY;
+        }
+
+        int result = [epos2Printer_ addLineSpace: linespc];
+        return result;
+    }
+}
+
 -(int) addCommand: (NSString* )base64string;
 {
     @synchronized (self) {

@@ -59,6 +59,17 @@ await printerInstance.addFeedLine(3);
 ```
 
 ---
+### [addLineSpace(`linespc: number`): `Promise<void>`](./addLineSpace.md)
+
+Adds line spacing setting to the command buffer.
+
+#### Example
+
+```typescript
+await printerInstance.addLineSpace(50);
+```
+
+---
 ### [sendData(`timeout?: number`): `Promise<PrinterStatusResponse>`](./sendData.md)
 
 Sends the print command.

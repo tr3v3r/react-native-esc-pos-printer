@@ -86,6 +86,10 @@ export class Printer {
     return this.printerWrapper.addFeedLine(line);
   };
 
+  addLineSpace = (linespc: number) => {
+    return this.printerWrapper.addLineSpace(linespc);
+  };
+
   sendData = (timeout?: number) => {
     return this.printerWrapper.sendData(timeout);
   };

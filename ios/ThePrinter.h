@@ -62,6 +62,8 @@
 
 -(int) addFeedLine: (int)line;
 
+-(int) addLineSpace: (int)linespc;
+
 -(int) addCut: (int)type;
 
 -(int) addCommand: (nonnull NSString* )base64string;
