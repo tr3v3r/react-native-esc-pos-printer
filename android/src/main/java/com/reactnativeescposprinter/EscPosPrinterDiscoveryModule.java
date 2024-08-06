@@ -222,10 +222,8 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
       UiThreadUtil.runOnUiThread(new Runnable() {
         @Override
         public synchronized void run() {
-          // Add the discovered device to the list
           mDeviceList.add(deviceInfo);
 
-          // Convert the device list to a WritableArray
           WritableArray mPrinterList = Arguments.createArray();
           for (DeviceInfo device : mDeviceList) {
             WritableMap printerData = Arguments.createMap();
