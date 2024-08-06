@@ -45,12 +45,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 
-
 @ReactModule(name = EscPosPrinterDiscoveryModule.NAME)
 public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule implements ActivityEventListener {
 
   private Context mContext;
+
   private List<DeviceInfo> mDeviceList = new ArrayList<>();
+
   private final ReactApplicationContext reactContext;
 
   public static final String NAME = "EscPosPrinterDiscovery";
