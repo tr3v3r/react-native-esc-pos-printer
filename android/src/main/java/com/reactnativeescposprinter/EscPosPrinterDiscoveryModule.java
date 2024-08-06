@@ -234,8 +234,7 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
             printerData.putString("bdAddress", device.getBdAddress());
             mPrinterList.pushMap(printerData);
           }
-
-          // Send the event to the React Native context
+          
           sendEvent(reactContext, "onDiscovery", mPrinterList);
         }
       });
