@@ -41,19 +41,22 @@ import com.google.android.gms.common.ConnectionResult;
 
 import com.reactnativeescposprinter.EposStringHelper;
 
+import java.util.ArrayList;
+
 
 
 @ReactModule(name = EscPosPrinterDiscoveryModule.NAME)
 public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule implements ActivityEventListener {
 
   private Context mContext;
-  private WritableArray mPrinterList = null;
+  private ArrayList<WritableMap> mPrinterList = null;
   private final ReactApplicationContext reactContext;
 
   public static final String NAME = "EscPosPrinterDiscovery";
 
   public EscPosPrinterDiscoveryModule(ReactApplicationContext reactContext) {
     super(reactContext);
+    mPrinterList = new ArrayList<WritableMap>();
     this.reactContext = reactContext;
     mContext = reactContext;
     reactContext.addActivityEventListener(this);
@@ -155,7 +158,7 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
   @ReactMethod
   private void startDiscovery(final ReadableMap paramsMap, Promise promise) {
     FilterOption mFilterOption = getFilterOptionsFromParams(paramsMap);
-    mPrinterList = Arguments.createArray();
+    mPrinterList.clear();
 
     try {
       Discovery.start(mContext, mFilterOption, mDiscoveryListener);
@@ -228,9 +231,9 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
           printerData.putString("macAddress", deviceInfo.getMacAddress());
           printerData.putString("bdAddress", deviceInfo.getBdAddress());
 
-          mPrinterList.pushMap(printerData);
+          mPrinterList.add(printerData);
 
-          sendEvent(reactContext, "onDiscovery", mPrinterList);
+          sendEvent(reactContext, "onDiscovery", Arguments.fromList(mPrinterList));
         }
       });
     }
