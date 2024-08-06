@@ -42,6 +42,7 @@ import com.google.android.gms.common.ConnectionResult;
 import com.reactnativeescposprinter.EposStringHelper;
 
 import java.util.ArrayList;
+import java.util.List;
 
 
 
@@ -49,14 +50,13 @@ import java.util.ArrayList;
 public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule implements ActivityEventListener {
 
   private Context mContext;
-  private ArrayList<WritableMap> mPrinterList = null;
+  private List<DeviceInfo> mDeviceList = new ArrayList<>();
   private final ReactApplicationContext reactContext;
 
   public static final String NAME = "EscPosPrinterDiscovery";
 
   public EscPosPrinterDiscoveryModule(ReactApplicationContext reactContext) {
     super(reactContext);
-    mPrinterList = new ArrayList<WritableMap>();
     this.reactContext = reactContext;
     mContext = reactContext;
     reactContext.addActivityEventListener(this);
@@ -157,8 +157,8 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
 
   @ReactMethod
   private void startDiscovery(final ReadableMap paramsMap, Promise promise) {
+    mDeviceList.clear();
     FilterOption mFilterOption = getFilterOptionsFromParams(paramsMap);
-    mPrinterList.clear();
 
     try {
       Discovery.start(mContext, mFilterOption, mDiscoveryListener);
@@ -222,18 +222,23 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
       UiThreadUtil.runOnUiThread(new Runnable() {
         @Override
         public synchronized void run() {
-          WritableMap printerData = Arguments.createMap();
+          // Add the discovered device to the list
+          mDeviceList.add(deviceInfo);
 
+          // Convert the device list to a WritableArray
+          WritableArray mPrinterList = Arguments.createArray();
+          for (DeviceInfo device : mDeviceList) {
+            WritableMap printerData = Arguments.createMap();
+            printerData.putString("target", device.getTarget());
+            printerData.putString("deviceName", device.getDeviceName());
+            printerData.putString("ipAddress", device.getIpAddress());
+            printerData.putString("macAddress", device.getMacAddress());
+            printerData.putString("bdAddress", device.getBdAddress());
+            mPrinterList.pushMap(printerData);
+          }
 
-          printerData.putString("target", deviceInfo.getTarget());
-          printerData.putString("deviceName", deviceInfo.getDeviceName());
-          printerData.putString("ipAddress", deviceInfo.getIpAddress());
-          printerData.putString("macAddress", deviceInfo.getMacAddress());
-          printerData.putString("bdAddress", deviceInfo.getBdAddress());
-
-          mPrinterList.add(printerData);
-
-          sendEvent(reactContext, "onDiscovery", Arguments.fromList(mPrinterList));
+          // Send the event to the React Native context
+          sendEvent(reactContext, "onDiscovery", mPrinterList);
         }
       });
     }
