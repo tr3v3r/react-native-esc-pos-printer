@@ -24,7 +24,7 @@ export const Discovery = memo(() => {
       <PrintersList
         onPress={(printer) => {
           if (printer) {
-            navigation.navigate('SimplePrint', { printer });
+            navigation.navigate('Printer', { printer });
           }
         }}
         printers={printers}

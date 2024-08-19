@@ -1,3 +1,4 @@
+import type { View } from 'react-native';
 import type {
   PrinterModelLang,
   ColorType,
@@ -141,6 +142,11 @@ export interface SpaceBetweenParams {
   textToWrapWidth?: number;
   gapSymbol?: string;
   noTrim?: boolean;
+}
+
+export interface AddViewShotParams {
+  viewNode: View;
+  width?: number;
 }
 
 export type AddTextLangParam = TextLangType | CommonParams.PARAM_DEFAULT;
