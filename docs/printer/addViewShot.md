@@ -1,4 +1,4 @@
-## static Printer.addTextLine
+## static Printer.addViewShot
 
 Prints image captured from React Native View
 
