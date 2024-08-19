@@ -1,7 +1,7 @@
 # Installation
 
 ```sh
-npx expo install react-native-mmkv
+npx expo install react-native-esc-pos-printer
 npx expo prebuild
 ```
 
