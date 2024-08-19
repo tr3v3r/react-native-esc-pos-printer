@@ -1,7 +1,12 @@
 import type PQueueType from 'p-queue/dist';
 import { PrinterWrapper } from './PrinterWrapper';
 import { PrinterGetSettingsType, PrinterModelLang } from './constants';
-import { addTextLine, monitorPrinter, tryToConnectUntil } from './printHelpers';
+import {
+  addTextLine,
+  addViewShot,
+  monitorPrinter,
+  tryToConnectUntil,
+} from './printHelpers';
 import type {
   AddBarcodeParams,
   AddCutTypeParam,
@@ -57,6 +62,7 @@ export class Printer {
   static addTextLine = addTextLine;
   static monitorPrinter = monitorPrinter;
   static tryToConnectUntil = tryToConnectUntil;
+  static addViewShot = addViewShot;
 
   get currentFontWidth() {
     return this.printerWrapper.currentFontWidth;

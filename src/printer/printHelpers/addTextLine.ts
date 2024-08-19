@@ -13,7 +13,7 @@ export async function addTextLine(
   );
 
   const charsPerLine =
-    printerCharsPerLinePerWidth[paperWidth] || DEFAULT_PAPER_WIDTH;
+    printerCharsPerLinePerWidth[paperWidth || DEFAULT_PAPER_WIDTH];
 
   const text = spaceBetween(
     Math.ceil(charsPerLine / printer.currentFontWidth),

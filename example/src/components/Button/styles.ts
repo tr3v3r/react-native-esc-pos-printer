@@ -10,6 +10,10 @@ export const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
+  containerSpace: {
+    marginTop: 10,
+  },
+
   text: {
     fontSize: 16,
     fontWeight: '600',

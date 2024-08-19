@@ -263,7 +263,7 @@ await printerInstance.clearCommandBuffer();
 
 ## Static Methods
 
-### [Printer.addTextLine(`printerInstance: Printer, params: AddTextLineParams`): `Promose<void>`](./addTextLine.md)
+### [Printer.addTextLine(`printerInstance: Printer, params: AddTextLineParams`): `Promise<void>`](./addTextLine.md)
 
 Prints text line with left and right parts
 
@@ -309,3 +309,45 @@ await Printer.tryToConnectUntil(
   (status) => status.online.statusCode === PrinterConstants.TRUE
 )
 ```
+
+### [Printer.addViewShot(`printerInstance: Printer, params: AddViewShotParams`): `Promise<void>`](./addViewShot.md)
+
+Prints image captured from React Native View
+
+Requires `react-native-view-shot` to be installed
+
+```bash
+yarn add react-native-view-shot
+```
+
+for iOS, run
+
+```bash
+cd ios && pod install
+```
+
+
+#### Example
+
+```typescript
+const ref = useRef<View>(null);
+
+...
+
+await Printer.addViewShot(printerInstance, {
+ viewNode: ref.current,
+});
+
+...
+
+return (
+  <View ref={ref}>
+    <Text>Print me</Text>
+  </View>
+);
+```
+
+<img src="../../assets/viewShotCode.jpg" width="200">
+<img src="../../assets/viewShotResult.jpg" width="200">
+
+Find detailed examples [here](../../example/src/screens/PrintFromView.tsx)
