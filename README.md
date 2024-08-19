@@ -34,7 +34,7 @@ I'm working on the lib at my free time. If you like the lib and want to support 
 ## Roadmap
 - [ ] Add new architecture support
 - [x] Add expo example
-- [ ] Add print from react View example
+- [x] Add print from react View example
 - [x] Reimplement discovering to have implementation close to native SDK
 - [x] Reimplement printing to have implementation close to native SDK
 - [x] Add queue mechanism for quick print
