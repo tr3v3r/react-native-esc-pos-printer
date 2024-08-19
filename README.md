@@ -13,12 +13,10 @@ _An unofficial React Native library for printing on an EPSON TM printer with the
 |---|
 
 1. [Installation](./docs/INSTALLATION.md)
-3. [API](./docs/API.md)
-4. [Expo](./docs/EXPO.md)
+2. [API](./docs/API.md)
+3. [Examples](./docs/QUICK_START.md)
+4. [Supported devices](./docs/SUPPORTED_DEVICES.md)
 5. [SDK information (v2.27.0)](./docs/SDK.md)
-6. [List of supported printers for Android](./docs/and2270.pdf)
-7. [List of supported printers for iOS](./docs/and2270.pdf)
-8. [Examples](./docs/QUICK_START.md)
 
 ## Sponsoring
 I'm working on the lib at my free time. If you like the lib and want to support me, you can [buy me a cofee](https://buymeacoffee.com/tr3v3r

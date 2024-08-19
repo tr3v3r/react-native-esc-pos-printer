@@ -1,4 +1,11 @@
+
 # Installation
+
+- [Bare React Native](#bare-react-native)
+- [Expo](#expo)
+
+
+## Bare React Native
 
 ```sh
 npm install react-native-esc-pos-printer
@@ -10,7 +17,7 @@ or
 yarn add react-native-esc-pos-printer
 ```
 
-## Android
+### Android
 Add the following permissions to `android/app/src/main/AndroidManifest.xml`
 
 ```xml
@@ -35,7 +42,7 @@ Add the following permissions to `android/app/src/main/AndroidManifest.xml`
 
 See explanation of permissions [here](./androidPermissions.md)
 
-## iOS
+### iOS
 
 ```sh
 pod install
@@ -66,3 +73,47 @@ For iOS13 or later, add Privacy-Bluetooth Always Usage Description.
      alt="Indoor Building Map Android"
      height="300"
 />
+
+---
+## Expo
+
+```sh
+npx expo install react-native-esc-pos-printer
+npx expo prebuild
+```
+
+Modify `app.json`:
+
+### Android
+```JSON
+{
+  "android": {
+    "permissions": [
+     "android.permission.INTERNET",
+     "android.permission.BLUETOOTH_SCAN",
+     "android.permission.BLUETOOTH_CONNECT",
+     "android.permission.BLUETOOTH",
+     "android.permission.BLUETOOTH_ADMIN",
+     "android.permission.ACCESS_FINE_LOCATION",
+     "android.permission.ACCESS_COARSE_LOCATION",
+     "android.permission.WRITE_EXTERNAL_STORAGE",
+     "android.permission.READ_EXTERNAL_STORAGE"
+     ]
+  }
+}
+```
+
+See explanation of permissions [here](./androidPermissions.md)
+
+### iOS
+
+```JSON
+{
+  "ios": {
+    "infoPlist": {
+      "NSBluetoothAlwaysUsageDescription": "Use this to communicate with the printer.",
+      "UISupportedExternalAccessoryProtocols": ["com.epson.escpos"]
+    }
+  }
+}
+```
