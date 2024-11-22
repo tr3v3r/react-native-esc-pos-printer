@@ -1,0 +1,28 @@
+name: Linters Check
+on:
+  pull_request:
+    types: [opened, synchronize]
+  workflow_dispatch:  
+jobs:
+  preview:
+    runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write # Allow comments on PRs
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v3
+
+      - name: 🏗 Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: yarn
+          
+      - name: 📦 Install dependencies
+        run: yarn install
+
+      - name: 📦 Check eslint
+        run: yarn lint
+
+      - name: 📦 Check typescript
+        run: yarn typecheck
