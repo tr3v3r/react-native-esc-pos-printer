@@ -13,12 +13,14 @@ export async function addTextLine(
     PrinterConstants.PRINTER_SETTING_PAPERWIDTH
   );
 
-  const charsPerLine = customCharsPerLine ? customCharsPerLine :
-    printerCharsPerLinePerWidth[paperWidth || DEFAULT_PAPER_WIDTH];
+  const charsPerLine = customCharsPerLine
+    ? customCharsPerLine
+    : printerCharsPerLinePerWidth[paperWidth || DEFAULT_PAPER_WIDTH];
 
   const text = spaceBetween(
     Math.ceil(charsPerLine / printer.currentFontWidth),
     params
   );
+
   await printer.addText(text);
 }
