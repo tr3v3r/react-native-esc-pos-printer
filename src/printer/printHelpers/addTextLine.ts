@@ -7,7 +7,6 @@ export async function addTextLine(
   printer: Printer,
   params: SpaceBetweenParams,
   customCharsPerLine?: number
-
 ) {
   const printerCharsPerLinePerWidth = getFontACharsPerLine(printer.deviceName);
   const { value: paperWidth } = await printer.getPrinterSetting(
