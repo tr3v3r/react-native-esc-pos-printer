@@ -5,14 +5,16 @@ import { PrinterConstants, DEFAULT_PAPER_WIDTH } from '../constants';
 
 export async function addTextLine(
   printer: Printer,
-  params: SpaceBetweenParams
+  params: SpaceBetweenParams,
+  customCharsPerLine?: number
+
 ) {
   const printerCharsPerLinePerWidth = getFontACharsPerLine(printer.deviceName);
   const { value: paperWidth } = await printer.getPrinterSetting(
     PrinterConstants.PRINTER_SETTING_PAPERWIDTH
   );
 
-  const charsPerLine =
+  const charsPerLine = customCharsPerLine ? customCharsPerLine :
     printerCharsPerLinePerWidth[paperWidth || DEFAULT_PAPER_WIDTH];
 
   const text = spaceBetween(
