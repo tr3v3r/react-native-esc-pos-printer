@@ -34,7 +34,8 @@
     "!**/__tests__",
     "!**/__fixtures__",
     "!**/__mocks__",
-    "!**/.*"
+    "!**/.*",
+    "!scripts/movelib"
   ],
   "scripts": {
     "example": "yarn workspace react-native-esc-pos-printer-example",
