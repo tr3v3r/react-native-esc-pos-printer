@@ -1,8 +1,8 @@
-package com.reactnativeescposprinter;
+package com.escposprinter;
 
 import android.util.ArrayMap;
 import android.util.Log;
-import com.reactnativeescposprinter.ThePrinter;
+import com.escposprinter.ThePrinter;
 
 public class ThePrinterManager {
 

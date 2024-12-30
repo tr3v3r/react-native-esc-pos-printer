@@ -22,34 +22,25 @@
 	<string>????</string>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>LSApplicationCategoryType</key>
-	<string></string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSAppTransportSecurity</key>
 	<dict>
-		<key>NSExceptionDomains</key>
-		<dict>
-			<key>localhost</key>
-			<dict>
-				<key>NSExceptionAllowsInsecureHTTPLoads</key>
-				<true/>
-			</dict>
-		</dict>
+	  <!-- Do not change NSAllowsArbitraryLoads to true, or you will risk app rejection! -->
+		<key>NSAllowsArbitraryLoads</key>
+		<false/>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
 	</dict>
-	<key>NSBluetoothAlwaysUsageDescription</key>
-	<string>Use this to communicate with the printer.</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string></string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Want to pick photos</string>
 	<key>UILaunchStoryboardName</key>
 	<string>LaunchScreen</string>
 	<key>UIRequiredDeviceCapabilities</key>
 	<array>
-		<string>armv7</string>
+		<string>arm64</string>
 	</array>
-	<key>UISupportedExternalAccessoryProtocols</key>
+  <key>UISupportedExternalAccessoryProtocols</key>
 	<array>
 		<string>com.epson.escpos</string>
 	</array>

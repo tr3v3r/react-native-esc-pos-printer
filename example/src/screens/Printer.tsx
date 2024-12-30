@@ -4,7 +4,7 @@ import {
   type RouteProp,
   type NavigationProp,
 } from '@react-navigation/native';
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { Button, PrinterInfo, ScreenTitle } from '../components';

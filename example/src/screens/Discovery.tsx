@@ -1,4 +1,4 @@
-import React, { memo } from 'react';
+import { memo } from 'react';
 import { View, StyleSheet, Text } from 'react-native';
 import { usePrintersDiscovery } from 'react-native-esc-pos-printer';
 import { PrintersList, Button, ScreenTitle } from '../components';

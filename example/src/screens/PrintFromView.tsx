@@ -1,5 +1,5 @@
 import { useRoute, type RouteProp } from '@react-navigation/native';
-import React, { memo, useMemo, useRef, useState } from 'react';
+import { memo, useMemo, useRef, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 import { Printer, PrinterConstants } from 'react-native-esc-pos-printer';
 import { Button, ScreenTitle } from '../components';

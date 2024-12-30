@@ -1,4 +1,4 @@
-import type PQueueType from 'p-queue/dist';
+import type PQueueType from 'p-queue';
 import { PrinterWrapper } from './PrinterWrapper';
 import { PrinterGetSettingsType, PrinterModelLang } from './constants';
 import {

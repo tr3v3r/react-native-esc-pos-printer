@@ -1,4 +1,4 @@
-package com.reactnativeescposprinter;
+package com.escposprinter;
 
 import androidx.annotation.NonNull;
 
