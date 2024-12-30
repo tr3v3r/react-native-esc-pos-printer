@@ -1,4 +1,4 @@
-package com.reactnativeescposprinter;
+package com.escposprinter;
 
 import com.epson.epos2.Epos2Exception;
 import com.epson.epos2.printer.Printer;
@@ -8,10 +8,10 @@ import com.epson.epos2.printer.ReceiveListener;
 import com.epson.epos2.printer.StatusChangeListener;
 import com.epson.epos2.Epos2CallbackCode;
 
-import com.reactnativeescposprinter.PrinterDelegate;
-import com.reactnativeescposprinter.EposStringHelper;
-import com.reactnativeescposprinter.PrinterCallback;
-import com.reactnativeescposprinter.ImageManager;
+import com.escposprinter.PrinterDelegate;
+import com.escposprinter.EposStringHelper;
+import com.escposprinter.PrinterCallback;
+import com.escposprinter.ImageManager;
 
 import com.facebook.react.bridge.ReadableMap;
 import com.facebook.react.bridge.WritableMap;

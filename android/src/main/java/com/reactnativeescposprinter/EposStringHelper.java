@@ -1,4 +1,4 @@
-package com.reactnativeescposprinter;
+package com.escposprinter;
 
 import com.epson.epos2.printer.Printer;
 import com.epson.epos2.printer.PrinterStatusInfo;

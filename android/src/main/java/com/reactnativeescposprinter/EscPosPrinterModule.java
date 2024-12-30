@@ -1,4 +1,4 @@
-package com.reactnativeescposprinter;
+package com.escposprinter;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -22,10 +22,10 @@ import com.epson.epos2.Epos2Exception;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.bridge.ReadableMap;
 
-import com.reactnativeescposprinter.ThePrinterManager;
-import com.reactnativeescposprinter.ThePrinter;
-import com.reactnativeescposprinter.EposStringHelper;
-import com.reactnativeescposprinter.PrinterCallback;
+import com.escposprinter.ThePrinterManager;
+import com.escposprinter.ThePrinter;
+import com.escposprinter.EposStringHelper;
+import com.escposprinter.PrinterCallback;
 
 
 @ReactModule(name = EscPosPrinterModule.NAME)

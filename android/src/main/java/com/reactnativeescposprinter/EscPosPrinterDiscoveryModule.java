@@ -1,4 +1,4 @@
-package com.reactnativeescposprinter;
+package com.escposprinter;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -39,7 +39,7 @@ import com.google.android.gms.common.api.CommonStatusCodes;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.ConnectionResult;
 
-import com.reactnativeescposprinter.EposStringHelper;
+import com.escposprinter.EposStringHelper;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -235,7 +235,7 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
             printerData.putString("bdAddress", device.getBdAddress());
             mPrinterList.pushMap(printerData);
           }
-          
+
           sendEvent(reactContext, "onDiscovery", mPrinterList);
         }
       });

@@ -1,5 +1,3 @@
-import React from 'react';
-
 import { FlatList, View } from 'react-native';
 import { PrinterItem } from '../PrinterItem';
 import { styles } from './styles';

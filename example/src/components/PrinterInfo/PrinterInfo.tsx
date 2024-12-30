@@ -1,4 +1,3 @@
-import React from 'react';
 import { Text, View } from 'react-native';
 import { styles } from './styles';
 import type { DeviceInfo } from 'react-native-esc-pos-printer';
