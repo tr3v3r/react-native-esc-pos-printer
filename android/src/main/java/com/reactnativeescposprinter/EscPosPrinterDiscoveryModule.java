@@ -40,13 +40,14 @@ import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.common.ConnectionResult;
 
 import com.escposprinter.EposStringHelper;
+import com.escposprinter.NativeEscPosPrinterDiscoverySpec;
 
 import java.util.ArrayList;
 import java.util.List;
 
 
 @ReactModule(name = EscPosPrinterDiscoveryModule.NAME)
-public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule implements ActivityEventListener {
+public class EscPosPrinterDiscoveryModule extends NativeEscPosPrinterDiscoverySpec implements ActivityEventListener {
 
   private Context mContext;
 
@@ -63,8 +64,7 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
     reactContext.addActivityEventListener(this);
   }
 
-  @Override
-  public Map<String, Object> getConstants() {
+  protected Map<String, Object> getTypedExportedConstants() {
     return EposStringHelper.getDiscoveryConstants();
   }
 
@@ -78,11 +78,19 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
   @Override
   public void onActivityResult(Activity activity, int requestCode, int resultCode, Intent data) {
     if (data != null && resultCode == Activity.RESULT_OK) {
-      reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
-          .emit("enableLocationSettingSuccess", "Success");
+      if(BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+        emitEnableLocationSettingSuccess();
+      } else {
+        reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
+        .emit("enableLocationSettingSuccess", "Success");
+      }
     } else {
+      if(BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+        emitEnableLocationSettingFailure();
+      } else {
       reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class)
           .emit("enableLocationSettingFailure", "Failure");
+      }
     }
   }
 
@@ -153,11 +161,15 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
   }
 
   private void sendEvent(ReactApplicationContext reactContext, String eventName, @Nullable WritableArray params) {
-    reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
+    if(BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+     emitOnDiscovery(params);
+    } else {
+     reactContext.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter.class).emit(eventName, params);
+    }
   }
 
   @ReactMethod
-  private void startDiscovery(final ReadableMap paramsMap, Promise promise) {
+  public void startDiscovery(final ReadableMap paramsMap, Promise promise) {
     mDeviceList.clear();
     FilterOption mFilterOption = getFilterOptionsFromParams(paramsMap);
 
@@ -173,7 +185,7 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
   }
 
   @ReactMethod
-  private void stopDiscovery(Promise promise) {
+  public void stopDiscovery(Promise promise) {
       try {
         Discovery.stop();
         promise.resolve(null);
@@ -241,4 +253,8 @@ public class EscPosPrinterDiscoveryModule extends ReactContextBaseJavaModule imp
       });
     }
   };
+
+  public void pairBluetoothDevice(String macAddress, Promise promise) {
+
+  }
 }

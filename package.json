@@ -167,6 +167,7 @@
     "source": "src",
     "output": "lib",
     "targets": [
+      "codegen",
       [
         "commonjs",
         {
@@ -188,9 +189,22 @@
       ]
     ]
   },
+  "codegenConfig": {
+    "name": "RNEspPosPrinterSpec",
+    "type": "modules",
+    "jsSrcsDir": "src/specs",
+    "outputDir": {
+      "ios": "ios/generated",
+      "android": "android/generated"
+    },
+    "android": {
+      "javaPackageName": "com.escposprinter"
+    },
+    "includesGeneratedCode": true
+  },
   "create-react-native-library": {
     "type": "legacy-module",
     "languages": "kotlin-objc",
-    "version": "0.45.5"
+    "version": "0.47.0"
   }
 }

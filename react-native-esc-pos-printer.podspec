@@ -14,7 +14,8 @@ Pod::Spec.new do |s|
   s.platforms    = { :ios => min_ios_version_supported }
   s.source       = { :git => "https://github.com/tr3v3r/react-native-esc-pos-printer.git", :tag => "#{s.version}" }
 
-  s.source_files = "ios/**/*.{h,m,mm}"
+  s.source_files = "ios/**/*.{h,m,mm,cpp}"
+  s.private_header_files = "ios/generated/**/*.h"
   s.vendored_frameworks = "ios/PrinterSDK/libepos2.xcframework"
   s.libraries = "xml2.2"
   s.frameworks = "ExternalAccessory", "CoreBluetooth"

@@ -19,6 +19,7 @@ import java.util.Map;
 
 public class EposStringHelper {
 private static int ERR_INIT = -1;
+private static int CONSTANT_NOT_SUPPORTED_FOR_PLATFORM = -404;
 
 
 
@@ -66,8 +67,14 @@ public static Map<String, Object> getDiscoveryConstants() {
       constants.put("TYPE_OTHER_PERIPHERAL", Discovery.TYPE_OTHER_PERIPHERAL);
       constants.put("FILTER_NAME", Discovery.FILTER_NAME);
       constants.put("FILTER_NONE", Discovery.FILTER_NONE);
-      constants.put("TRUE", Discovery.TRUE);
-      constants.put("FALSE", Discovery.FALSE);
+      constants.put("PRINTER_TRUE", Discovery.TRUE);
+      constants.put("PRINTER_FALSE", Discovery.FALSE);
+      // stub constants for cross-platform compatibility (iOS only)
+      constants.put("PORTTYPE_BLUETOOTH_LE", CONSTANT_NOT_SUPPORTED_FOR_PLATFORM);
+      constants.put("BT_ERR_PARAM", CONSTANT_NOT_SUPPORTED_FOR_PLATFORM);
+      constants.put("BT_ERR_UNSUPPORTED", CONSTANT_NOT_SUPPORTED_FOR_PLATFORM);
+      constants.put("BT_ERR_CANCEL", CONSTANT_NOT_SUPPORTED_FOR_PLATFORM);
+      constants.put("BT_ERR_ILLEGAL_DEVICE", CONSTANT_NOT_SUPPORTED_FOR_PLATFORM);
       // return values
       constants.put("ERR_PARAM", Epos2Exception.ERR_PARAM);
       constants.put("ERR_ILLEGAL", Epos2Exception.ERR_ILLEGAL);
@@ -140,6 +147,7 @@ public static Map<String, Object> getPrinterConstants() {
       constants.put("CODE_ERR_PROCESSING", Epos2CallbackCode.CODE_ERR_PROCESSING);
       constants.put("CODE_ERR_ILLEGAL", Epos2CallbackCode.CODE_ERR_ILLEGAL);
       constants.put("CODE_ERR_DEVICE_BUSY", Epos2CallbackCode.CODE_ERR_DEVICE_BUSY);
+      constants.put("CODE_ERR_PARAM", Epos2CallbackCode.CODE_ERR_PARAM);
 
           // get printer settings
 
@@ -186,8 +194,8 @@ public static Map<String, Object> getPrinterConstants() {
 
       // printer status
 
-      constants.put("TRUE", Printer.TRUE);
-      constants.put("FALSE", Printer.FALSE);
+      constants.put("PRINTER_TRUE", Printer.TRUE);
+      constants.put("PRINTER_FALSE", Printer.FALSE);
       constants.put("UNKNOWN", Printer.UNKNOWN);
       constants.put("PAPER_OK", Printer.PAPER_OK);
       constants.put("PAPER_NEAR_END", Printer.PAPER_NEAR_END);

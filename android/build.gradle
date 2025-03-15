@@ -57,7 +57,7 @@ android {
   defaultConfig {
     minSdkVersion getExtOrIntegerDefault("minSdkVersion")
     targetSdkVersion getExtOrIntegerDefault("targetSdkVersion")
-
+    buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
   }
 
   buildTypes {
@@ -73,6 +73,19 @@ android {
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
+  }
+
+  sourceSets {
+    main {
+      if (isNewArchitectureEnabled()) {
+          java.srcDirs += [
+            "generated/java",
+            "generated/jni"
+          ]
+      } else {
+              java.srcDirs += ['src/oldarch']
+      }
+    }
   }
 }
 
@@ -91,3 +104,10 @@ implementation 'com.google.android.gms:play-services-location:21.0.1'
 implementation "com.facebook.react:react-native:+"
 }
 
+if (isNewArchitectureEnabled()) {
+  react {
+    jsRootDir = file("../src/")
+    libraryName = "AwesomeLibrary"
+    codegenJavaPackageName = "com.awesomelibrary"
+  }
+}
