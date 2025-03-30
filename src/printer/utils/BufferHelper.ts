@@ -26,6 +26,7 @@ export class BufferHelper {
   }
 
   toBuffer(): Buffer {
+    // @ts-ignore
     return Buffer.concat(this.buffers, this.size);
   }
 

@@ -1,4 +1,4 @@
-import { NativeEventEmitter, NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
 
 import {
   PrinterDiscoveryError,
@@ -19,9 +19,7 @@ import {
   PrinterPairBluetoothErrorStatusMapping,
 } from './constants';
 import { getProcessedError } from './utils';
-
-const { EscPosPrinterDiscovery } = NativeModules;
-const discoveryEventEmmiter = new NativeEventEmitter(EscPosPrinterDiscovery);
+import { EscPosPrinterDiscovery } from '../specs';
 
 class PrintersDiscoveryClass {
   timeout: ReturnType<typeof setTimeout> | null = null;
@@ -109,8 +107,7 @@ class PrintersDiscoveryClass {
   };
 
   public onDiscovery = (callback: (printers: DeviceInfo[]) => void) => {
-    const listener = discoveryEventEmmiter.addListener(
-      'onDiscovery',
+    const listener = EscPosPrinterDiscovery.onDiscovery(
       (printer: RawDeviceInfo[]) => {
         callback(
           printer.map((info) => ({

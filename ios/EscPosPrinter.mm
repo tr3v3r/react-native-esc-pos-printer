@@ -6,6 +6,7 @@
 #import "ThePrinterManager.h"
 #import "EposStringHelper.h"
 
+
 @interface EscPosPrinter() <PrinterDelegate>
 
 @end
@@ -23,13 +24,22 @@ RCT_EXPORT_MODULE()
     return  self;
 }
 
-- (NSArray<NSString *> *)supportedEvents {
-    return @[@"onPrintSuccess", @"onPrintFailure", @"onGetPaperWidthSuccess", @"onGetPaperWidthFailure", @"onMonitorStatusUpdate"];
+#if RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+    return std::make_shared<facebook::react::NativeEscPosPrinterSpecJSI>(params);
 }
+#endif
+
 
 - (NSDictionary *)constantsToExport
 {
  return  [EposStringHelper getPrinterConstants];
+}
+
+- (NSDictionary *)getConstants {
+    return [self constantsToExport];
 }
 
 + (BOOL)requiresMainQueueSetup
@@ -39,16 +49,20 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(initWithPrinterDeviceName:(NSString *)target
                   deviceName:(NSString *)deviceName
-                  lang:(int)lang
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  lang:(double)lang
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
      @synchronized (self) {
         ThePrinter* thePrinter = [objManager_ getObject:target];
 
         if (thePrinter == nil) {
             int series = [EposStringHelper getPrinterSeries: deviceName];
+             NSLog(@"deviceName: %@", deviceName);
+
+            NSLog(@"series: %d", series);
             thePrinter = [[ThePrinter alloc] initWith:target series:series lang:lang delegate:self];
+            NSLog(@"thePrinter: %@", thePrinter);
             [objManager_ add:thePrinter];
         }
 
@@ -63,9 +77,9 @@ RCT_EXPORT_METHOD(initWithPrinterDeviceName:(NSString *)target
 }
 
 RCT_EXPORT_METHOD(connect: (nonnull NSString*)target
-                  timeout: (int)timeout
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  timeout: (double)timeout
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     int result = EPOS2_SUCCESS;
     ThePrinter* thePrinter = nil;
@@ -86,8 +100,8 @@ RCT_EXPORT_METHOD(connect: (nonnull NSString*)target
 }
 
 RCT_EXPORT_METHOD(disconnect: (nonnull NSString*) target
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     int result = EPOS2_SUCCESS;
     @synchronized (self) {
@@ -107,8 +121,8 @@ RCT_EXPORT_METHOD(disconnect: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(clearCommandBuffer: (nonnull NSString*) target
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     int result = EPOS2_SUCCESS;
     @synchronized (self) {
@@ -129,8 +143,8 @@ RCT_EXPORT_METHOD(clearCommandBuffer: (nonnull NSString*) target
 
 RCT_EXPORT_METHOD(addText: (nonnull NSString*) target
                   data: (NSString*) data
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     int result = EPOS2_SUCCESS;
     @synchronized (self) {
@@ -150,9 +164,9 @@ RCT_EXPORT_METHOD(addText: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(addTextLang: (nonnull NSString*) target
-                  lang: (int) lang
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  lang: (double) lang
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     int result = EPOS2_SUCCESS;
     @synchronized (self) {
@@ -172,9 +186,9 @@ RCT_EXPORT_METHOD(addTextLang: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(addFeedLine: (nonnull NSString*) target
-                  line: (int) line
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  line: (double) line
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     int result = EPOS2_SUCCESS;
     @synchronized (self) {
@@ -194,9 +208,9 @@ RCT_EXPORT_METHOD(addFeedLine: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(addLineSpace: (nonnull NSString*) target
-                  linespc: (int) linespc
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  linespc: (double) linespc
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     int result = EPOS2_SUCCESS;
     @synchronized (self) {
@@ -216,9 +230,9 @@ RCT_EXPORT_METHOD(addLineSpace: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(addCut: (nonnull NSString*) target
-                  type: (int)type
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  type: (double)type
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     int result = EPOS2_SUCCESS;
     @synchronized (self) {
@@ -239,8 +253,8 @@ RCT_EXPORT_METHOD(addCut: (nonnull NSString*) target
 
 RCT_EXPORT_METHOD(addCommand: (nonnull NSString*) target
                   base64string: (NSString*)base64string
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     int result = EPOS2_SUCCESS;
     @synchronized (self) {
@@ -260,10 +274,10 @@ RCT_EXPORT_METHOD(addCommand: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(addPulse: (nonnull NSString*) target
-                  drawer: (int)drawer
-                  time: (int)time
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  drawer: (double)drawer
+                  time: (double)time
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     int result = EPOS2_SUCCESS;
     @synchronized (self) {
@@ -283,9 +297,9 @@ RCT_EXPORT_METHOD(addPulse: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(addTextAlign: (nonnull NSString*) target
-                  align: (int)align
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  align: (double)align
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     int result = EPOS2_SUCCESS;
     @synchronized (self) {
@@ -306,10 +320,10 @@ RCT_EXPORT_METHOD(addTextAlign: (nonnull NSString*) target
 
 
 RCT_EXPORT_METHOD(addTextSize: (nonnull NSString*) target
-                  width: (int)width
-                  height:(int)height
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  width: (double)width
+                  height:(double)height
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     int result = EPOS2_SUCCESS;
     @synchronized (self) {
@@ -329,12 +343,12 @@ RCT_EXPORT_METHOD(addTextSize: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(addTextStyle: (nonnull NSString*) target
-                  reverse:(int)reverse
-                  ul:(int)ul
-                  em:(int)em
-                  color:(int)color
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  reverse:(double)reverse
+                  ul:(double)ul
+                  em:(double)em
+                  color:(double)color
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     int result = EPOS2_SUCCESS;
     @synchronized (self) {
@@ -355,9 +369,9 @@ RCT_EXPORT_METHOD(addTextStyle: (nonnull NSString*) target
 
 
 RCT_EXPORT_METHOD(addTextSmooth: (nonnull NSString*) target
-                  smooth: (int)smooth
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  smooth: (double)smooth
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     int result = EPOS2_SUCCESS;
     @synchronized (self) {
@@ -377,8 +391,8 @@ RCT_EXPORT_METHOD(addTextSmooth: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(getStatus: (nonnull NSString*) target
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     @synchronized (self) {
         ThePrinter* thePrinter = [objManager_ getObject:target];
@@ -400,14 +414,14 @@ RCT_EXPORT_METHOD(getStatus: (nonnull NSString*) target
 
 RCT_EXPORT_METHOD(addImage: (nonnull NSString*) target
                   source:(NSDictionary *)source
-                  width:(int)width
-                  color:(int)color
-                  mode:(int)mode
-                  halftone:(int)halftone
-                  brightness:(float)brightness
-                  compress:(int)compress
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  width:(double)width
+                  color:(double)color
+                  mode:(double)mode
+                  halftone:(double)halftone
+                  brightness:(double)brightness
+                  compress:(double)compress
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     int result = EPOS2_SUCCESS;
     @synchronized (self) {
@@ -429,13 +443,13 @@ RCT_EXPORT_METHOD(addImage: (nonnull NSString*) target
 
 RCT_EXPORT_METHOD(addBarcode: (nonnull NSString*) target
                   data:(NSString *)data
-                  type:(int)type
-                  hri:(int)hri
-                  font:(int)font
-                  width:(int)width
-                  height:(int)height
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  type:(double)type
+                  hri:(double)hri
+                  font:(double)font
+                  width:(double)width
+                  height:(double)height
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     int result = EPOS2_SUCCESS;
     @synchronized (self) {
@@ -456,13 +470,13 @@ RCT_EXPORT_METHOD(addBarcode: (nonnull NSString*) target
 
 RCT_EXPORT_METHOD(addSymbol: (nonnull NSString*) target
                   data: (NSString *)data
-                  type:(int)type
-                  level:(int)level
-                  width:(int)width
-                  height:(int)height
-                  size:(int)size
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  type:(double)type
+                  level:(double)level
+                  width:(double)width
+                  height:(double)height
+                  size:(double)size
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     int result = EPOS2_SUCCESS;
     @synchronized (self) {
@@ -482,9 +496,9 @@ RCT_EXPORT_METHOD(addSymbol: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(sendData: (nonnull NSString*) target
-                  timeout: (int)timeout
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  timeout: (double)timeout
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
 
     @synchronized (self) {
@@ -505,10 +519,10 @@ RCT_EXPORT_METHOD(sendData: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(getPrinterSetting:(nonnull NSString*) target
-                  timeout: (int)timeout
-                  type: (int)type
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  timeout: (double)timeout
+                  type: (double)type
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
 
     @synchronized (self) {

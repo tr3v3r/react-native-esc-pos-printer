@@ -1242,7 +1242,7 @@ PODS:
     - ReactCommon/turbomodule/bridging
     - ReactCommon/turbomodule/core
     - Yoga
-  - react-native-esc-pos-printer (0.1.0):
+  - react-native-esc-pos-printer (4.3.3):
     - DoubleConversion
     - glog
     - hermes-engine
@@ -1918,7 +1918,7 @@ SPEC CHECKSUMS:
   React-logger: 697873f06b8ba436e3cddf28018ab4741e8071b6
   React-Mapbuffer: c174e11bdea12dce07df8669d6c0dc97eb0c7706
   React-microtasksnativemodule: 8a80099ad7391f4e13a48b12796d96680f120dc6
-  react-native-esc-pos-printer: 3c59537c990f8e39388937c42f199469e482239a
+  react-native-esc-pos-printer: 87d6c9b259e4f80b755b7aef97a684c001324c88
   react-native-image-picker: e7331948589e764ecd5a9c715c3fc14d4e6187e6
   react-native-safe-area-context: 782fec0553f14a630a2bac87b116e512a9f35500
   react-native-view-shot: 6b7ed61d77d88580fed10954d45fad0eb2d47688

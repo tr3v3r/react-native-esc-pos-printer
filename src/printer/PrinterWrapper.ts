@@ -1,4 +1,4 @@
-import { Image, NativeModules } from 'react-native';
+import { Image } from 'react-native';
 import {
   CommonOperationErrorMessageMapping,
   ConnectPrinterErrorMessageMapping,
@@ -23,6 +23,8 @@ import type {
   AddTextSmoothParam,
   AddTextStyleParams,
   PrinterInitParams,
+  PrinterSettingsRawResponse,
+  PrinterStatusRawResponse,
 } from './types';
 import {
   BufferHelper,
@@ -32,7 +34,7 @@ import {
   throwProcessedError,
 } from './utils';
 
-const { EscPosPrinter } = NativeModules;
+import { EscPosPrinter } from '../specs';
 
 export class PrinterWrapper {
   private target: string;
@@ -164,7 +166,10 @@ export class PrinterWrapper {
 
   sendData = async (timeout: number = 5000) => {
     try {
-      const result = await EscPosPrinter.sendData(this.target, timeout);
+      const result = (await EscPosPrinter.sendData(
+        this.target,
+        timeout
+      )) as PrinterStatusRawResponse;
       return parsePrinterStatus(result);
     } catch (error) {
       const { errorType, data } = processComplextError(error.message);
@@ -196,11 +201,11 @@ export class PrinterWrapper {
         return parsePrinterSettings({ type, value: this.printerPaperWidth });
       }
 
-      const result = await EscPosPrinter.getPrinterSetting(
+      const result = (await EscPosPrinter.getPrinterSetting(
         this.target,
         timeout,
         type
-      );
+      )) as PrinterSettingsRawResponse;
 
       if (isPrinterPaperWidthRequested) {
         this.printerPaperWidth = result.value;
@@ -227,7 +232,9 @@ export class PrinterWrapper {
 
   getStatus = async () => {
     try {
-      const result = await EscPosPrinter.getStatus(this.target);
+      const result = (await EscPosPrinter.getStatus(
+        this.target
+      )) as PrinterStatusRawResponse;
       return parsePrinterStatus(result);
     } catch (error) {
       throwProcessedError({

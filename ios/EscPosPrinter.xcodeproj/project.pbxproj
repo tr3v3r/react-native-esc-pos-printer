@@ -32,7 +32,7 @@
 /* Begin PBXFileReference section */
 		134814201AA4EA6300B7C361 /* libEscPosPrinter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libEscPosPrinter.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		6218CEA325D6963300B59129 /* EscPosPrinterDiscovery.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EscPosPrinterDiscovery.h; sourceTree = "<group>"; };
-		6218CEA425D6963300B59129 /* EscPosPrinterDiscovery.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EscPosPrinterDiscovery.m; sourceTree = "<group>"; };
+		6218CEA425D6963300B59129 /* EscPosPrinterDiscovery.mm */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.cpp.objcpp; path = EscPosPrinterDiscovery.mm; sourceTree = "<group>"; };
 		625F9678291CD719000CEA87 /* libepos2.xcframework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcframework; path = libepos2.xcframework; sourceTree = "<group>"; };
 		625F967A291CD754000CEA87 /* CoreBluetooth.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreBluetooth.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX12.3.sdk/System/Library/Frameworks/CoreBluetooth.framework; sourceTree = DEVELOPER_DIR; };
 		62CF91982B977B9C00F811BE /* ImageManager.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ImageManager.m; sourceTree = "<group>"; };
@@ -46,7 +46,7 @@
 		874BE12028635F3900EC5122 /* ThePrinter.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = ThePrinter.m; sourceTree = "<group>"; };
 		874BE12528636F5C00EC5122 /* EposStringHelper.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EposStringHelper.h; sourceTree = "<group>"; };
 		874BE12628636F6E00EC5122 /* EposStringHelper.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EposStringHelper.m; sourceTree = "<group>"; };
-		B3E7B5891CC2AC0600A0062D /* EscPosPrinter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EscPosPrinter.m; sourceTree = "<group>"; };
+		B3E7B5891CC2AC0600A0062D /* EscPosPrinter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = EscPosPrinter.mm; sourceTree = "<group>"; };
 		F4FF95D5245B92E700C19C63 /* EscPosPrinter-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "EscPosPrinter-Bridging-Header.h"; sourceTree = "<group>"; };
 		F4FF95D6245B92E800C19C63 /* EscPosPrinter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EscPosPrinter.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
@@ -86,11 +86,11 @@
 				874BE11F28635F1C00EC5122 /* ThePrinter.h */,
 				874BE12028635F3900EC5122 /* ThePrinter.m */,
 				6218CEA325D6963300B59129 /* EscPosPrinterDiscovery.h */,
-				6218CEA425D6963300B59129 /* EscPosPrinterDiscovery.m */,
+				6218CEA425D6963300B59129 /* EscPosPrinterDiscovery.mm */,
 				62DF9FDE25CDC7BB0048F83E /* EscPosPrinter.h */,
 				62E6DE2225CC684A00B4CFF3 /* PrinterSDK */,
 				F4FF95D6245B92E800C19C63 /* EscPosPrinter.swift */,
-				B3E7B5891CC2AC0600A0062D /* EscPosPrinter.m */,
+				B3E7B5891CC2AC0600A0062D /* EscPosPrinter.mm */,
 				F4FF95D5245B92E700C19C63 /* EscPosPrinter-Bridging-Header.h */,
 				134814211AA4EA7D00B7C361 /* Products */,
 				62DF9CFA25CC6CE30048F83E /* Frameworks */,

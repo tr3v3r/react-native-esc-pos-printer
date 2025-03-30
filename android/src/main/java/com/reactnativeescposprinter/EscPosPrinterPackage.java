@@ -1,29 +1,62 @@
 package com.escposprinter;
 
-import androidx.annotation.NonNull;
-
-import com.facebook.react.ReactPackage;
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.NativeModule;
 import com.facebook.react.bridge.ReactApplicationContext;
+import com.facebook.react.module.model.ReactModuleInfo;
+import com.facebook.react.module.model.ReactModuleInfoProvider;
+import com.facebook.react.TurboReactPackage;
 import com.facebook.react.uimanager.ViewManager;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
-public class EscPosPrinterPackage implements ReactPackage {
-    @NonNull
+public class EscPosPrinterPackage extends TurboReactPackage {
+
+    @Nullable
     @Override
-    public List<NativeModule> createNativeModules(@NonNull ReactApplicationContext reactContext) {
-        List<NativeModule> modules = new ArrayList<>();
-        modules.add(new EscPosPrinterModule(reactContext));
-        modules.add(new EscPosPrinterDiscoveryModule(reactContext));
-        return modules;
+    public NativeModule getModule(String name, ReactApplicationContext reactContext) {
+        if (name.equals(EscPosPrinterModule.NAME)) {
+            return new EscPosPrinterModule(reactContext);
+        } if(name.equals(EscPosPrinterDiscoveryModule.NAME)) {
+            return new EscPosPrinterDiscoveryModule(reactContext);
+        } else {
+            return null;
+        }
     }
 
-    @NonNull
     @Override
-    public List<ViewManager> createViewManagers(@NonNull ReactApplicationContext reactContext) {
-        return Collections.emptyList();
+    public ReactModuleInfoProvider getReactModuleInfoProvider() {
+        return () -> {
+            final Map<String, ReactModuleInfo> moduleInfos = new HashMap<>();
+            boolean isTurboModule = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
+            moduleInfos.put(
+                    EscPosPrinterModule.NAME,
+                    new ReactModuleInfo(
+                            EscPosPrinterModule.NAME,
+                            EscPosPrinterModule.NAME,
+                            false, // canOverrideExistingModule
+                            false, // needsEagerInit
+                            true, // hasConstants
+                            false, // isCxxModule
+                            isTurboModule // isTurboModule
+            ));
+            moduleInfos.put(
+                    EscPosPrinterDiscoveryModule.NAME,
+                    new ReactModuleInfo(
+                            EscPosPrinterDiscoveryModule.NAME,
+                            EscPosPrinterDiscoveryModule.NAME,
+                            false, // canOverrideExistingModule
+                            false, // needsEagerInit
+                            true, // hasConstants
+                            false, // isCxxModule
+                            isTurboModule // isTurboModule
+            ));
+
+            return moduleInfos;
+        };
     }
 }

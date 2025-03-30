@@ -1,15 +1,12 @@
-import { NativeModules } from 'react-native';
+import { EscPosPrinter } from '../../../specs';
 
-const { EscPosPrinter } = NativeModules;
-
-const EscPosPrinterConstants: Record<string, number> =
-  EscPosPrinter.getConstants();
+const EscPosPrinterConstants = EscPosPrinter.getConstants();
 
 export enum CommonParams {
   PARAM_DEFAULT = EscPosPrinterConstants.PARAM_DEFAULT,
   PARAM_UNSPECIFIED = EscPosPrinterConstants.PARAM_UNSPECIFIED,
-  TRUE = EscPosPrinterConstants.TRUE,
-  FALSE = EscPosPrinterConstants.FALSE,
+  TRUE = EscPosPrinterConstants.PRINTER_TRUE,
+  FALSE = EscPosPrinterConstants.PRINTER_FALSE,
   UNKNOWN = EscPosPrinterConstants.UNKNOWN,
 }
 

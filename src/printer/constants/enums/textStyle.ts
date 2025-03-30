@@ -1,9 +1,6 @@
-import { NativeModules } from 'react-native';
+import { EscPosPrinter } from '../../../specs';
 
-const { EscPosPrinter } = NativeModules;
-
-const EscPosPrinterConstants: Record<string, number> =
-  EscPosPrinter.getConstants();
+const EscPosPrinterConstants = EscPosPrinter.getConstants();
 
 export enum FontType {
   FONT_A = EscPosPrinterConstants.FONT_A,

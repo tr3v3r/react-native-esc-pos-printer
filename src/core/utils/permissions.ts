@@ -1,13 +1,8 @@
-import {
-  NativeEventEmitter,
-  NativeModules,
-  PermissionsAndroid,
-  Platform,
-} from 'react-native';
+import { PermissionsAndroid, Platform } from 'react-native';
 
-import type { EmitterSubscription, Permission } from 'react-native';
-const { EscPosPrinterDiscovery } = NativeModules;
-const discoveryEventEmmiter = new NativeEventEmitter(EscPosPrinterDiscovery);
+import type { EventSubscription, Permission } from 'react-native';
+import { EscPosPrinterDiscovery } from '../../specs';
+
 const platformVersion = Platform.Version as number;
 export async function requestAndroidPermissions(): Promise<boolean> {
   if (platformVersion < 23) return true;
@@ -60,8 +55,8 @@ export async function requestAndroidPermissions(): Promise<boolean> {
 
 export function enableLocationAccessAndroid10() {
   if (platformVersion > 28) {
-    let successListener: EmitterSubscription | null;
-    let errorListener: EmitterSubscription | null;
+    let successListener: EventSubscription | null;
+    let errorListener: EventSubscription | null;
 
     function removeListeners() {
       successListener?.remove();
@@ -72,16 +67,14 @@ export function enableLocationAccessAndroid10() {
     }
 
     return new Promise((res, rej) => {
-      successListener = discoveryEventEmmiter.addListener(
-        'enableLocationSettingSuccess',
+      successListener = EscPosPrinterDiscovery.enableLocationSettingSuccess(
         () => {
           removeListeners();
           res(true);
         }
       );
 
-      errorListener = discoveryEventEmmiter.addListener(
-        'enableLocationSettingFailure',
+      errorListener = EscPosPrinterDiscovery.enableLocationSettingFailure(
         () => {
           removeListeners();
           rej(false);

@@ -1,12 +1,11 @@
-import { NativeModules, Platform } from 'react-native';
+import { Platform } from 'react-native';
 import { remapConstants } from '../core/utils';
 
-const { EscPosPrinterDiscovery } = NativeModules;
+import { EscPosPrinterDiscovery } from '../specs';
 
 export const DEFAULT_DISCOVERY_TIMEOUT = Platform.OS === 'ios' ? 5000 : 10000;
 
-const DiscoveryModuleConstants: Record<string, number> =
-  EscPosPrinterDiscovery.getConstants();
+const DiscoveryModuleConstants = EscPosPrinterDiscovery.getConstants();
 
 export enum DiscoveryDeviceType {
   TYPE_ALL = DiscoveryModuleConstants.TYPE_ALL,
@@ -40,8 +39,8 @@ export enum DiscoveryDeviceModel {
 }
 
 export enum DiscoveryBooleanParams { // Android only
-  TRUE = DiscoveryModuleConstants.TRUE,
-  FALSE = DiscoveryModuleConstants.FALSE,
+  TRUE = DiscoveryModuleConstants.PRINTER_TRUE,
+  FALSE = DiscoveryModuleConstants.PRINTER_FALSE,
 }
 
 export enum PrinterPairBluetoothError {

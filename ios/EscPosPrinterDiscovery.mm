@@ -16,6 +16,18 @@ RCT_EXPORT_MODULE()
  return [EposStringHelper getDiscoveryConstants];
 }
 
+- (NSDictionary *)getConstants {
+    return [self constantsToExport];
+}
+
+#if RCT_NEW_ARCH_ENABLED
+- (std::shared_ptr<facebook::react::TurboModule>)getTurboModule:
+    (const facebook::react::ObjCTurboModule::InitParams &)params
+{
+    return std::make_shared<facebook::react::NativeEscPosPrinterDiscoverySpecJSI>(params);
+}
+#endif
+
 + (BOOL) requiresMainQueueSetup {
   return YES;
 }
@@ -24,10 +36,9 @@ RCT_EXPORT_MODULE()
     return @[@"onDiscovery"];
 }
 
-RCT_REMAP_METHOD(startDiscovery,
-                 params:(NSDictionary *)params
-                 withResolver:(RCTPromiseResolveBlock)resolve
-                 withRejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(startDiscovery:(NSDictionary *)params
+                 resolve:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject)
 {
     Epos2FilterOption *filterOption = [self getFilterOptionsFromParams: params];
     _printerList = [ [NSMutableArray alloc] init ];
@@ -41,9 +52,8 @@ RCT_REMAP_METHOD(startDiscovery,
 }
 
 
-RCT_REMAP_METHOD(stopDiscovery,
-                 withResolver:(RCTPromiseResolveBlock)resolve
-                 withRejecter:(RCTPromiseRejectBlock)reject)
+RCT_EXPORT_METHOD(stopDiscovery:(RCTPromiseResolveBlock)resolve
+                 reject:(RCTPromiseRejectBlock)reject)
 {
     int result = EPOS2_SUCCESS;
     result = [Epos2Discovery stop];
@@ -56,8 +66,8 @@ RCT_REMAP_METHOD(stopDiscovery,
 }
 
 RCT_EXPORT_METHOD(pairBluetoothDevice: (NSString *) macAddress
-                  withResolver:(RCTPromiseResolveBlock)resolve
-                  withRejecter:(RCTPromiseRejectBlock)reject)
+                  resolve:(RCTPromiseResolveBlock)resolve
+                  reject:(RCTPromiseRejectBlock)reject)
 {
     @synchronized (self) {
        Epos2BluetoothConnection *pairingPrinter = [[Epos2BluetoothConnection alloc] init];
@@ -114,9 +124,11 @@ RCT_EXPORT_METHOD(pairBluetoothDevice: (NSString *) macAddress
         @"deviceType": @(deviceType)
     }];
 
+    #if RCT_NEW_ARCH_ENABLED
+
+    [self emitOnDiscovery:_printerList];
+    #else
     [self sendEventWithName:@"onDiscovery" body:_printerList];
+    #endif
 }
-
-
-
 @end
