@@ -49,7 +49,7 @@ RCT_EXPORT_MODULE()
 
 RCT_EXPORT_METHOD(initWithPrinterDeviceName:(NSString *)target
                   deviceName:(NSString *)deviceName
-                  lang:(int)lang
+                  lang:(double)lang
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -58,7 +58,11 @@ RCT_EXPORT_METHOD(initWithPrinterDeviceName:(NSString *)target
 
         if (thePrinter == nil) {
             int series = [EposStringHelper getPrinterSeries: deviceName];
+             NSLog(@"deviceName: %@", deviceName);
+
+            NSLog(@"series: %d", series);
             thePrinter = [[ThePrinter alloc] initWith:target series:series lang:lang delegate:self];
+            NSLog(@"thePrinter: %@", thePrinter);
             [objManager_ add:thePrinter];
         }
 
@@ -73,7 +77,7 @@ RCT_EXPORT_METHOD(initWithPrinterDeviceName:(NSString *)target
 }
 
 RCT_EXPORT_METHOD(connect: (nonnull NSString*)target
-                  timeout: (int)timeout
+                  timeout: (double)timeout
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -160,7 +164,7 @@ RCT_EXPORT_METHOD(addText: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(addTextLang: (nonnull NSString*) target
-                  lang: (int) lang
+                  lang: (double) lang
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -182,7 +186,7 @@ RCT_EXPORT_METHOD(addTextLang: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(addFeedLine: (nonnull NSString*) target
-                  line: (int) line
+                  line: (double) line
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -204,7 +208,7 @@ RCT_EXPORT_METHOD(addFeedLine: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(addLineSpace: (nonnull NSString*) target
-                  linespc: (int) linespc
+                  linespc: (double) linespc
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -226,7 +230,7 @@ RCT_EXPORT_METHOD(addLineSpace: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(addCut: (nonnull NSString*) target
-                  type: (int)type
+                  type: (double)type
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -270,8 +274,8 @@ RCT_EXPORT_METHOD(addCommand: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(addPulse: (nonnull NSString*) target
-                  drawer: (int)drawer
-                  time: (int)time
+                  drawer: (double)drawer
+                  time: (double)time
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -293,7 +297,7 @@ RCT_EXPORT_METHOD(addPulse: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(addTextAlign: (nonnull NSString*) target
-                  align: (int)align
+                  align: (double)align
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -316,8 +320,8 @@ RCT_EXPORT_METHOD(addTextAlign: (nonnull NSString*) target
 
 
 RCT_EXPORT_METHOD(addTextSize: (nonnull NSString*) target
-                  width: (int)width
-                  height:(int)height
+                  width: (double)width
+                  height:(double)height
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -339,10 +343,10 @@ RCT_EXPORT_METHOD(addTextSize: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(addTextStyle: (nonnull NSString*) target
-                  reverse:(int)reverse
-                  ul:(int)ul
-                  em:(int)em
-                  color:(int)color
+                  reverse:(double)reverse
+                  ul:(double)ul
+                  em:(double)em
+                  color:(double)color
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -365,7 +369,7 @@ RCT_EXPORT_METHOD(addTextStyle: (nonnull NSString*) target
 
 
 RCT_EXPORT_METHOD(addTextSmooth: (nonnull NSString*) target
-                  smooth: (int)smooth
+                  smooth: (double)smooth
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -410,12 +414,12 @@ RCT_EXPORT_METHOD(getStatus: (nonnull NSString*) target
 
 RCT_EXPORT_METHOD(addImage: (nonnull NSString*) target
                   source:(NSDictionary *)source
-                  width:(int)width
-                  color:(int)color
-                  mode:(int)mode
-                  halftone:(int)halftone
-                  brightness:(float)brightness
-                  compress:(int)compress
+                  width:(double)width
+                  color:(double)color
+                  mode:(double)mode
+                  halftone:(double)halftone
+                  brightness:(double)brightness
+                  compress:(double)compress
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -439,11 +443,11 @@ RCT_EXPORT_METHOD(addImage: (nonnull NSString*) target
 
 RCT_EXPORT_METHOD(addBarcode: (nonnull NSString*) target
                   data:(NSString *)data
-                  type:(int)type
-                  hri:(int)hri
-                  font:(int)font
-                  width:(int)width
-                  height:(int)height
+                  type:(double)type
+                  hri:(double)hri
+                  font:(double)font
+                  width:(double)width
+                  height:(double)height
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -466,11 +470,11 @@ RCT_EXPORT_METHOD(addBarcode: (nonnull NSString*) target
 
 RCT_EXPORT_METHOD(addSymbol: (nonnull NSString*) target
                   data: (NSString *)data
-                  type:(int)type
-                  level:(int)level
-                  width:(int)width
-                  height:(int)height
-                  size:(int)size
+                  type:(double)type
+                  level:(double)level
+                  width:(double)width
+                  height:(double)height
+                  size:(double)size
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -492,7 +496,7 @@ RCT_EXPORT_METHOD(addSymbol: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(sendData: (nonnull NSString*) target
-                  timeout: (int)timeout
+                  timeout: (double)timeout
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {
@@ -515,8 +519,8 @@ RCT_EXPORT_METHOD(sendData: (nonnull NSString*) target
 }
 
 RCT_EXPORT_METHOD(getPrinterSetting:(nonnull NSString*) target
-                  timeout: (int)timeout
-                  type: (int)type
+                  timeout: (double)timeout
+                  type: (double)type
                   resolve:(RCTPromiseResolveBlock)resolve
                   reject:(RCTPromiseRejectBlock)reject)
 {

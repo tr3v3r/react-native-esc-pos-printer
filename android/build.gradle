@@ -107,7 +107,7 @@ implementation "com.facebook.react:react-native:+"
 if (isNewArchitectureEnabled()) {
   react {
     jsRootDir = file("../src/")
-    libraryName = "AwesomeLibrary"
-    codegenJavaPackageName = "com.awesomelibrary"
+    libraryName = "RNEspPosPrinterSpec"
+    codegenJavaPackageName = "com.escposprinter"
   }
 }
