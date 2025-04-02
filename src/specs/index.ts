@@ -1,7 +1,8 @@
 import { NativeModules, NativeEventEmitter, Platform } from 'react-native';
 import type { Spec as NativeEscPosPrinterSpec } from './NativeEscPosPrinter';
 import type { Spec as NativeEscPosPrinterDiscoverySpec } from './NativeEscPosPrinterDiscovery';
-const isTurboModuleEnabled = !!global.__turboModuleProxy;
+const isTurboModuleEnabled =
+  !!global.__turboModuleProxy || !!global.RN$Bridgeless;
 
 let EscPosPrinter: NativeEscPosPrinterSpec;
 let EscPosPrinterDiscovery: NativeEscPosPrinterDiscoverySpec;
