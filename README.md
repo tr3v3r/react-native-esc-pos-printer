@@ -1,4 +1,4 @@
-<p align="center" style="margin: -40px -40px 0 -40px;">
+<p align="center">
   <img src="./docs/assets/printer.png"
      alt="Printer"
 />
@@ -103,9 +103,9 @@ function App() {
 ## Sponsor this project
 If you like what I'm doing and want to support me, you can:
 
-<p align="left" style="overflow: hidden; max-width: 500px;">
-  <a style="display: block; margin-top: -20px; margin-bottom: -30px" href="https://buymeacoffee.com/tr3v3r" target="_blank">
-    <img  src="./docs/assets/coffee.png" alt="Buy me a coffee" />
+<p align="left">
+  <a href="https://buymeacoffee.com/tr3v3r" target="_blank">
+    <img width="500"  src="./docs/assets/coffee.png" alt="Buy me a coffee" />
   </a>
 </p>
 
