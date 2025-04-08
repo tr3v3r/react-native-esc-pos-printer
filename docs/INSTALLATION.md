@@ -5,17 +5,7 @@
 - [Expo](#expo)
 
 
-## Bare React Native
-
-```sh
-npm install react-native-esc-pos-printer
-```
-
-or
-
-```sh
-yarn add react-native-esc-pos-printer
-```
+## React Native
 
 ### Android
 Add the following permissions to `android/app/src/main/AndroidManifest.xml`
@@ -56,7 +46,7 @@ For iOS13 or later, add Privacy-Bluetooth Always Usage Description.
 3. Select "Privacy-Bluetooth Always Usage Description".
 4. Enter the intended use of Bluetooth in the "Value" field. (Example: Use this to communicate with the printer.)
 
-<img src="../assets/ios-install-0.png"
+<img src="./assets/ios-install-0.png"
      alt="Indoor Building Map Android"
      height="300"
 />
@@ -69,18 +59,13 @@ For iOS13 or later, add Privacy-Bluetooth Always Usage Description.
 4. Expand the items added in Step 3.
 5. Enter com.epson.escpos as the Value for Item 0.
 
-<img src="../assets/ios-install.png"
+<img src="./assets/ios-install.png"
      alt="Indoor Building Map Android"
      height="300"
 />
 
 ---
 ## Expo
-
-```sh
-npx expo install react-native-esc-pos-printer
-npx expo prebuild
-```
 
 Modify `app.json`:
 

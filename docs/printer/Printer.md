@@ -17,111 +17,140 @@ const printer = new Printer({
 
 ## Methods
 
-### [connect(`timeout?: string`): `Promise<void>`](./connect.md)
+### connect()
+*connect(`timeout?: string`): `Promise<void>`*
 
 Starts communication with the printer.
 
-#### Example
+**Example**
 
 ```typescript
 await printerInstance.connect();
 ```
+[Read more](./connect.md)
+
 ---
 
-### [disconnect(): `Promise<void>`](./disconnect.md)
+### disconnect()
+*disconnect(): `Promise<void>`*
 
 Ends communication with the printer.
 
-#### Example
+**Example**
 
 ```typescript
 await printerInstance.disconnect();
 ```
+[Read more](./disconnect.md)
+
 ---
-### [addText(`text: string`): `Promise<void>`](./addText.md)
+
+### addText()
+*addText(`text: string`): `Promise<void>`*
 
 Adds a character print command to the command buffer.
 
-#### Example
+**Example**
 
 ```typescript
 await printerInstance.addText("Hello, World!");
 ```
+[Read more](./addText.md)
+
 ---
-### [addFeedLine(`line?: number`): `Promise<void>`](./addFeedLine.md)
+
+### addFeedLine()
+*addFeedLine(`line?: number`): `Promise<void>`*
 
 Adds a paper-feed-by-line command to the command buffer.
 
-#### Example
+**Example**
 
 ```typescript
 await printerInstance.addFeedLine(3);
 ```
+[Read more](./addFeedLine.md)
 
 ---
-### [addLineSpace(`linespc: number`): `Promise<void>`](./addLineSpace.md)
+
+### addLineSpace()
+*addLineSpace(`linespc: number`): `Promise<void>`*
 
 Adds line spacing setting to the command buffer.
 
-#### Example
+**Example**
 
 ```typescript
 await printerInstance.addLineSpace(50);
 ```
+[Read more](./addLineSpace.md)
 
 ---
-### [sendData(`timeout?: number`): `Promise<PrinterStatusResponse>`](./sendData.md)
+
+### sendData()
+*sendData(`timeout?: number`): `Promise<PrinterStatusResponse>`*
 
 Sends the print command.
 
-#### Example
+**Example**
 
 ```typescript
 const printerStatus = await printerInstance.sendData();
 ```
+[Read more](./sendData.md)
+
 ---
 
-### [addCut(`type?: AddCutTypeParam`): `Promise<void>`](./addCut.md)
+### addCut()
+*addCut(`type?: AddCutTypeParam`): `Promise<void>`*
 
 Adds a sheet cut command to the command buffer.
 Sets how to cut paper.
 
-#### Example
+**Example**
 
 ```typescript
 await printerInstance.addCut(PrinterConstants.CUT_NO_FEED);
 ```
+[Read more](./addCut.md)
 
-___
-### [getPrinterSetting(`type: PrinterGetSettingsType, timeout?: number`): `Promise<PrinterSettingsResponse>`](./getPrinterSetting.md)
+---
+
+### getPrinterSetting()
+*getPrinterSetting(`type: PrinterGetSettingsType, timeout?: number`): `Promise<PrinterSettingsResponse>`*
 
 Acquires the set value of the printer setting.
 The value acquired by this API is notified to the listener method specified in the listener parameter.
 
-#### Example
+**Example**
 
 ```typescript
-
 const printerSetting = await printerInstance.getPrinterSetting(PrinterConstants.PRINTER_SETTING_PAPERWIDTH);
 ```
+[Read more](./getPrinterSetting.md)
 
-___
-### [getStatus(): `Promise<PrinterStatusResponse>`](./getStatus.md)
+---
+
+### getStatus()
+*getStatus(): `Promise<PrinterStatusResponse>`*
 
 Acquires the current status information.
 
-#### Example
+**Example**
 
 ```typescript
 const printerStatus = await printerInstance.getStatus();
 ```
+[Read more](./getStatus.md)
+
 ---
 
-### [addImage(params: AddImageParams): `Promise<void>`](./addImage.md)
+### addImage()
+*addImage(params: AddImageParams): `Promise<void>`*
 
 Adds a raster image print command to the command buffer.
 
-#### Example
+**Example**
 
 ```typescript
 await printerInstance.addImage({
@@ -129,16 +158,19 @@ await printerInstance.addImage({
   width: 100,
 });
 ```
+[Read more](./addImage.md)
 
+---
 
-### [addBarcode(params: AddBarcodeParams): `Promise<void>`](./addBarcode.md)
+### addBarcode()
+*addBarcode(params: AddBarcodeParams): `Promise<void>`*
 
 Adds a barcode print command to the command buffer.
 
-#### Example
+**Example**
 
 ```typescript
- await printerInstance.addBarcode({
+await printerInstance.addBarcode({
   data: 'Test123',
   type: PrinterConstants.BARCODE_CODE93,
   hri: PrinterConstants.HRI_BELOW,
@@ -146,27 +178,35 @@ Adds a barcode print command to the command buffer.
   height: 50,
 });
 ```
+[Read more](./addBarcode.md)
 
-### [addSymbol(params: AddSymbolParams): `Promise<void>`](./addSymbol.md)
+---
+
+### addSymbol()
+*addSymbol(params: AddSymbolParams): `Promise<void>`*
 
 Adds a 2D symbol print command to the command buffer.
 
-#### Example
+**Example**
 
 ```typescript
- await printerInstance.addSymbol({
+await printerInstance.addSymbol({
   type: PrinterConstants.SYMBOL_QRCODE_MODEL_2,
   level: PrinterConstants.LEVEL_M,
   size: 5,
   data: 'Test123',
 });
 ```
+[Read more](./addSymbol.md)
 
-### [addCommand(`data: Uint8Array`): `Promise<void>`](./addCommand.md)
+---
+
+### addCommand()
+*addCommand(`data: Uint8Array`): `Promise<void>`*
 
 Adds a command to the command buffer. Sends the ESC/POS command.
 
-#### Example
+**Example**
 
 ```typescript
 import EscPosEncoder from 'esc-pos-encoder';
@@ -182,32 +222,44 @@ let result = encoder
 
 await printerInstance.addCommand(result);
 ```
+[Read more](./addCommand.md)
 
-### [addPulse(`params?: AddPulseParams`): `Promise<void>`](./addPulse.md)
+---
+
+### addPulse()
+*addPulse(`params?: AddPulseParams`): `Promise<void>`*
 
 Adds a drawer kick command to the command buffer. Sets the drawer kick.
 
-#### Example
+**Example**
 
 ```typescript
 await printerInstance.addPulse();
 ```
+[Read more](./addPulse.md)
 
-### [addTextAlign(`params?: AddTextAlignParam`): `Promise<void>`](./addTextAlign.md)
+---
+
+### addTextAlign()
+*addTextAlign(`params?: AddTextAlignParam`): `Promise<void>`*
 
 Adds a text alignment command to the command buffer.
 
-#### Example
+**Example**
 
 ```typescript
 await printerInstance.addTextAlign(PrinterConstants.ALIGN_CENTER);
 ```
+[Read more](./addTextAlign.md)
 
-### [addTextSize(`params?: AddTextSizeParams`): `Promise<void>`](./addTextSize.md)
+---
+
+### addTextSize()
+*addTextSize(`params?: AddTextSizeParams`): `Promise<void>`*
 
 Adds character scaling factor setting to the command buffer.
 
-#### Example
+**Example**
 
 ```typescript
 await printerInstance.addTextSize({
@@ -215,22 +267,30 @@ await printerInstance.addTextSize({
   height: 2,
 });
 ```
+[Read more](./addTextSize.md)
 
-### [addTextSmooth(`params?: AddTextSmoothParam`): `Promise<void>`](./addTextSmooth.md)
+---
+
+### addTextSmooth()
+*addTextSmooth(`params?: AddTextSmoothParam`): `Promise<void>`*
 
 Adds smoothing setting to the command buffer.
 
-#### Example
+**Example**
 
 ```typescript
 await printerInstance.addTextSmooth(PrinterConstants.TRUE);
 ```
+[Read more](./addTextSmooth.md)
 
-### [addTextStyle(`params?: AddTextStyleParams`): `Promise<void>`](./addTextStyle.md)
+---
+
+### addTextStyle()
+*addTextStyle(`params?: AddTextStyleParams`): `Promise<void>`*
 
 Adds character style setting to the command buffer.
 
-#### Example
+**Example**
 
 ```typescript
 await printerInstance.addTextStyle({
@@ -239,35 +299,46 @@ await printerInstance.addTextStyle({
   color: PrinterConstants.PARAM_UNSPECIFIED,
 } as const);
 ```
+[Read more](./addTextStyle.md)
 
-### [addTextLang(`lang: AddTextLangParam`): `Promise<void>`](./addTextLang.md)
+---
+
+### addTextLang()
+*addTextLang(`lang: AddTextLangParam`): `Promise<void>`*
 
 Adds language setting to the command buffer.
 A text string specified by the [addText](./addText.md) API is encoded according to the language specified by this API.
 
-#### Example
+**Example**
 
 ```typescript
 await printerInstance.addTextLang(PrinterConstants.LANG_JA);
 ```
+[Read more](./addTextLang.md)
 
-### clearCommandBuffer(): `Promise<void>`
+---
+
+### clearCommandBuffer()
+*clearCommandBuffer(): `Promise<void>`*
 
 Clears the command buffer.
 
-#### Example
+**Example**
 
 ```typescript
 await printerInstance.clearCommandBuffer();
 ```
 
+---
+
 ## Static Methods
 
-### [Printer.addTextLine(`printerInstance: Printer, params: AddTextLineParams`): `Promise<void>`](./addTextLine.md)
+### Printer.addTextLine()
+*Printer.addTextLine(`printerInstance: Printer, params: AddTextLineParams`): `Promise<void>`*
 
-Prints text line with left and right parts
+Prints text line with left and right parts.
 
-#### Example
+**Example**
 
 ```typescript
 await Printer.addTextLine(printerInstance, {
@@ -276,58 +347,63 @@ await Printer.addTextLine(printerInstance, {
   gapSymbol: '_',
 });
 ```
+[Read more](./addTextLine.md)
 
-Find more examples [here](../../src/printer/utils/layout/__tests__/spaceBetween.test.tsx)
+---
 
-
-
-### [Printer.monitorPrinter(`printerInstance: Printer, listener: Listener, interval: number`): () => void](./monitorPrinter.md)
+### Printer.monitorPrinter()
+*Printer.monitorPrinter(`printerInstance: Printer, listener: Listener, interval: number`): () => void*
 
 Starts monitoring the printer status.
 
-#### Example
+**Example**
 
 ```typescript
- const stop = Printer.monitorPrinter(printerInstance, (status) => {
-     console.log(status)
- });
+const stop = Printer.monitorPrinter(printerInstance, (status) => {
+  console.log(status);
+});
 
- // call stop() to stop monitoring
+// call stop() to stop monitoring
 ```
+[Read more](./monitorPrinter.md)
 
+---
 
-### [Printer.tryToConnectUntil(`printerInstance: Printer, condition: (status: PrinterStatusResponse) => boolean`): `Promise<void>`](./tryToConnectUntil.md)
-
+### Printer.tryToConnectUntil()
+*Printer.tryToConnectUntil(`printerInstance: Printer, condition: (status: PrinterStatusResponse) => boolean`): `Promise<void>`*
 
 Tries to connect to the printer until the condition is met.
 
-#### Example
+**Example**
 
 ```typescript
 await Printer.tryToConnectUntil(
   printerInstance,
   (status) => status.online.statusCode === PrinterConstants.TRUE
-)
+);
 ```
+[Read more](./tryToConnectUntil.md)
 
-### [Printer.addViewShot(`printerInstance: Printer, params: AddViewShotParams`): `Promise<void>`](./addViewShot.md)
+---
 
-Prints image captured from React Native View
+### Printer.addViewShot()
+*Printer.addViewShot(`printerInstance: Printer, params: AddViewShotParams`): `Promise<void>`*
 
-Requires `react-native-view-shot` to be installed
+Prints image captured from React Native View.
+
+Requires `react-native-view-shot` to be installed.
 
 ```bash
 yarn add react-native-view-shot
 ```
 
-for iOS, run
+For iOS, run:
 
 ```bash
 cd ios && pod install
 ```
 
-
-#### Example
+**Example**
 
 ```typescript
 const ref = useRef<View>(null);
@@ -335,7 +411,7 @@ const ref = useRef<View>(null);
 ...
 
 await Printer.addViewShot(printerInstance, {
- viewNode: ref.current,
+  viewNode: ref.current,
 });
 
 ...
@@ -347,7 +423,7 @@ return (
 );
 ```
 
-<img src="../../assets/viewShotCode.jpg" width="200">
-<img src="../../assets/viewShotResult.jpg" width="200">
+<img src="../assets/viewShotCode.jpg" width="200">
+<img src="../assets/viewShotResult.jpg" width="200">
 
-Find detailed examples [here](../../example/src/screens/PrintFromView.tsx)
+[Read more](./addViewShot.md)

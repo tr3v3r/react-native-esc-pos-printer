@@ -1,10 +1,5 @@
-# EPSON ePOS SDK for React Native
-
-_An unofficial React Native library for printing on an EPSON TM printer with the <strong>Epson ePOS SDK for iOS</strong> and <strong>Epson ePOS SDK for Android</strong>_
-
-
-<p align="center">
-  <img src="./assets/printer.png"
+<p align="center" style="margin: -40px -40px 0 -40px;">
+  <img src="./docs/assets/printer.png"
      alt="Printer"
 />
 </p>
@@ -12,30 +7,113 @@ _An unofficial React Native library for printing on an EPSON TM printer with the
 |  [![npm version](https://badge.fury.io/js/react-native-esc-pos-printer.svg)](https://badge.fury.io/js/react-native-esc-pos-printer)  |
 |---|
 
-1. [Installation](./docs/INSTALLATION.md)
-2. [API](./docs/API.md)
+## Features
+ - Supports **BLE, LAN, USB** and **Wi-Fi** connection methods
+ - Print receipts natively and from React Native views
+ - Compatible with the **new architecture**
+ - Build-in **queue mechanism**
+ - **Clear errors descriptions**
+ - Proxy-like API makes it **easy to add new commands**
+
+
+## Installation
+
+### React Native
+
+```sh
+yarn add react-native-esc-pos-printer
+```
+
+### Expo
+
+```sh
+npx expo install react-native-esc-pos-printer
+npx expo prebuild
+```
+
+
+
+### Also complete [this required steps](./docs/INSTALLATION.md)
+
+## Usage
+
+### Discover printers
+
+```tsx
+import { usePrintersDiscovery } from 'react-native-esc-pos-printer';
+
+function App() {
+  const { start, isDiscovering, printers } =
+    usePrintersDiscovery();
+
+    useEffect(() => {
+      start();
+    }, []);
+}
+```
+
+### Print
+
+```tsx
+import { Printer } from 'react-native-esc-pos-printer';
+
+function App() {
+  const { start, isDiscovering, printers } =
+    usePrintersDiscovery();
+
+    useEffect(() => {
+      start();
+    }, []);
+
+    const print = () => {
+      // printing on all discovered printers
+      printers.forEach(printersData => {
+          const printerInstance = new Printer({
+            target: printersData.target,
+            deviceName: printersData.deviceName,
+          });
+
+          const res = await printerInstance.addQueueTask(async () => {
+            await Printer.tryToConnectUntil(
+              printerInstance,
+              (status) => status.online.statusCode === PrinterConstants.TRUE
+            );
+            await printerInstance.addText('DUDE!');
+            await printerInstance.addFeedLine();
+            await printerInstance.addCut();
+            const result = await printerInstance.sendData();
+            await printerInstance.disconnect();
+            return result;
+        })
+      })
+  }
+
+  return <Button title="Print" onPress={print} />;
+}
+
+```
+
+## Documentation
+1. [Discovery API](./docs/discovery/discovery.md)
+2. [Printer API](./docs/printer/Printer.md)
 3. [Examples](./docs/QUICK_START.md)
 4. [Supported devices](./docs/SUPPORTED_DEVICES.md)
 5. [SDK information (v2.27.0)](./docs/SDK.md)
 
-## Sponsoring
-I'm working on the lib at my free time. If you like the lib and want to support me, you can [buy me a cofee](https://buymeacoffee.com/tr3v3r
-). Thanks!
+## Sponsor this project
+If you like what I'm doing and want to support me, you can:
 
+<p align="left" style="overflow: hidden; max-width: 500px;">
+  <a style="display: block; margin-top: -20px; margin-bottom: -30px" href="https://buymeacoffee.com/tr3v3r" target="_blank">
+    <img  src="./docs/assets/coffee.png" alt="Buy me a coffee" />
+  </a>
+</p>
 
 ## Known issues
 
-1. For now it's not possible to print and discover on Android simulator. But you can always use real device.
+1. It's not possible to print and discover on Android simulator.
 
-2. If you have an issue with using Flipper on iOS real device, please [try this](./docs/flipperWorkaround.md) workaround.
-
-## Roadmap
-- [x] Add new architecture support
-- [x] Add expo example
-- [x] Add print from react View example
-- [x] Reimplement discovering to have implementation close to native SDK
-- [x] Reimplement printing to have implementation close to native SDK
-- [x] Add queue mechanism for quick print
+2. If you have an issue with using Flipper on iOS real device, [try this](./docs/flipperWorkaround.md) workaround.
 
 ## License
 
