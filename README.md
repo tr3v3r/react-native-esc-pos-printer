@@ -20,6 +20,9 @@
 
 ### React Native
 
+> [!WARNING]  
+> For react-native lower than 0.76.x version, use react-native-esc-pos-printer 4.3.3 or lower
+
 ```sh
 yarn add react-native-esc-pos-printer
 ```
@@ -30,8 +33,6 @@ yarn add react-native-esc-pos-printer
 npx expo install react-native-esc-pos-printer
 npx expo prebuild
 ```
-
-
 
 ### Also complete [this required steps](./docs/INSTALLATION.md)
 
