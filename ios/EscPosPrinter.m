@@ -6,7 +6,10 @@
 #import "ThePrinterManager.h"
 #import "EposStringHelper.h"
 
-@interface EscPosPrinter() <PrinterDelegate>
+@interface EscPosPrinter() <PrinterDelegate, Epos2ScanDelegate, Epos2ConnectionDelegate> {
+    Epos2BarcodeScanner *barcodeScanner_;
+    NSString *scannerTarget_;
+}
 
 @end
 
@@ -24,7 +27,7 @@ RCT_EXPORT_MODULE()
 }
 
 - (NSArray<NSString *> *)supportedEvents {
-    return @[@"onPrintSuccess", @"onPrintFailure", @"onGetPaperWidthSuccess", @"onGetPaperWidthFailure", @"onMonitorStatusUpdate"];
+    return @[@"onPrintSuccess", @"onPrintFailure", @"onGetPaperWidthSuccess", @"onGetPaperWidthFailure", @"onMonitorStatusUpdate", @"onScanData"];
 }
 
 - (NSDictionary *)constantsToExport
@@ -526,6 +529,82 @@ RCT_EXPORT_METHOD(getPrinterSetting:(nonnull NSString*) target
             reject(@"event_failure", data, nil);
         }];
     }
+}
+
+
+#pragma mark - Barcode scanner API
+
+RCT_EXPORT_METHOD(initBarcodeScanner:(NSString *)target
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+{
+    if (barcodeScanner_ != nil) {
+        resolve(nil);
+        return;
+    }
+
+    barcodeScanner_ = [[Epos2BarcodeScanner alloc] init];
+    if (barcodeScanner_ == nil) {
+        reject(@"event_failure", [@(EPOS2_ERR_MEMORY) stringValue], nil);
+        return;
+    }
+
+    scannerTarget_ = target;
+    [barcodeScanner_ setScanEventDelegate:self];
+    [barcodeScanner_ setConnectionEventDelegate:self];
+    resolve(nil);
+}
+
+RCT_EXPORT_METHOD(connectBarcodeScanner:(int)timeout
+                  withResolver:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+{
+    if (barcodeScanner_ == nil || scannerTarget_ == nil) {
+        reject(@"event_failure", [@(EPOS2_ERR_PARAM) stringValue], nil);
+        return;
+    }
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        int result = [self->barcodeScanner_ connect:self->scannerTarget_ timeout:timeout];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (result == EPOS2_SUCCESS) {
+                resolve(nil);
+            } else {
+                reject(@"event_failure", [@(result) stringValue], nil);
+            }
+        });
+    });
+}
+
+RCT_EXPORT_METHOD(disconnectBarcodeScanner:(RCTPromiseResolveBlock)resolve
+                  withRejecter:(RCTPromiseRejectBlock)reject)
+{
+    if (barcodeScanner_ == nil) {
+        resolve(nil);
+        return;
+    }
+
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        int result = [self->barcodeScanner_ disconnect];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            if (result == EPOS2_SUCCESS) {
+                resolve(nil);
+            } else {
+                reject(@"event_failure", [@(result) stringValue], nil);
+            }
+            self->barcodeScanner_ = nil;
+        });
+    });
+}
+
+#pragma mark - Epos2ScanDelegate
+
+- (void)onScanData:(Epos2BarcodeScanner *)scannerObj scanData:(NSString *)scanData
+{
+    if (!scanData) { return; }
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self sendEventWithName:@"onScanData" body:@{@"data": scanData}];
+    });
 }
 
 @end

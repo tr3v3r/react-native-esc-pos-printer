@@ -155,4 +155,16 @@ export class Printer {
   clearCommandBuffer = () => {
     return this.printerWrapper.clearCommandBuffer();
   };
+  
+  onScanData = (callback: (data: string) => void) => {
+    return this.printerWrapper.onScanData(callback);
+  };
+
+  initScanner = () => {
+    return this.printerWrapper.initScanner();
+  };
+
+  connectScanner = () => {
+    return this.printerWrapper.connectScanner();
+  };
 }

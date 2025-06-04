@@ -1,5 +1,6 @@
 #ifndef ThePrinter_h
 #define ThePrinter_h
+
 #import "ePOS2.h"
 
 
@@ -12,6 +13,13 @@
 @optional
 - (void) onGetPrinterSetting:(NSString* _Nonnull)objectid code:(int)code type:(int)type value:(int)value;
 - (void) onPtrReceive:(NSString* _Nonnull)objectid data:(NSDictionary* _Nonnull)data;
+
+/**
+ * Called when barcode-scan data is received from an attached Epson scanner.
+ * @param objectid object identifier supplied to the module
+ * @param scanData UTF‑8 decoded string from the barcode/QR code
+ */
+- (void) onScanData:(NSString* _Nonnull)objectid scanData:(NSString* _Nonnull)scanData;
 @end
 
 
@@ -22,6 +30,8 @@
     Epos2Printer*    epos2Printer_;  // eposPrinter
     bool             isConnected_;   // cache if printer is connected
     bool             didBeginTransaction_; // did start transactions
+    Epos2BarcodeScanner* barcodeScanner_;   // epos barcode‑scanner
+    bool                isScannerConnected_; // scanner connection state
 }
 
 /**
@@ -145,6 +155,28 @@
  @return ePOS int result
  */
 -(int) endTransaction;
+
+/**
+ * Initialise the Epson barcode scanner object.
+ * @param scannerTarget target string obtained from device discovery
+ * @param delegate delegate for scan / connection callbacks (usually self)
+ * @return int ePOS result code
+ */
+- (int) initScannerWith:(nonnull NSString*)scannerTarget
+               delegate:(id<PrinterDelegate> _Nullable)delegate;
+
+/**
+ * Connect to the barcode scanner.
+ * @param timeout milliseconds to wait, or EPOS2_PARAM_DEFAULT
+ * @return int ePOS result code
+ */
+- (int) connectScanner:(long)timeout;
+
+/**
+ * Disconnect from the barcode scanner.
+ * @return int ePOS result code
+ */
+- (int) disconnectScanner;
 
 @end
 

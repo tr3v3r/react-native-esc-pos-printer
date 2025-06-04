@@ -26,7 +26,12 @@ export class BufferHelper {
   }
 
   toBuffer(): Buffer {
-    return Buffer.concat(this.buffers, this.size);
+    // Cast the internal Buffer array to the readonly Uint8Array[]
+    // type expected by Buffer.concat in newer @types/node.
+    return Buffer.concat(
+      this.buffers as unknown as readonly Uint8Array[],
+      this.size
+    );
   }
 
   toString(encoding: BufferEncoding): string {
