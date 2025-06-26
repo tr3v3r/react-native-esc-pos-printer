@@ -6,6 +6,10 @@
 + (UIImage *)scaleImage:(UIImage *)image
              size:(CGSize)size
 {
+    if (!image || image.size.width <= 0 || image.size.height <= 0 || size.width <= 0 || size.height <= 0) {
+        return nil;
+    }
+    
     CGFloat scale = MAX(size.width/image.size.width, size.height/image.size.height);
     CGFloat width = image.size.width * scale;
     CGFloat height = image.size.height * scale;
@@ -25,6 +29,10 @@
 + (CGSize)getImageCGSize:(UIImage *)imageData
             width:(int)width
 {
+    if (!imageData || imageData.size.width <= 0 || imageData.size.height <= 0 || width <= 0) {
+        return CGSizeZero;
+    }
+    
     NSInteger imgHeight = imageData.size.height;
     NSInteger imagWidth = imageData.size.width;
 
@@ -38,7 +46,11 @@
     if([urlString hasPrefix: @"http"] || [urlString hasPrefix: @"https"]) {
         NSURL *url = [NSURL URLWithString: urlString];
         NSData *data = [NSData dataWithContentsOfURL:url];
-        imageData = [[UIImage alloc] initWithData:data];
+        if (data && data.length > 0) {
+            imageData = [[UIImage alloc] initWithData:data];
+        } else {
+            imageData = nil;
+        }
     } else {
         imageData = [RCTConvert UIImage:imageObj];
     }

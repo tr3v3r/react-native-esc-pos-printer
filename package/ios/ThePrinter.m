@@ -387,8 +387,22 @@
             return EPOS2_ERR_MEMORY;
         }
         UIImage *data = [ImageManager getImageFromDictionarySource:source];
+        // Check if image loading failed (e.g., due to network issues)
+        if (data == nil) {
+            return EPOS2_ERR_PARAM;
+        }
+        
         CGSize size = [ImageManager getImageCGSize:data width:width];
+        // Check if size calculation failed (e.g., invalid image dimensions)
+        if (size.width <= 0 || size.height <= 0) {
+            return EPOS2_ERR_PARAM;
+        }
+        
         UIImage *scaledImage = [ImageManager scaleImage:data size:size];
+        // Check if image scaling failed
+        if (scaledImage == nil) {
+            return EPOS2_ERR_PARAM;
+        }
 
         int result = [epos2Printer_ addImage: scaledImage x:0 y:0 width:size.width height:size.height color:color mode:mode halftone:halftone brightness:brightness compress:compress];
         return result;
