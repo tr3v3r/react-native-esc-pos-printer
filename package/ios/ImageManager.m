@@ -38,7 +38,11 @@
     if([urlString hasPrefix: @"http"] || [urlString hasPrefix: @"https"]) {
         NSURL *url = [NSURL URLWithString: urlString];
         NSData *data = [NSData dataWithContentsOfURL:url];
-        imageData = [[UIImage alloc] initWithData:data];
+        if (data && data.length > 0) {
+            imageData = [[UIImage alloc] initWithData:data];
+        } else {
+            imageData = nil;
+        }
     } else {
         imageData = [RCTConvert UIImage:imageObj];
     }

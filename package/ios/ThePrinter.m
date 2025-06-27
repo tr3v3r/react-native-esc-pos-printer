@@ -387,6 +387,11 @@
             return EPOS2_ERR_MEMORY;
         }
         UIImage *data = [ImageManager getImageFromDictionarySource:source];
+        // Check if image loading failed (e.g., due to network issues)
+        if (data == nil) {
+            return EPOS2_ERR_FAILURE;
+        }
+        
         CGSize size = [ImageManager getImageCGSize:data width:width];
         UIImage *scaledImage = [ImageManager scaleImage:data size:size];
 
