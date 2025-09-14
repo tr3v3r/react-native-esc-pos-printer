@@ -2,7 +2,7 @@
 #import "ThePrinterManager.h"
 
 #if RCT_NEW_ARCH_ENABLED
-#import "RNEspPosPrinterSpec.h"
+#import "RNEscPosPrinterSpec.h"
 
 @interface EscPosPrinter : NSObject <NativeEscPosPrinterSpec>
 {
