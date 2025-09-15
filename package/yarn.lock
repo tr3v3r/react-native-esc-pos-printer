@@ -10684,10 +10684,10 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"react-native-esc-pos-printer-sdk@npm:2.27.1":
-  version: 2.27.1
-  resolution: "react-native-esc-pos-printer-sdk@npm:2.27.1"
-  checksum: 3551435b4df1633d5588ef4fbb1e853c6258e5b71d2afb8658df4a48379b710d2f736ec6d0be858627d49cfd96141b577e8a23877aadb0ee12b2731fa86436c1
+"react-native-esc-pos-printer-sdk@npm:2.31.1":
+  version: 2.31.1
+  resolution: "react-native-esc-pos-printer-sdk@npm:2.31.1"
+  checksum: 9ac4e4e2195601ee72776589a02c7afc3e08a535afe7d1462f2ff4ecae2d06c300ed12ec424ecd1074f2b1212faeb672e990ed2a894db16678f686fd6c04eafd
   languageName: node
   linkType: hard
 
@@ -10714,7 +10714,7 @@ __metadata:
     react: 18.3.1
     react-native: 0.76.5
     react-native-builder-bob: ^0.32.0
-    react-native-esc-pos-printer-sdk: 2.27.1
+    react-native-esc-pos-printer-sdk: 2.31.1
     react-native-view-shot: ^3.8.0
     release-it: ^17.10.0
     turbo: ^1.10.7
