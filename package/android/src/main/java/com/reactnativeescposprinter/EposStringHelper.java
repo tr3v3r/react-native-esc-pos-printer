@@ -328,6 +328,13 @@ public static Map<String, Object> getPrinterConstants() {
       constants.put("ALIGN_CENTER", Printer.ALIGN_CENTER);
       constants.put("ALIGN_RIGHT", Printer.ALIGN_RIGHT);
 
+      // page direction
+
+      constants.put("DIRECTION_LEFT_TO_RIGHT", 0);
+      constants.put("DIRECTION_BOTTOM_TO_TOP", 1);
+      constants.put("DIRECTION_RIGHT_TO_LEFT", 2);
+      constants.put("DIRECTION_TOP_TO_BOTTOM", 3);
+
       // lang
 
       constants.put("LANG_EN", Printer.LANG_EN);

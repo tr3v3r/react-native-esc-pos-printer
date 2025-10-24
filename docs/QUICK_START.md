@@ -23,3 +23,13 @@ Please find full code [here](https://github.com/tr3v3r/react-native-esc-pos-prin
 />
 
 Please find full code [here](https://github.com/tr3v3r/react-native-esc-pos-printer/tree/main/package/example/src/screens/PrintFromView.tsx).
+
+
+## 3) Print Landscape
+
+<img src="./assets/receiptLandscape.jpg"
+     alt="Receipt Landscape`"
+     height="300"
+/>
+
+Please find full code [here](https://github.com/tr3v3r/react-native-esc-pos-printer/tree/main/package/example/src/screens/LandscapePrint.tsx).

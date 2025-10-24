@@ -299,6 +299,36 @@ public class ThePrinter implements PrinterSettingListener, ReceiveListener {
       epos2Printer_.addTextStyle(reverse, ul, em, color);
     }
 
+    synchronized public void addPageArea(int horizontal, int vertical, int width, int height) throws Epos2Exception {
+      if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+      epos2Printer_.addPageArea(horizontal, vertical, width, height);
+    }
+
+    synchronized public void addPageDirection(int direction) throws Epos2Exception {
+      if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+      epos2Printer_.addPageDirection(direction);
+    }
+
+    synchronized public void addPagePosition(int horizontal, int vertical) throws Epos2Exception {
+      if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+      epos2Printer_.addPagePosition(horizontal, vertical);
+    }
+
+    synchronized public void addPageBegin() throws Epos2Exception {
+      if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+      epos2Printer_.addPageBegin();
+    }
+
+    synchronized public void addPageEnd() throws Epos2Exception {
+      if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);
+
+      epos2Printer_.addPageEnd();
+    }
+
     synchronized public void addImage(ReadableMap source, Context mContext, int width, int color,
                                       int mode, int halftone, double brightness, int compress) throws Epos2Exception {
       if (epos2Printer_ == null) throw new Epos2Exception(Epos2Exception.ERR_MEMORY);

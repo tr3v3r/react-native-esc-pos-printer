@@ -155,4 +155,24 @@ export class Printer {
   clearCommandBuffer = () => {
     return this.printerWrapper.clearCommandBuffer();
   };
+
+  addPageArea = (horizontal: number, vertical: number, width: number, height: number) => {
+    return this.printerWrapper.addPageArea(horizontal, vertical, width, height);
+  };
+
+  addPageDirection = (direction: number) => {
+    return this.printerWrapper.addPageDirection(direction);
+  };
+
+  addPagePosition = (horizontal: number, vertical: number) => {
+    return this.printerWrapper.addPagePosition(horizontal, vertical);
+  };
+
+  addPageBegin = () => {
+    return this.printerWrapper.addPageBegin();
+  };
+
+  addPageEnd = () => {
+    return this.printerWrapper.addPageEnd();
+  };
 }
