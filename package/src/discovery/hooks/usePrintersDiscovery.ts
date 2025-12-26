@@ -5,7 +5,7 @@ import type { PrinterDiscoveryError } from '../../core/errors';
 
 export function usePrintersDiscovery() {
   const [printers, setPrinters] = useState<DeviceInfo[]>([]);
-  const [isDiscovering, setIsDescovering] = useState<boolean>(false);
+  const [isDiscovering, setIsDiscovering] = useState<boolean>(false);
   const [printerError, setPrinterError] =
     useState<PrinterDiscoveryError | null>(null);
 
