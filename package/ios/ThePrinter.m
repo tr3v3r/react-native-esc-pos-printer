@@ -12,6 +12,8 @@
 
     void (^onGetPrinterSettingSuccessHandler_)(NSDictionary* data);
     void (^onGetPrinterSettingErrorHandler_)(NSString* data);
+
+    dispatch_queue_t ptrReceiveQueue_;
 }
 @end
 
@@ -32,6 +34,8 @@
 
         onGetPrinterSettingSuccessHandler_ = nil;
         onGetPrinterSettingErrorHandler_ = nil;
+
+        ptrReceiveQueue_ = dispatch_queue_create("com.escposprinter.ptrReceive", DISPATCH_QUEUE_SERIAL);
 
     }
     return self;
@@ -521,25 +525,30 @@
 #pragma mark - Epos2PtrReceiveDelegate
 - (void) onPtrReceive:(Epos2Printer *)printerObj code:(int)code status:(Epos2PrinterStatusInfo *)status printJobId:(NSString *)printJobId
 {
-    @synchronized (self) {
-        NSDictionary* returnData = [EposStringHelper convertStatusInfoToDictionary:status];
-        [self endTransaction];
+    // The SDK calls this on the main thread. Taking the lock below and ending the transaction
+    // can wait for another call or for the printer itself, so do them off the main thread.
+    // The queue is serial to keep the results in the order they arrive.
+    NSDictionary* returnData = [EposStringHelper convertStatusInfoToDictionary:status];
+    dispatch_async(ptrReceiveQueue_, ^{
+        @synchronized (self) {
+            [self endTransaction];
 
-        if(onPtrRecieveSuccessHandler_ && onPtrRecieveErrorHandler_) {
-            if(code == EPOS2_CODE_SUCCESS) {
-                onPtrRecieveSuccessHandler_(returnData);
-            } else {
-                NSDictionary* errorDataDic = @{
-                    @"data": @(code),
-                    @"type": @"code"
-                };
-                onPtrRecieveErrorHandler_([EposStringHelper convertDictionatyToJsonString:errorDataDic]);
+            if(self->onPtrRecieveSuccessHandler_ && self->onPtrRecieveErrorHandler_) {
+                if(code == EPOS2_CODE_SUCCESS) {
+                    self->onPtrRecieveSuccessHandler_(returnData);
+                } else {
+                    NSDictionary* errorDataDic = @{
+                        @"data": @(code),
+                        @"type": @"code"
+                    };
+                    self->onPtrRecieveErrorHandler_([EposStringHelper convertDictionatyToJsonString:errorDataDic]);
+                }
             }
-        }
 
-        onPtrRecieveSuccessHandler_ = nil;
-        onPtrRecieveErrorHandler_ = nil;
-    }
+            self->onPtrRecieveSuccessHandler_ = nil;
+            self->onPtrRecieveErrorHandler_ = nil;
+        }
+    });
 }
 
 
