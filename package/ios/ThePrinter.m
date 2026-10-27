@@ -12,6 +12,8 @@
 
     void (^onGetPrinterSettingSuccessHandler_)(NSDictionary* data);
     void (^onGetPrinterSettingErrorHandler_)(NSString* data);
+
+    dispatch_queue_t printerCallbackQueue_;
 }
 @end
 
@@ -32,6 +34,8 @@
 
         onGetPrinterSettingSuccessHandler_ = nil;
         onGetPrinterSettingErrorHandler_ = nil;
+
+        printerCallbackQueue_ = dispatch_queue_create("com.escposprinter.printerCallback", DISPATCH_QUEUE_SERIAL);
 
     }
     return self;
@@ -521,54 +525,63 @@
 #pragma mark - Epos2PtrReceiveDelegate
 - (void) onPtrReceive:(Epos2Printer *)printerObj code:(int)code status:(Epos2PrinterStatusInfo *)status printJobId:(NSString *)printJobId
 {
-    @synchronized (self) {
-        NSDictionary* returnData = [EposStringHelper convertStatusInfoToDictionary:status];
-        [self endTransaction];
+    // The SDK calls this on the main thread. Taking the lock and ending the transaction
+    // can block for a long time (lock contention or Bluetooth reconnection), so do it
+    // off the main thread. Convert status data here before the dispatch while the
+    // status object is still valid.
+    NSDictionary* returnData = [EposStringHelper convertStatusInfoToDictionary:status];
+    dispatch_async(printerCallbackQueue_, ^{
+        @synchronized (self) {
+            [self endTransaction];
 
-        if(onPtrRecieveSuccessHandler_ && onPtrRecieveErrorHandler_) {
-            if(code == EPOS2_CODE_SUCCESS) {
-                onPtrRecieveSuccessHandler_(returnData);
-            } else {
-                NSDictionary* errorDataDic = @{
-                    @"data": @(code),
-                    @"type": @"code"
-                };
-                onPtrRecieveErrorHandler_([EposStringHelper convertDictionatyToJsonString:errorDataDic]);
+            if(self->onPtrRecieveSuccessHandler_ && self->onPtrRecieveErrorHandler_) {
+                if(code == EPOS2_CODE_SUCCESS) {
+                    self->onPtrRecieveSuccessHandler_(returnData);
+                } else {
+                    NSDictionary* errorDataDic = @{
+                        @"data": @(code),
+                        @"type": @"code"
+                    };
+                    self->onPtrRecieveErrorHandler_([EposStringHelper convertDictionatyToJsonString:errorDataDic]);
+                }
             }
-        }
 
-        onPtrRecieveSuccessHandler_ = nil;
-        onPtrRecieveErrorHandler_ = nil;
-    }
+            self->onPtrRecieveSuccessHandler_ = nil;
+            self->onPtrRecieveErrorHandler_ = nil;
+        }
+    });
 }
 
 
 #pragma mark - Epos2PrinterSettingDelegate
 - (void) onGetPrinterSetting:(int)code type:(int)type value:(int)value
 {
+    // Same main-thread concern as onPtrReceive: the lock and endTransaction can block
+    // for a long time. Capture primitive args before the dispatch (they're copied by value).
+    NSDictionary* returnData = @{
+        @"type": [NSNumber numberWithInt:type],
+        @"value": [NSNumber numberWithInt:value],
+    };
+    dispatch_async(printerCallbackQueue_, ^{
+        @synchronized (self) {
+            [self endTransaction];
 
-    @synchronized (self) {
-      NSDictionary* returnData = @{
-            @"type": [NSNumber numberWithInt:type],
-            @"value": [NSNumber numberWithInt:value],
-          };
-        [self endTransaction];
-
-        if(onGetPrinterSettingSuccessHandler_ && onGetPrinterSettingErrorHandler_) {
-            if(code == EPOS2_CODE_SUCCESS) {
-                onGetPrinterSettingSuccessHandler_(returnData);
-            } else {
-                NSDictionary* errorDataDic = @{
-                    @"data": @(code),
-                    @"type": @"code"
-                };
-                onGetPrinterSettingErrorHandler_([EposStringHelper convertDictionatyToJsonString:errorDataDic]);
+            if(self->onGetPrinterSettingSuccessHandler_ && self->onGetPrinterSettingErrorHandler_) {
+                if(code == EPOS2_CODE_SUCCESS) {
+                    self->onGetPrinterSettingSuccessHandler_(returnData);
+                } else {
+                    NSDictionary* errorDataDic = @{
+                        @"data": @(code),
+                        @"type": @"code"
+                    };
+                    self->onGetPrinterSettingErrorHandler_([EposStringHelper convertDictionatyToJsonString:errorDataDic]);
+                }
             }
-        }
 
-        onGetPrinterSettingSuccessHandler_ = nil;
-        onGetPrinterSettingErrorHandler_ = nil;
-    }
+            self->onGetPrinterSettingSuccessHandler_ = nil;
+            self->onGetPrinterSettingErrorHandler_ = nil;
+        }
+    });
 }
 
 - (void) onSetPrinterSetting:(int)code
