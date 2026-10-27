@@ -159,6 +159,7 @@ public class ThePrinter implements PrinterSettingListener, ReceiveListener {
                       if(((Epos2Exception) e).getErrorStatus() != Epos2Exception.ERR_ILLEGAL) {
                          throw e;
                       }
+                      break;
                     }
                 }
             }
