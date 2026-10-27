@@ -7,6 +7,7 @@ import {
   PrinterScreen,
 } from '../screens';
 import type { DeviceInfo } from 'react-native-esc-pos-printer';
+import { LandscapePrint } from '../screens/LandscapePrint';
 
 export type RootStackParamList = {
   Discovery: undefined;
@@ -17,6 +18,9 @@ export type RootStackParamList = {
     printer: DeviceInfo;
   };
   Printer: {
+    printer: DeviceInfo;
+  };
+  LandscapePrint: {
     printer: DeviceInfo;
   };
 };
@@ -31,6 +35,7 @@ export const RootNavigator = () => {
         <Stack.Screen name="Printer" component={PrinterScreen} />
         <Stack.Screen name="PrintFromView" component={PrintFromView} />
         <Stack.Screen name="SimplePrint" component={SimplePrint} />
+        <Stack.Screen name="LandscapePrint" component={LandscapePrint} />
       </Stack.Navigator>
     </NavigationContainer>
   );

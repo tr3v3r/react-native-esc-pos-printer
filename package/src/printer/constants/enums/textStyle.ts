@@ -15,3 +15,10 @@ export enum TextAlignType {
   ALIGN_CENTER = EscPosPrinterConstants.ALIGN_CENTER,
   ALIGN_RIGHT = EscPosPrinterConstants.ALIGN_RIGHT,
 }
+
+export enum PageDirectionType {
+  DIRECTION_LEFT_TO_RIGHT = EscPosPrinterConstants.DIRECTION_LEFT_TO_RIGHT,
+  DIRECTION_BOTTOM_TO_TOP = EscPosPrinterConstants.DIRECTION_BOTTOM_TO_TOP,
+  DIRECTION_RIGHT_TO_LEFT = EscPosPrinterConstants.DIRECTION_RIGHT_TO_LEFT,
+  DIRECTION_TOP_TO_BOTTOM = EscPosPrinterConstants.DIRECTION_TOP_TO_BOTTOM,
+}

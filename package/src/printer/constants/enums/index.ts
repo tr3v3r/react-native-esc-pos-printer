@@ -34,7 +34,7 @@ import {
 
 import { BarcodeType, BarcodeHRI } from './barcode';
 import { SymbolType, SymbolLevel } from './symbol';
-import { FontType, TextAlignType } from './textStyle';
+import { FontType, TextAlignType, PageDirectionType } from './textStyle';
 import { PrinterAddPulseDrawerType, PrinterAddPulseTimeType } from './pulse';
 
 export const PrinterConstants = {
@@ -56,6 +56,7 @@ export const PrinterConstants = {
   ...PrinterAddPulseDrawerType,
   ...PrinterAddPulseTimeType,
   ...TextAlignType,
+  ...PageDirectionType,
   ...PrinterPaperStatus,
   ...PrinterPanelSwitchStatus,
   ...PrinterDrawerStatus,
@@ -91,6 +92,7 @@ export {
   PrinterAddPulseDrawerType,
   PrinterAddPulseTimeType,
   TextAlignType,
+  PageDirectionType,
   PrinterPaperStatus,
   PrinterPanelSwitchStatus,
   PrinterDrawerStatus,
