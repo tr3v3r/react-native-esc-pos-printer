@@ -555,29 +555,32 @@
 #pragma mark - Epos2PrinterSettingDelegate
 - (void) onGetPrinterSetting:(int)code type:(int)type value:(int)value
 {
+    // Same main-thread concern as onPtrReceive: the lock and endTransaction can block
+    // for a long time. Capture primitive args before the dispatch (they're copied by value).
+    NSDictionary* returnData = @{
+        @"type": [NSNumber numberWithInt:type],
+        @"value": [NSNumber numberWithInt:value],
+    };
+    dispatch_async(ptrReceiveQueue_, ^{
+        @synchronized (self) {
+            [self endTransaction];
 
-    @synchronized (self) {
-      NSDictionary* returnData = @{
-            @"type": [NSNumber numberWithInt:type],
-            @"value": [NSNumber numberWithInt:value],
-          };
-        [self endTransaction];
-
-        if(onGetPrinterSettingSuccessHandler_ && onGetPrinterSettingErrorHandler_) {
-            if(code == EPOS2_CODE_SUCCESS) {
-                onGetPrinterSettingSuccessHandler_(returnData);
-            } else {
-                NSDictionary* errorDataDic = @{
-                    @"data": @(code),
-                    @"type": @"code"
-                };
-                onGetPrinterSettingErrorHandler_([EposStringHelper convertDictionatyToJsonString:errorDataDic]);
+            if(self->onGetPrinterSettingSuccessHandler_ && self->onGetPrinterSettingErrorHandler_) {
+                if(code == EPOS2_CODE_SUCCESS) {
+                    self->onGetPrinterSettingSuccessHandler_(returnData);
+                } else {
+                    NSDictionary* errorDataDic = @{
+                        @"data": @(code),
+                        @"type": @"code"
+                    };
+                    self->onGetPrinterSettingErrorHandler_([EposStringHelper convertDictionatyToJsonString:errorDataDic]);
+                }
             }
-        }
 
-        onGetPrinterSettingSuccessHandler_ = nil;
-        onGetPrinterSettingErrorHandler_ = nil;
-    }
+            self->onGetPrinterSettingSuccessHandler_ = nil;
+            self->onGetPrinterSettingErrorHandler_ = nil;
+        }
+    });
 }
 
 - (void) onSetPrinterSetting:(int)code
