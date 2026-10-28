@@ -28,7 +28,7 @@ export function usePrintersDiscovery() {
         setPrinters([]);
         setPrinterError(null);
       }
-      setIsDescovering(isNextDiscovering);
+      setIsDiscovering(isNextDiscovering);
     });
 
     return () => {
