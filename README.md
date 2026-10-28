@@ -95,11 +95,8 @@ function App() {
 ```
 
 ## Documentation
-1. [Discovery API](./docs/discovery/discovery.md)
-2. [Printer API](./docs/printer/Printer.md)
-3. [Examples](./docs/QUICK_START.md)
-4. [Supported devices](./docs/SUPPORTED_DEVICES.md)
-5. [SDK information (v2.27.0)](./docs/SDK.md)
+
+**[https://tr3v3r.github.io/react-native-esc-pos-printer](https://tr3v3r.github.io/react-native-esc-pos-printer)**
 
 ## Sponsor this project
 If you like what I'm doing and want to support me, you can:
