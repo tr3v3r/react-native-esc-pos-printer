@@ -419,4 +419,69 @@ export class PrinterWrapper {
       });
     }
   };
+
+  addPageArea = async (
+    horizontal: number,
+    vertical: number,
+    width: number,
+    height: number
+  ) => {
+    try {
+      await EscPosPrinter.addPageArea(this.target, horizontal, vertical, width, height);
+    } catch (error) {
+      throwProcessedError({
+        methodName: 'addPageArea',
+        errorCode: error.message,
+        messagesMapping: CommonOperationErrorMessageMapping,
+      });
+    }
+  };
+
+  addPageDirection = async (direction: number) => {
+    try {
+      await EscPosPrinter.addPageDirection(this.target, direction);
+    } catch (error) {
+      throwProcessedError({
+        methodName: 'addPageDirection',
+        errorCode: error.message,
+        messagesMapping: CommonOperationErrorMessageMapping,
+      });
+    }
+  };
+
+  addPagePosition = async (horizontal: number, vertical: number) => {
+    try {
+      await EscPosPrinter.addPagePosition(this.target, horizontal, vertical);
+    } catch (error) {
+      throwProcessedError({
+        methodName: 'addPagePosition',
+        errorCode: error.message,
+        messagesMapping: CommonOperationErrorMessageMapping,
+      });
+    }
+  };
+
+  addPageBegin = async () => {
+    try {
+      await EscPosPrinter.addPageBegin(this.target);
+    } catch (error) {
+      throwProcessedError({
+        methodName: 'addPageBegin',
+        errorCode: error.message,
+        messagesMapping: CommonOperationErrorMessageMapping,
+      });
+    }
+  };
+
+  addPageEnd = async () => {
+    try {
+      await EscPosPrinter.addPageEnd(this.target);
+    } catch (error) {
+      throwProcessedError({
+        methodName: 'addPageEnd',
+        errorCode: error.message,
+        messagesMapping: CommonOperationErrorMessageMapping,
+      });
+    }
+  };
 }

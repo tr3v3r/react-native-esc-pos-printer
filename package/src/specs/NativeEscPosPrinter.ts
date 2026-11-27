@@ -209,6 +209,10 @@ export interface Spec extends TurboModule {
     ALIGN_LEFT: number;
     ALIGN_CENTER: number;
     ALIGN_RIGHT: number;
+    DIRECTION_LEFT_TO_RIGHT: number;
+    DIRECTION_BOTTOM_TO_TOP: number;
+    DIRECTION_RIGHT_TO_LEFT: number;
+    DIRECTION_TOP_TO_BOTTOM: number;
     LANG_EN: number;
     LANG_JA: number;
     LANG_ZH_CN: number;
@@ -227,6 +231,21 @@ export interface Spec extends TurboModule {
   connect(target: string, timeout: number): Promise<void>;
   disconnect(target: string): Promise<void>;
   clearCommandBuffer(target: string): Promise<void>;
+  addPageArea(
+    target: string,
+    horizontal: number,
+    vertical: number,
+    width: number,
+    height: number
+  ): Promise<void>;
+  addPageDirection(target: string, direction: number): Promise<void>;
+  addPagePosition(
+    target: string,
+    horizontal: number,
+    vertical: number
+  ): Promise<void>;
+  addPageBegin(target: string): Promise<void>;
+  addPageEnd(target: string): Promise<void>;
   addText(target: string, data: string): Promise<void>;
   addTextLang(target: string, lang: number): Promise<void>;
   addFeedLine(target: string, line: number): Promise<void>;

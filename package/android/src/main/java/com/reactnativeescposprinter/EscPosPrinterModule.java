@@ -134,6 +134,81 @@ public class EscPosPrinterModule extends NativeEscPosPrinterSpec {
     }
 
     @ReactMethod
+    synchronized public void addPageArea(String target, double horizontal, double vertical, double width, double height, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EposStringHelper.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.addPageArea((int) horizontal, (int) vertical, (int) width, (int) height);
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+    
+    @ReactMethod
+    synchronized public void addPageDirection(String target, double direction, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EposStringHelper.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.addPageDirection((int) direction);
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+
+    @ReactMethod
+    synchronized public void addPagePosition(String target, double horizontal, double vertical, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EposStringHelper.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.addPagePosition((int) horizontal, (int) vertical);
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+
+    @ReactMethod
+    synchronized public void addPageBegin(String target, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EposStringHelper.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.addPageBegin();
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+
+    @ReactMethod
+    synchronized public void addPageEnd(String target, Promise promise) {
+      ThePrinter thePrinter = thePrinterManager_.getObject(target);
+      if (thePrinter == null) {
+        promise.reject(EposStringHelper.getErrorTextData(ERR_INIT, ""));
+      } else {
+        try {
+          thePrinter.addPageEnd();
+          promise.resolve(null);
+        } catch(Exception e) {
+          processError(promise, e, "");
+        }
+      }
+    }
+
+    @ReactMethod
     synchronized public void addText(String target, String data, Promise promise) {
       ThePrinter thePrinter = thePrinterManager_.getObject(target);
       if (thePrinter == null) {

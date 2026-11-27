@@ -41,6 +41,12 @@ export const PrinterScreen = memo(() => {
           onPress={() => navigation.navigate('PrintFromView', { printer })}
           topOffset
         />
+        <Button
+          loading={false}
+          title="Landscape Print"
+          onPress={() => navigation.navigate('LandscapePrint', { printer })}
+          topOffset
+        />
       </View>
     </View>
   );

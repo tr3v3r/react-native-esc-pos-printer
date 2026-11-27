@@ -331,6 +331,78 @@ await printerInstance.clearCommandBuffer();
 
 ---
 
+## Page Mode Control
+
+### addPageArea()
+*addPageArea(`horizontal: number, vertical: number, width: number, height: number`): `Promise<void>`*
+
+Sets the printable area coordinates and dimensions for page mode printing.
+
+**Example**
+
+```typescript
+await printerInstance.addPageArea(0, 0, 400, 600);
+```
+[Read more](./addPageArea.md)
+
+---
+
+### addPageDirection()
+*addPageDirection(`direction: number`): `Promise<void>`*
+
+Sets the direction for text and graphics in page mode.
+
+**Example**
+
+```typescript
+await printerInstance.addPageDirection(PrinterConstants.DIRECTION_LEFT_TO_RIGHT);
+```
+[Read more](./addPageDirection.md)
+
+---
+
+### addPagePosition()
+*addPagePosition(`horizontal: number, vertical: number`): `Promise<void>`*
+
+Sets the current print position within the page area in page mode.
+
+**Example**
+
+```typescript
+await printerInstance.addPagePosition(100, 50);
+```
+[Read more](./addPagePosition.md)
+
+---
+
+### addPageBegin()
+*addPageBegin(): `Promise<void>`*
+
+Starts page mode for advanced layout control and precise positioning.
+
+**Example**
+
+```typescript
+await printerInstance.addPageBegin();
+```
+[Read more](./addPageBegin.md)
+
+---
+
+### addPageEnd()
+*addPageEnd(): `Promise<void>`*
+
+Ends page mode and prints all the content that was positioned within the page area.
+
+**Example**
+
+```typescript
+await printerInstance.addPageEnd();
+```
+[Read more](./addPageEnd.md)
+
+---
+
 ## Static Methods
 
 ### Printer.addTextLine()
